@@ -2,27 +2,28 @@
 % Please edit documentation in R/methods_tagbio.R
 \name{addResult}
 \alias{addResult}
-\title{Add data to a tagbio.result.}
+\title{Add data to a TagbioResult.}
 \usage{
-addResult(tagResult, resultData, resultType)
+addResult(tag_result, result_data, result_type)
 }
 \arguments{
-\item{tagResult}{tagResult object}
+\item{tag_result}{tagResult object}
 
-\item{resultData}{data.frame or file path to results data}
+\item{result_data}{data.frame or file path to results data}
 
-\item{resultType}{either \code{data.frame}, \code{jpeg}, \code{pdf},
+\item{result_type}{either \code{data.frame}, \code{jpeg}, \code{pdf},
 \code{png}, \code{svg}}
 }
 \value{
-updated tagResult object
+updated TagbioResult object
 }
 \description{
-This method adds results to a tagbio.result object.
+This method adds results to a tagbio.result object
 }
 \examples{
-addResult(tagresult, "my_pdf_file.pdf", type = "pdf")
+tag_result <- TagbioResult()
+addResult(tag_result, "my_pdf_file.pdf", result_type = "pdf")
 }
 \seealso{
-\code{\link{tagbio.data}}
+\code{\link{TagbioData}}
 }

@@ -4,16 +4,12 @@
 \alias{getTagData}
 \title{Retrieve data from a tag.bio flux capacitor}
 \usage{
-getTagData(fcUrl, apiKey, arguments, protocolName = "download")
+getTagData(fc, protocol_instance)
 }
 \arguments{
-\item{fcUrl}{flux capacitor API URL}
+\item{fc}{flux capacitor object}
 
-\item{apiKey}{flux capacitor API key for authentication}
-
-\item{arguments}{a list of arguments to specify the API query}
-
-\item{protocolName}{name of protocol.  Default is "download".}
+\item{protocol_instance}{protocol instance}
 }
 \value{
 A tagbio.data object with data.frame populated by query
@@ -22,10 +18,14 @@ A tagbio.data object with data.frame populated by query
 Retrieve data from a tag.bio flux capacitor
 }
 \examples{
-getTagData(FC_URL, API_KEY, list(expression = c("A1CF","A2M"),
-    clinical_categorical_variables = c("clinical.SAMPLE_ID")))
+fc_hnsc <- FC(name = "fc-hnsc", 
+     url = "https://fc-genesig-gateway-azure.dev.tag.bio/fc-svc/fc-hnsc/")
+protocol_instance <- ProtocolInstance(name = "download", 
+     arguments = list(expression = c("A1CF","A2M"),
+     clinical_categorical_variables = c("clinical.SAMPLE_ID")))
+getTagData(fc_hnsc, protocol_instance)
 
 }
 \seealso{
-\code{\link{tagbio.result}},\code{\link{getTagData}}
+\code{\link{TagbioResult}},\code{\link{FC}},\code{\link{ProtocolInstance}}
 }
