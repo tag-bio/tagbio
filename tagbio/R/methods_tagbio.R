@@ -1,79 +1,121 @@
 
 library("httr")
 
-#### REMOVE THIS:
-# API_KEY = "REDACTED"
-# args = list(expression = c("A1CF","A2M","A2M-AS1","A2ML1","A4GNT","AA"),
-# clinical_categorical_variables = c("clinical.SAMPLE_ID","clinical.PATIENT_ID"))
-# FC_URL = ""https://fc-skcm.fc.tag.bio/q"
-# PROTOCOL_NAME = "download"
-
 #' An S4 class representing data from the tag.bio platform
 #'
-#' The tagbio.data class holds tagbio.data as a data.frame attribute of the
-#' object.  tagbio.data objects are typically created through a
+#' The TagbioData class holds tagbio.data as a data.frame attribute of the
+#' object.  TagbioData objects are typically created through a
 #' \code{getTagData} query or created directly from the flux capacitor and
-#' passed to a user defined method.  The tagbio.data object may optionally
+#' passed to a user defined method.  The TagbioData object may optionally
 #' have a list of parameters defined.  This list is typically populated by
 #' the flux capacitor and is used to direct user defined methods.
 #'
 #' @slot data.frame a data frame typically retrieved from tag.bio
 #' @slot parameters a list of parameters from tag.bio
-#' @export
-tagbio.data <- setClass(
-    "tagbio.data",
+#' @export TagbioData
+#' @exportClass TagbioData
+TagbioData <- setClass(
+    "TagbioData",
     representation(data.frame = "data.frame",
                    parameters = "list"),
     prototype(data.frame = data.frame(), parameters = list())
 )
 
+#' An S4 class representing a tag.bio flux capacitor (FC)
+#'
+#' The FC class represents a tag.bio flux capacitor (FC). A FC
+#' object has a name and API key which are required for interacting
+#' with the FC through API calls.
+#'
+#' @slot name name of the FC
+#' @slot url URL of the FC.  Should end with a forward slash.
+#' @slot api_key API key of the FC (if not open)
+#' @examples
+#' fc_hnsc <- FC(name = "fc-hnsc", 
+#'      url = "https://fc-genesig-gateway-azure.dev.tag.bio/fc-svc/fc-hnsc/")
+#' @export FC
+#' @exportClass FC
+FC <- setClass(
+  "FC",
+  representation(name = "character",
+                 url = "character",
+                 api_key = "character"),
+  prototype(name = "", url = "", api_key = "")
+)
 
-
+#' An S4 class representing a tag.bio protocol instance.
+#'
+#' The ProtocolInstance class represents a tag.bio protocol.  The
+#' object has the protocol name and specifies what data should
+#' be downloaded from the protocol through the API query.
+#'
+#' @slot name name of the protocol (default 'download')
+#' @slot arguments a list of arguments to specify the API query
+#' @slot version protocol version (default 'N/A')
+#' @slot require_auth protocol requires athetication (default FALSE)
+#' @examples
+#' protocol_instance <- ProtocolInstance(name = "download", 
+#'      arguments = list(expression = c("A1CF","A2M"),
+#'      clinical_categorical_variables = c("clinical.SAMPLE_ID")))
+#' @export ProtocolInstance
+#' @exportClass ProtocolInstance
+ProtocolInstance <- setClass(
+  "ProtocolInstance",
+  representation(name = "character",
+                 arguments = "list",
+                 version = "character",
+                 require_auth = "logical"),
+  prototype(name = "download", arguments = list(), version = "N/A", require_auth = FALSE)
+)
+setGeneric("as.list")
+setMethod("as.list", c(x = "ProtocolInstance"), function(x) {
+  return(list(name = x@name, arguments = x@arguments, version = x@version, require_auth = x@require_auth))
+})
 
 #' Retrieve data from a tag.bio flux capacitor
 #'
-#' @param fcUrl flux capacitor API URL
-#' @param apiKey flux capacitor API key for authentication
-#' @param arguments a list of arguments to specify the API query
-#' @param protocolName name of protocol.  Default is "download".
+#' @param fc flux capacitor object
+#' @param protocol_instance protocol instance
 #' @return A tagbio.data object with data.frame populated by query
 #' @export
-#' @seealso \code{\link{tagbio.result}},\code{\link{getTagData}}
+#' @seealso \code{\link{TagbioResult}},\code{\link{FC}},\code{\link{ProtocolInstance}}
 #' @examples
-#' getTagData(FC_URL, API_KEY, list(expression = c("A1CF","A2M"),
-#'     clinical_categorical_variables = c("clinical.SAMPLE_ID")))
+#' fc_hnsc <- FC(name = "fc-hnsc", 
+#'      url = "https://fc-genesig-gateway-azure.dev.tag.bio/fc-svc/fc-hnsc/")
+#' protocol_instance <- ProtocolInstance(name = "download", 
+#'      arguments = list(expression = c("A1CF","A2M"),
+#'      clinical_categorical_variables = c("clinical.SAMPLE_ID")))
+#' getTagData(fc_hnsc, protocol_instance)
 #'
-getTagData <- function(fcUrl, apiKey, arguments, protocolName = "download") {
+getTagData <- function(fc, protocol_instance) {
 
     # create payload for request
     jsonPayload <- list(
         zip = TRUE,
-        api_key = apiKey,
+        api_key = fc@api_key,
         groups = c("developer"),
-        protocol_instance = list(
-           arguments = arguments,
-           name = protocolName,
-           version = "N/A",
-           require_auth = TRUE
-        )
+        protocol_instance = as.list(protocol_instance)
     )
 
+    # add query to url
+    # TODO - check for trailing slash
+    url <- paste0(fc@url, "q")
+
     # submit request to FC
-    r <- POST(fcUrl,
+    r <- httr::POST(url,
               body = jsonPayload,
               encode = "json")
-    tag_data_frame <- content(r, as = "parsed", type = "text/csv",
+    tag_data_frame <- httr::content(r, as = "parsed", type = "text/csv",
                               encoding = "UTF-8")
 
     # set up the tagbio.data instance
-    tag_data <- tagbio.data()
-    tag_data@data.frame = tag_data_frame
+    tag_data <- TagbioData(data.frame = tag_data_frame) 
     return(tag_data)
 }
 
 #' An S4 class representing data to return to the tag.bio platform
 #'
-#' The tagbio.result class allows the user to return data to the tag.bio
+#' The TagbioResult class allows the user to return data to the tag.bio
 #' platform.  It is typically only used in user-defined protocol methods
 #' called from the flux capacitor.
 #'
@@ -82,9 +124,10 @@ getTagData <- function(fcUrl, apiKey, arguments, protocolName = "download") {
 #' @slot pdf path to a pdf file
 #' @slot png path to a png file
 #' @slot svg path to a svg file
-#' @export
-tagbio.result <- setClass(
-  "tagbio.result",
+#' @export TagbioResult
+#' @exportClass TagbioResult
+TagbioResult <- setClass(
+  "TagbioResult",
   representation(data.frame = "data.frame",
                  jpeg = "character",
                  pdf = "character",
@@ -93,23 +136,24 @@ tagbio.result <- setClass(
   prototype(data.frame = data.frame(), jpeg = "", pdf = "", png = "", svg = "")
 )
 
-#' Add data to a tagbio.result.
+#' Add data to a TagbioResult.
 #'
 #' This method adds results to a tagbio.result object
 #'
-#' @param tagResult tagResult object
-#' @param resultData data.frame or file path to results data
-#' @param resultType either \code{data.frame}, \code{jpeg}, \code{pdf},
+#' @param tag_result tagResult object
+#' @param result_data data.frame or file path to results data
+#' @param result_type either \code{data.frame}, \code{jpeg}, \code{pdf},
 #'    \code{png}, \code{svg}
 #'
-#' @return updated tagResult object
+#' @return updated TagbioResult object
 #' @export
-#' @seealso \code{\link{tagbio.data}}
+#' @seealso \code{\link{TagbioData}}
 #' @examples
-#' addResult(tagresult, "my_pdf_file.pdf", type = "pdf")
+#' tag_result <- TagbioResult()
+#' addResult(tag_result, "my_pdf_file.pdf", result_type = "pdf")
 setGeneric(
     "addResult",
-    def=function(tagResult, resultData, resultType)
+    def=function(tag_result, result_data, result_type)
         {
             standardGeneric("addResult")
     }
@@ -117,33 +161,33 @@ setGeneric(
 
 setMethod(
     "addResult",
-    signature = "tagbio.result",
-    function(tagResult, resultData, resultType) {
-        if (!(resultType %in% c("data.frame", "jpeg", "pdf", "png", "svg"))) {
-            stop("Not an expected resultType")
+    signature = "TagbioResult",
+    function(tag_result, result_data, result_type) {
+        if (!(result_type %in% c("data.frame", "jpeg", "pdf", "png", "svg"))) {
+            stop("Not an expected result_type")
         }
 
         # TODO:  Add type checks...
-        if (resultType == "data.frame") {
-            tagResult@data.frame = resultData
+        if (result_type == "data.frame") {
+            tag_result@data.frame = result_data
         }
 
-        if (resultType == "jpeg") {
-            tagResult@jpeg = resultData
+        if (result_type == "jpeg") {
+            tag_result@jpeg = result_data
         }
 
-        if (resultType == "pdf") {
-            tagResult@pdf = resultData
+        if (result_type == "pdf") {
+            tag_result@pdf = result_data
         }
 
-        if (resultType == "png") {
-            tagResult@png = resultData
+        if (result_type == "png") {
+            tag_result@png = result_data
         }
 
-        if (resultType == "svg") {
-            tagResult@png = resultData
+        if (result_type == "svg") {
+            tag_result@png = result_data
         }
 
-        return(tagResult)
+        return(tag_result)
     }
 )
