@@ -1,0 +1,106 @@
+---
+title: "Getting Started with tagbio.R"
+author: "J Ireland, j@tag.bio"
+date: "December 10, 2019"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{getting-started-with-tagbio}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+## 1 Overview of Using tag.bio with R
+
+The `tagbio.R` package allows users to interact with a tag.bio flux capacitor
+(FC) using native R commands.  
+
+### 1.1 Calling tag.bio from R
+
+In the simplest use case, a user may wish to retrieve data from a tag.bio FC
+to use in their R application.  In this scenario, the FC is being used as a 
+queryable data source, returning results as a dataframe much like they would
+get through a database call or simple file upload.  The interaction is one way
+with data being pulled from the FC, but no results being returned back to 
+tag.bio.  The user is doing almost all of their work from the R environment.
+The `tagbio.R` package facilitates this interaction, performing API calls and
+formatting results as R data.frame objects.
+
+Even if the user's end goal is to call custom R methods from a tag.bio protocol,
+development will typically use this read-only interaction mode until the method
+is deemed ready for use.  Once the R method is working in this mode, it is 
+straight-forward to then have it be run directly from the tag.bio protocol as 
+described below.
+
+### 1.2 Calling R from tag.bio
+
+
+## 2 Set Up
+
+### 2.1 Connecting to tag.bio from R
+
+`tagbio.R` retrieves data from a tag.bio FC using the built in API.  To connect 
+to tag.bio from R, you will need the API URL of the FC you wish to connect to, a 
+protocol name (typically "download") and a valid API key for authentication.  
+
+The API URL will be the URL you normally use to access the tag.bio instance 
+followed by a "/q".  For example, if you normally access tag.bio at 
+<https://fc-skcm.fc.tag.bio>, then the API URL would simply be 
+<https://fc-skcm.fc.tag.bio/q>.
+
+To obtain a valid API key you will need to contact <support@tag.bio>.
+
+### 2.2 Configuring tag.bio to Run Custom R Code
+
+...This section will be more involved...
+
+## 3 Example: Calling tag.bio from R
+
+Something about FC
+
+```{r create_fc, echo=TRUE, message=F, warning=F}
+
+library(tagbio)
+
+# set up connection to the FC
+fc_hnsc <- FC(name = "fc-hnsc", url = "https://fc-genesig-gateway-azure.dev.tag.bio/fc-svc/fc-hnsc/")
+
+```
+
+```{r create_protocol, echo=TRUE, message=F, warning=F}
+
+# leukocyte infiltration signature genes
+leuk_genes <- c("CCL5", "CD19", "CD37", "CD3D", "CD3E", "CD3G", "CD3Z", "CD79A", "CD79B", "CD8A",
+    "CD8B1", "IGHG3", "IGJ", "IGLC1", "CD14", "LCK", "LTB", "MS4A1")
+leuk_genes <- c("A1CF","A2M")
+
+# define protocol instance
+prot_inst <- ProtocolInstance(name = "download", 
+    arguments = list(expression = leuk_genes,
+                     clinical_categorical_variables = c("clinical.SAMPLE_ID")))
+
+```
+
+```{r get_data, echo=TRUE, message=F, warning=F}
+
+# get
+
+exp_data <- getTagData(fc_hnsc, prot_inst) 
+exp_data
+
+```
+
+## 4 Example: Calling R from tag.bio
+
+
+## 5 Conclusion
+
+## 6 Session Info
+
