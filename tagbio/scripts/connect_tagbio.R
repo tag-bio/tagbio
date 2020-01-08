@@ -26,7 +26,7 @@ args <- parser$parse_args()
 user_function <- dget(args$user_function)
 
 ## Read in the fc params and create FC and protocol instances
-fc_data <- fromJSON(file = args.fc_data)
+fc_data <- fromJSON(file = args$fc_data)
 fc <- FC(name = fc_data$fc$name, url = fc_data$fc$url)
 prot_inst <- ProtocolInstance(name = fc_data$protocol_instance$name, arguments = fc_data$protocol_instance$arguments) 
 
