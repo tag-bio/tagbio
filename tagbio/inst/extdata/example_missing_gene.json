@@ -1,0 +1,18 @@
+{
+    "fc":{
+      "name": "fc-hnsc",  
+      "url": "https://fc-genesig-gateway-azure.dev.tag.bio/fc-svc/fc-hnsc/",
+      "api_key": ""
+    },
+    "protocol_instance": {
+      "name": "download",
+      "arguments": {
+        "expression": ["CCL5"],
+        "clinical_categorical_variables": ["clinical.SAMPLE_ID","clinical.PATIENT_ID"]
+      }
+    },
+    "passthrough_arguments": {
+      "n_lines": 10
+    }
+}
+
