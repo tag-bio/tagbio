@@ -21,6 +21,45 @@ TagbioData <- setClass(
     prototype(data.frame = data.frame(), parameters = list())
 )
 
+#' Get data from a TagbioData object.
+#'
+#' This convenience method returns the data.frame component of a TagbioData object.  If a 
+#' data_type is provided, only results of this type are returned in the data.frame.
+#'
+#' @param tag_data TagbioData object
+#' @param data_type type of data to return in data frame (default NA)
+#' @param row_name if set, use this column to create row names (default "")
+#' @return data.frame of data
+#' @export
+#' @examples
+#' tag_data <- TagbioData()
+#' getDataFrame(tag_data)
+setGeneric(
+    "getDataFrame",
+    def=function(tag_data, data_type = NA, row_name = "") {
+        standardGeneric("getDataFrame")
+    }
+)
+
+setMethod(
+    "getDataFrame",
+    signature = "TagbioData",
+    function(tag_data, data_type = NA, row_name = "") {
+        df <- tag_data@data.frame
+
+        if (!is.na(data_type)) {
+            type_eq <- paste0(data_type, " = ")
+            df <- df %>% select(matches(paste0("^(", type_eq, ".*|", row_name, ")$"))) %>%
+                set_names(~stringr::str_replace_all(., type_eq, ""))
+        }
+
+        if (row_name != "") {
+            df <- df %>% column_to_rownames(var = row_name)
+        }        
+        return(df)
+    }
+)
+
 #' An S4 class representing a tag.bio flux capacitor (FC)
 #'
 #' The FC class represents a tag.bio flux capacitor (FC). A FC
@@ -138,7 +177,7 @@ TagbioResult <- setClass(
 
 #' Add data to a TagbioResult.
 #'
-#' This method adds results to a tagbio.result object
+#' This method adds results to a TagbioResult object
 #'
 #' @param tag_result tagResult object
 #' @param result_data data.frame or file path to results data
@@ -191,3 +230,30 @@ setMethod(
         return(tag_result)
     }
 )
+
+#' Add pdf to a TagbioResult.
+#'
+#' This method starts the graphics device driver for producing PDF graphics and
+#' adds to TagbioResult object
+#'
+#' @param tag_result tagResult object
+#' @export
+#' @seealso \code{\link{pdf}}
+#' @examples
+#' tag_result <- TagbioResult()
+#' pdf(tag_result)
+
+setGeneric("pdf")
+
+setMethod(
+    "pdf",
+    signature("TagbioResult"),
+    function(file, width, height, onefile, family, title, fonts, version, paper, 
+    encoding, bg, fg, pointsize, pagecentre, colormodel, useDingbats, 
+    useKerning, fillOddEven, compress) {
+        pdf(file = file@pdf, width, height, onefile, family, title, fonts, version, paper, 
+            encoding, bg, fg, pointsize, pagecentre, colormodel, useDingbats, 
+            useKerning, fillOddEven, compress)
+    }
+)
+
