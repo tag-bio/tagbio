@@ -18,7 +18,7 @@ addResult(tag_result, result_data, result_type)
 updated TagbioResult object
 }
 \description{
-This method adds results to a tagbio.result object
+This method adds results to a TagbioResult object
 }
 \examples{
 tag_result <- TagbioResult()
