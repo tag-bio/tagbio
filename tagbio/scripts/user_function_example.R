@@ -1,13 +1,17 @@
 
 suppressPackageStartupMessages(library(tagbio))
 suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(gridExtra))
 
-function(tag_data) {
+function(tag_data, tag_result) {
     # user function returns top n-lines of data
     n_lines <- tag_data@parameters$n_lines
     short_tag_data <- tag_data@data.frame %>% top_n(n_lines)
-    print(short_tag_data)
-    tag_result <- TagbioResult()
-    tag_result@data.frame <- short_tag_data
+    
+    # open graphics device driver and add pdf to result
+    pdf(tag_result, height=11, width=8.5)
+    grid.table(short_tag_data)
+    dev.off()
+
     return(tag_result)
 }
