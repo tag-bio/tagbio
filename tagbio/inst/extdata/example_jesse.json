@@ -1,0 +1,34 @@
+{
+    "fc":{
+        "name": "fc-friday",  
+        "url": "https://fc-genesig-gateway-azure.dev.tag.bio/fc-svc/fc-friday/",
+        "api_key": ""
+    },
+    "protocol_instance": {
+      "name": "default_download",
+      "version": "N/A",
+      "arguments": {
+        "entity_annotation": [
+          {
+            "collection": {
+              "name": "Gene expression",
+              "name_type": "simple"
+            },
+            "variable_type": "numeric"
+          }
+        ],
+        "background_cohort": [
+          {
+            "operator": "AND",
+            "criteria": [],
+            "variable_type": "categorical-compound"
+          }
+        ]
+      }
+    },
+    "passthrough_arguments": {
+      "n_lines": [
+        25
+      ]
+    }
+  }
