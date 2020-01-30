@@ -1,4 +1,5 @@
-{ "zip": true,
+{ 
+    "zip": true,
     "protocol_instance":{
         "name":"download",
         "version":"N/A",

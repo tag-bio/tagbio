@@ -1,0 +1,13 @@
+{ 
+    "zip": true,
+    "protocol_instance":{
+        "name":"download",
+        "version":"N/A",
+        "arguments":{
+            "cancer_type":"Melanoma",
+            "raw_expression_signature":["Wound healing gene signature"],
+            "categorical_variable_collection":["Sample ID","Cancer type","Cancer subtype","Immune subtype"]
+        }
+    },
+    "groups":["developer"]
+}
