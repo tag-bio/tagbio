@@ -1,4 +1,4 @@
-#!/usr/bin/env Rscript
+#!/usr/local/bin/Rscript
 # connect_tagbio.R
 # 
 # author: j@tag.bio
