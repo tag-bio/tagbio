@@ -9,6 +9,8 @@
 # ./tag.R -u https://fc-skcm.fc.tag.bio/q -j payload_example.json -f user_function_example.R -p params_example.json -o output.csv
 #
 
+print("Starting R process")
+
 ## Command line options
 suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("rjson"))
@@ -52,3 +54,5 @@ tag_result <- TagbioResult(jpeg = args$jpeg_file, pdf = args$pdf_file,
 
 ## Run the user function.  Should return a tag result back
 tag_result <- user_function(tag_data, tag_result)
+
+print("Finished R process")
