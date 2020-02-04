@@ -13,7 +13,7 @@ function(tag_data, tag_result) {
     print("Starting user function")
 
     exp_data <- getDataFrame(tag_data, data_type = "Expression", 
-                         row_name ="clinical.SAMPLE_ID")
+                         row_name ="Sample ID")
 
     smp_filter <- apply(is.na(exp_data), 1, sum) / ncol(exp_data) < 0.1 
     exp_matrix <- as.matrix(exp_data[smp_filter,])
