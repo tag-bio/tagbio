@@ -18,8 +18,9 @@ Imports:
     httr,
     qpdf,
     rjson,
-    gridExtra
+    gridExtra,
+    tidyverse
 Suggests: 
     knitr,
-    rmarkdown,
-    tidyverse
+    rmarkdown
+    
