@@ -1,5 +1,6 @@
 
 library("httr")
+library("svglite")
 
 #' An S4 class representing data from the tag.bio platform
 #'
@@ -257,3 +258,46 @@ setMethod(
     }
 )
 
+#' Add svg to a TagbioResult.
+#'
+#' This method starts the graphics device driver for producing SVG graphics and
+#' adds to TagbioResult object
+#'
+#' @param tag_result tagResult object
+#' @export
+#' @seealso \code{\link{svglite}}
+#' @examples
+#' tag_result <- TagbioResult()
+#' svglite(tag_result)
+
+setGeneric("svglite", package = "svglite")
+
+setMethod(
+    "svglite",
+    signature("TagbioResult"),
+    function(file, width, height, bg, pointsize, standalone, system_fonts, user_fonts) {
+        svglite(file = file@svg, width, height, bg, pointsize, standalone, system_fonts, user_fonts)
+    }
+)
+
+#' Add png to a TagbioResult.
+#'
+#' This method starts the graphics device driver for producing png graphics and
+#' adds to TagbioResult object
+#'
+#' @param tag_result tagResult object
+#' @export
+#' @seealso \code{\link{png}}
+#' @examples
+#' tag_result <- TagbioResult()
+#' png(tag_result)
+
+setGeneric("png")
+
+setMethod(
+    "png",
+    signature("TagbioResult"),
+    function(filename) {
+        png(filename = filename@png)
+    }
+)
