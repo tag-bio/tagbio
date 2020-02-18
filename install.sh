@@ -8,6 +8,6 @@ apt-get install -y \
   libssl-dev \
   python3
 
-install.r argparse gridExtra httr qpdf rjson
+install.r argparse gridExtra httr qpdf rjson tidyverse
 install.r $TAGBIO_R_UTILS/tagbio_0.2.0.tar.gz
 
