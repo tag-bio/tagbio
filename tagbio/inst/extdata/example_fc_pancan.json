@@ -1,0 +1,23 @@
+{
+    "fc":{
+      "name": "fc-pan-can",  
+      "url": "https://fc-genesig-gateway-azure.dev.tag.bio/fc-svc/fc-pan-can/",
+      "api_key": ""
+    },
+    "protocol_instance": {
+      "name": "download",
+      "version":"N/A",
+      "arguments":{
+          "cancer_type":"Melanoma",
+          "raw_expression_signature":["Wound healing gene signature"],
+          "categorical_variable_collection":["Sample ID","Cancer type","Cancer subtype","Immune subtype"]
+      }
+    },
+    "passthrough_arguments": {
+      "n_lines": [7],
+      "output_file": ["test.pdf"],
+      "output_type": ["pdf"]
+    }
+}
+
+
