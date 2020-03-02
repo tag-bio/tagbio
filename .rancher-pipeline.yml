@@ -1,0 +1,17 @@
+stages:
+- name: build
+  steps:
+  - publishImageConfig:
+      dockerfilePath: ./Dockerfile
+      buildContext: .
+      tag: tagbior:branch-${CICD_GIT_BRANCH}
+      pushRemote: true
+      registry: platform-registry.dev.tag.bio
+timeout: 60
+notification:
+  recipients:
+  - recipient: '#ci-stage-cluster'
+    notifier: c-qrx5z:n-lrl8w
+  condition:
+  - Success
+  - Failed
