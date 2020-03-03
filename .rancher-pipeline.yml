@@ -6,7 +6,7 @@ stages:
       buildContext: .
       tag: tagbior:branch-${CICD_GIT_BRANCH}
       pushRemote: true
-      registry: platform-registry.dev.tag.bio
+      registry: platform-write-registry.dev.tag.bio
 timeout: 60
 notification:
   recipients:
