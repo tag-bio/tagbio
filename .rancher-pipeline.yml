@@ -10,7 +10,7 @@ stages:
 - name: trigger-downstream-pipelines
   steps:
   - runScriptConfig:
-      image: platform-registry.dev.tag.bio/tagbio-ci-pipeline:branch-stage
+      image: platform-registry.dev.tag.bio/tagbio-ci-pipeline:branch-master
       shellScript: $TAGBIO_CI_PIPELINE_DIR/trigger-pipelines.js
     env:
       TRIGGER_PIPELINES_BRANCH: stage
