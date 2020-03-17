@@ -19,7 +19,7 @@ parser$add_argument("-f", "--user_function", required = TRUE,
 parser$add_argument("-o", "--output_file", required = FALSE, 
     help="Save result file to this path.")
 parser$add_argument("-t", "--output_type", required = FALSE, 
-    help="File type of result.", choices = c("jpg", "pdf", "plotly", "png", "svg"))
+    help="File type of result.", choices = c("jpg", "html", "pdf", "png", "svg"))
 
 args <- parser$parse_args()
 
@@ -39,8 +39,8 @@ add_result_file <- function(tag_res, file_path, file_type) {
     if (file_type == 'svg') {
         tag_res@svg <- file_path
     }
-    if (file_type == 'plotly') {
-        tag_res@plotly <- file_path
+    if (file_type == 'html') {
+        tag_res@html <- file_path
     }
     return(tag_res)
 }
