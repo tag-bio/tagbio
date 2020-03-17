@@ -171,9 +171,10 @@ TagbioResult <- setClass(
   representation(data.frame = "data.frame",
                  jpeg = "character",
                  pdf = "character",
+                 plotly = "character",
                  png = "character",
                  svg = "character"),
-  prototype(data.frame = data.frame(), jpeg = "", pdf = "", png = "", svg = "")
+  prototype(data.frame = data.frame(), jpeg = "", pdf = "", plotly = "", png = "", svg = "")
 )
 
 #' Add data to a TagbioResult.
@@ -203,7 +204,7 @@ setMethod(
     "addResult",
     signature = "TagbioResult",
     function(tag_result, result_data, result_type) {
-        if (!(result_type %in% c("data.frame", "jpeg", "pdf", "png", "svg"))) {
+        if (!(result_type %in% c("data.frame", "jpeg", "pdf", "png", "svg", "plotly"))) {
             stop("Not an expected result_type")
         }
 
@@ -226,6 +227,10 @@ setMethod(
 
         if (result_type == "svg") {
             tag_result@png = result_data
+        }
+
+        if (result_type == "plotly") {
+            tag_result@plotly = result_data
         }
 
         return(tag_result)
@@ -298,6 +303,6 @@ setMethod(
     "png",
     signature("TagbioResult"),
     function(filename) {
-        png(filename = filename@png)
+        png(filename = filename@png, width = 6, height = 8, units = 'in', res = 500)
     }
 )
