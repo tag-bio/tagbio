@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 set -e
+set -x
 
 # package dependencies
 echo "Installing tagbio R system dependencies"
