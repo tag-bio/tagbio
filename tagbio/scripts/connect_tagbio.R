@@ -52,10 +52,20 @@ user_function <- dget(args$user_function)
 ## Read in the fc params and create FC and protocol instances
 fc_data <- fromJSON(file = args$fc_data)
 fc <- FC(name = fc_data$fc$name, url = fc_data$fc$url)
-prot_inst <- ProtocolInstance(name = fc_data$protocol_instance$name, arguments = fc_data$protocol_instance$arguments)
+
+## Look for protocol instance or script
+prot_inst <- NULL
+if (!is.null(fc_data[['protocol_instance']])) {
+    prot_inst <- fc_data[['protocol_instance']]
+} 
+
+script <- NULL
+if (!is.null(fc_data[['script']])) {
+    script <- fc_data[['script']]
+} 
 
 ## Load the data into a TagbioData object
-tag_data <- getTagData(fc, prot_inst)
+tag_data <- getTagData(fc, prot_inst, script)
 
 ## Add to this the pass through attributes
 tag_data@parameters <- fc_data$passthrough_arguments
@@ -67,7 +77,6 @@ tag_result <- TagbioResult()
 params <- tag_data@parameters
 output_set <- FALSE
 if (!is.null(params) & !is.null(params$output_file) & !is.null(params$output_type)) {
-    print("HERE")
     tag_result <- add_result_file(tag_result, params$output_file[1], params$output_type[1])
     output_set <- TRUE
 }

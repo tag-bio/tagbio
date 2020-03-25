@@ -83,39 +83,42 @@ FC <- setClass(
   prototype(name = "", url = "", api_key = "")
 )
 
-#' An S4 class representing a tag.bio protocol instance.
-#'
-#' The ProtocolInstance class represents a tag.bio protocol.  The
-#' object has the protocol name and specifies what data should
-#' be downloaded from the protocol through the API query.
-#'
-#' @slot name name of the protocol (default 'download')
-#' @slot arguments a list of arguments to specify the API query
-#' @slot version protocol version (default 'N/A')
-#' @slot require_auth protocol requires athetication (default FALSE)
-#' @examples
-#' protocol_instance <- ProtocolInstance(name = "download", 
-#'      arguments = list(expression = c("A1CF","A2M"),
-#'      clinical_categorical_variables = c("clinical.SAMPLE_ID")))
-#' @export ProtocolInstance
-#' @exportClass ProtocolInstance
-ProtocolInstance <- setClass(
-  "ProtocolInstance",
-  representation(name = "character",
-                 arguments = "list",
-                 version = "character",
-                 require_auth = "logical"),
-  prototype(name = "download", arguments = list(), version = "N/A", require_auth = FALSE)
-)
-setGeneric("as.list")
-setMethod("as.list", c(x = "ProtocolInstance"), function(x) {
-  return(list(name = x@name, arguments = x@arguments, version = x@version, require_auth = x@require_auth))
-})
+# TODO - support protocol and script objects to help user build
+
+# #' An S4 class representing a tag.bio protocol instance.
+# #'
+# #' The ProtocolInstance class represents a tag.bio protocol.  The
+# #' object has the protocol name and specifies what data should
+# #' be downloaded from the protocol through the API query.
+# #'
+# #' @slot name name of the protocol (default 'download')
+# #' @slot arguments a list of arguments to specify the API query
+# #' @slot version protocol version (default 'N/A')
+# #' @slot require_auth protocol requires athetication (default FALSE)
+# #' @examples
+# #' protocol_instance <- ProtocolInstance(name = "download", 
+# #'      arguments = list(expression = c("A1CF","A2M"),
+# #'      clinical_categorical_variables = c("clinical.SAMPLE_ID")))
+# #' @export ProtocolInstance
+# #' @exportClass ProtocolInstance
+# ProtocolInstance <- setClass(
+#   "ProtocolInstance",
+#   representation(name = "character",
+#                  arguments = "list",
+#                  version = "character",
+#                  require_auth = "logical"),
+#   prototype(name = "download", arguments = list(), version = "N/A", require_auth = FALSE)
+# )
+# setGeneric("as.list")
+# setMethod("as.list", c(x = "ProtocolInstance"), function(x) {
+#   return(list(name = x@name, arguments = x@arguments, version = x@version, require_auth = x@require_auth))
+# })
 
 #' Retrieve data from a tag.bio flux capacitor
 #'
 #' @param fc flux capacitor object
 #' @param protocol_instance protocol instance
+#' @param script script instance
 #' @return A tagbio.data object with data.frame populated by query
 #' @export
 #' @seealso \code{\link{TagbioResult}},\code{\link{FC}},\code{\link{ProtocolInstance}}
@@ -127,15 +130,31 @@ setMethod("as.list", c(x = "ProtocolInstance"), function(x) {
 #'      clinical_categorical_variables = c("clinical.SAMPLE_ID")))
 #' getTagData(fc_hnsc, protocol_instance)
 #'
-getTagData <- function(fc, protocol_instance) {
+getTagData <- function(fc, protocol_instance = NULL, script = NULL) {
+
+    print("Getting tag data")
+
+    # if no protocol or script, we return an empty TagbioData 
+    if (is.null(protocol_instance) && is.null(script)) {
+        tag_data <- TagbioData()
+        return(tag_data)
+    }
 
     # create payload for request
     jsonPayload <- list(
         zip = TRUE,
         api_key = fc@api_key,
-        groups = c("developer"),
-        protocol_instance = as.list(protocol_instance)
+        groups = c("developer")
     )
+
+    if (!is.null(protocol_instance)) {
+        jsonPayload$protocol_instance = protocol_instance 
+    }
+
+    if (!is.null(script)) {
+        jsonPayload = script
+        jsonPayload$api_key = fc@api_key 
+    }
 
     # add query to url
     # TODO - check for trailing slash

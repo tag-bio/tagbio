@@ -4,12 +4,14 @@
 \alias{getTagData}
 \title{Retrieve data from a tag.bio flux capacitor}
 \usage{
-getTagData(fc, protocol_instance)
+getTagData(fc, protocol_instance = NULL, script = NULL)
 }
 \arguments{
 \item{fc}{flux capacitor object}
 
 \item{protocol_instance}{protocol instance}
+
+\item{script}{script instance}
 }
 \value{
 A tagbio.data object with data.frame populated by query
