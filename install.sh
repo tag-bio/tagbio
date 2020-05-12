@@ -15,5 +15,5 @@ echo "Installing tagbio R package dependencies"
 install.r argparse gridExtra httr qpdf rjson tidyverse svglite
 
 echo "Installing tagbio R package itself"
-install.r $TAGBIO_R_UTILS/tagbio_0.5.0.tgz
+install.r $TAGBIO_R_UTILS/tagbio_0.6.0.tgz
 
