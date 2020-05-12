@@ -177,24 +177,28 @@ getTagData <- function(fc, protocol_instance = NULL, script = NULL) {
 #' The TagbioResult class allows the user to return data to the tag.bio
 #' platform.  It is typically only used in user-defined protocol methods
 #' called from the flux capacitor.
+#' 
+#' Results are typically stored in a file either as a data frame or a
+#' plot saved in a graphics format or HTML.  Any messages not part of
+#' the results can be placed in the message file.  
+#' 
+#' A TagbioResults is typically prepopulated and passed to a user-
+#' defined R function.  The type and paths direct the user what output
+#' is expected and where results should be saved.
 #'
-#' @slot data.frame a dataframe of results
-#' @slot html path to a html file
-#' @slot jpeg path to a jpeg file
-#' @slot pdf path to a pdf file
-#' @slot png path to a png file
-#' @slot svg path to a svg file
+#' @slot result_data a dataframe of results
+#' @slot output_path path to resullts file
+#' @slot message_path path to a message file
+#' @slot result_type format of the results (html, png, pdf)
 #' @export TagbioResult
 #' @exportClass TagbioResult
 TagbioResult <- setClass(
   "TagbioResult",
-  representation(data.frame = "data.frame",
-                 html = "character",
-                 jpeg = "character",
-                 pdf = "character",
-                 png = "character",
-                 svg = "character"),
-  prototype(data.frame = data.frame(), html = "", jpeg = "", pdf = "", png = "", svg = "")
+  representation(result_data = "data.frame",
+                 output_path = "character",
+                 message_path = "character",
+                 result_type = "character"),
+  prototype(result_data = data.frame(), output_path = "", message_path = "", result_type = "")
 )
 
 #' Add data to a TagbioResult.
@@ -224,7 +228,7 @@ setMethod(
     "addResult",
     signature = "TagbioResult",
     function(tag_result, result_data, result_type) {
-        if (!(result_type %in% c("data.frame", "html", "jpeg", "pdf", "png", "svg"))) {
+        if (!(result_type %in% c("data.frame", "html", "jpeg", "pdf", "png", "json"))) {
             stop("Not an expected result_type")
         }
 
