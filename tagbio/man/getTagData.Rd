@@ -4,7 +4,13 @@
 \alias{getTagData}
 \title{Retrieve data from a tag.bio flux capacitor}
 \usage{
-getTagData(fc, protocol_instance = NULL, script = NULL)
+getTagData(
+  fc,
+  protocol_instance = NULL,
+  script = NULL,
+  username = NULL,
+  password = NULL
+)
 }
 \arguments{
 \item{fc}{flux capacitor object}

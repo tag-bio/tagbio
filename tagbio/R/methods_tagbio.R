@@ -49,6 +49,9 @@ setMethod(
         df <- tag_data@data.frame
 
         if (!is.na(data_type)) {
+            # escape parens
+            data_type <- gsub("\\(", "\\\\(", gsub("\\)", "\\\\)", data_type))
+
             type_eq <- paste0(data_type, " = ")
             df <- df %>% select(matches(paste0("^(", type_eq, ".*|", row_name, ")$"))) %>%
                 set_names(~stringr::str_replace_all(., type_eq, ""))
@@ -130,7 +133,8 @@ FC <- setClass(
 #'      clinical_categorical_variables = c("clinical.SAMPLE_ID")))
 #' getTagData(fc_hnsc, protocol_instance)
 #'
-getTagData <- function(fc, protocol_instance = NULL, script = NULL) {
+getTagData <- function(fc, protocol_instance = NULL, script = NULL, 
+                       username = NULL, password = NULL) {
 
     print("Getting tag data")
 
@@ -160,10 +164,20 @@ getTagData <- function(fc, protocol_instance = NULL, script = NULL) {
     # TODO - check for trailing slash
     url <- paste0(fc@url, "q")
 
-    # submit request to FC
-    r <- httr::POST(url,
-              body = jsonPayload,
-              encode = "json")
+    r <- NA
+    if (!is.null(username) && !is.null(password)) {
+      # submit request to FC with authentication
+      r <- httr::POST(url,
+                body = jsonPayload,
+                #httr::verbose(),
+                httr::authenticate(username, password, type = "basic"),
+                encode = "json")
+    } else {
+      # no authentication
+      r <- httr::POST(url,
+                      body = jsonPayload,
+                      encode = "json")
+    }
     tag_data_frame <- httr::content(r, as = "parsed", type = "text/csv",
                               encoding = "UTF-8")
 

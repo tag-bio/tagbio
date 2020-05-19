@@ -22,6 +22,10 @@ parser$add_argument("-o", "--output_file", required = TRUE,
     help="Save result file to this path.")
 parser$add_argument("-t", "--output_type", required = TRUE, 
     help="File type of result.", choices = c("html", "json", "pdf", "png"))
+parser$add_argument("-u", "--username", required = FALSE, default = NULL, 
+                    help="Username for authentication.")
+parser$add_argument("-p", "--password", required = TRUE, default = NULL,
+                    help="Password for authentication.")
 
 args <- parser$parse_args()
 
@@ -46,7 +50,8 @@ if (!is.null(fc_data[['script']])) {
 } 
 
 ## Load the data into a TagbioData object
-tag_data <- getTagData(fc, prot_inst, script)
+tag_data <- getTagData(fc, prot_inst, script, 
+                       username = args$username, password = args$password)
 
 ## Add to this the pass through attributes
 tag_data@parameters <- fc_data$passthrough_arguments
