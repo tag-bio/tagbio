@@ -21,7 +21,7 @@ parser$add_argument("-m", "--message_file", required = FALSE,
 parser$add_argument("-o", "--output_file", required = TRUE, 
     help="Save result file to this path.")
 parser$add_argument("-t", "--output_type", required = TRUE, 
-    help="File type of result.", choices = c("html", "json", "pdf", "png"))
+    help="File type of result.", choices = c("csv", "html", "json", "pdf", "png"))
 parser$add_argument("-u", "--username", required = FALSE, default = NULL, 
                     help="Username for authentication.")
 parser$add_argument("-p", "--password", required = FALSE, default = NULL,
