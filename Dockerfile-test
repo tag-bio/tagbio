@@ -1,0 +1,8 @@
+FROM platform-registry.dev.tag.bio/tagbio-fc-jars:branch-master
+WORKDIR /tagbior
+
+COPY . /tagbior/
+
+RUN ./install-r.sh
+RUN ./install.sh
+RUN ["./install-bioc-checked.R", "GSVA"]
