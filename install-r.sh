@@ -1,7 +1,9 @@
 #!/usr/bin/env sh
 set -e
 
-export R_BASE_VERSION=${1:-3.6.3}
+export R_BASE_VERSION=${1:-4.0.2}
+export R_MAJOR=${R_BASE_VERSION:0:1}
+
 echo "Installing R $R_BASE_VERSION"
 
 apt-get update -y
@@ -24,8 +26,15 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
 apt-key adv --keyserver keys.gnupg.net --recv-key 'E19F5F87128899B192B1A2C2AD5F960A256A04AF'
-echo "deb http://cloud.r-project.org/bin/linux/debian buster-cran35/" >> /etc/apt/sources.list
-echo "deb http://cloud.r-project.org/bin/linux/debian buster-cran40/" >> /etc/apt/sources.list
+if [ "$R_MAJOR" == "4" ]; then
+  echo "deb http://cloud.r-project.org/bin/linux/debian buster-cran40/" >> /etc/apt/sources.list
+elif [ "$R_MAJOR" == "3" ]; then
+  echo "deb http://cloud.r-project.org/bin/linux/debian buster-cran35/" >> /etc/apt/sources.list
+else
+  echo "install-r.sh only supports major versions 3 and 4"
+  exit 1
+fi
+
 # echo "deb http://http.debian.net/debian sid main" > /etc/apt/sources.list.d/debian-unstable.list
 # echo 'APT::Default-Release "testing";' > /etc/apt/apt.conf.d/default
 

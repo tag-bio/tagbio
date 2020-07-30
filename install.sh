@@ -19,7 +19,6 @@ apt-get install -y \
 echo "Installing tagbio R package dependencies"
 # do them one at a time for early failure
 install2.r -e argparse
-install2.r -e BiocManager
 install2.r -e gridExtra
 install2.r -e httr
 install2.r -e qpdf
