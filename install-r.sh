@@ -2,7 +2,7 @@
 set -e
 
 export R_BASE_VERSION=${1:-4.0.2}
-export R_MAJOR=${R_BASE_VERSION:0:1}
+export R_MAJOR=$(echo $R_BASE_VERSION|cut -b 1)
 
 echo "Installing R $R_BASE_VERSION"
 
@@ -26,9 +26,11 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
 apt-key adv --keyserver keys.gnupg.net --recv-key 'E19F5F87128899B192B1A2C2AD5F960A256A04AF'
-if [ "$R_MAJOR" == "4" ]; then
+if [ "$R_MAJOR"=="4" ]; then
+  echo "using buster-cran40"
   echo "deb http://cloud.r-project.org/bin/linux/debian buster-cran40/" >> /etc/apt/sources.list
-elif [ "$R_MAJOR" == "3" ]; then
+elif [ "$R_MAJOR"=="3" ]; then
+  echo "using buster-cran35"
   echo "deb http://cloud.r-project.org/bin/linux/debian buster-cran35/" >> /etc/apt/sources.list
 else
   echo "install-r.sh only supports major versions 3 and 4"
