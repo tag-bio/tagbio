@@ -23,6 +23,9 @@ install2.r -e gridExtra
 install2.r -e httr
 install2.r -e qpdf
 install2.r -e rjson
+install2.r -e broom
+install2.r -e tidyr
+install2.r -e modelr
 install2.r -e tidyverse
 install2.r -e svglite
 
