@@ -1,34 +1,39 @@
 #!/usr/bin/env sh
 set -e
-set -x
+set +x
 
 TAGBIO_R_VERSION=${1:-0.9.0}
 echo "Installing tagbio R version $TAGBIO_R_VERSION"
 
 # package dependencies
 echo "Installing tagbio R system dependencies"
-apt-get update
-apt-get install -y \
-  libcairo2-dev \
-  libcurl4-openssl-dev \
-  libfontconfig1-dev \
-  libssl-dev \
-  libxml2-dev \
-  python3
+# apt-get update
+# apt-get install -y \
+#   libcairo2-dev \
+#   libcurl4-openssl-dev \
+#   libfontconfig1-dev \
+#   libssl-dev \
+#   libxml2-dev
 
-echo "Installing tagbio R package dependencies"
-# do them one at a time for early failure
-install2.r -e argparse
-install2.r -e gridExtra
-install2.r -e httr
-install2.r -e qpdf
-install2.r -e rjson
-install2.r -e broom
-install2.r -e tidyr
-install2.r -e modelr
-install2.r -e tidyverse
-install2.r -e svglite
+conda config --add channels bioconda
+conda config --add channels conda-forge
+conda install \
+  bioconductor-gsva \
+  docopt \
+  pip \
+  python=3.8 \
+  r-argparse \
+  r-broom \
+  r-docopt \
+  r-gridextra \
+  r-httr \
+  r-modelr \
+  r-qpdf \
+  r-rjson \
+  r-svglite \
+  r-tidyr \
+  r-tidyverse
 
 echo "Installing tagbio R package itself"
-install2.r -e $TAGBIO_R_UTILS/tagbio_$TAGBIO_R_VERSION.tgz
+R CMD INSTALL $TAGBIO_R_UTILS/tagbio_$TAGBIO_R_VERSION.tgz
 
