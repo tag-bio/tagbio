@@ -37,3 +37,6 @@ conda install \
 echo "Installing tagbio R package itself"
 R CMD INSTALL $TAGBIO_R_UTILS/tagbio_$TAGBIO_R_VERSION.tgz
 
+conda clean --all -y
+apt-get clean -y
+apt-get autoremove -y
