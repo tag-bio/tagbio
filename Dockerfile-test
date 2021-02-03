@@ -5,4 +5,3 @@ COPY . /tagbior/
 
 RUN ./install-r.sh
 RUN ./install.sh
-RUN ["./install-bioc-checked.R", "GSVA"]
