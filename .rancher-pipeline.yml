@@ -1,4 +1,9 @@
 stages:
+- name: "Generate VERSION.txt"
+  steps:
+  - runScriptConfig:
+      image: alpine/git
+      shellScript: sh -c 'git rev-parse --short HEAD > VERSION.txt'
 - name: build
   steps:
   - publishImageConfig:
