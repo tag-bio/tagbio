@@ -13,7 +13,8 @@ apt-get install -y \
   libcurl4-openssl-dev \
   libfontconfig1-dev \
   libssl-dev \
-  libxml2-dev
+  libxml2-dev \
+  libxt-dev
 
 conda config --add channels bioconda
 conda config --add channels conda-forge
