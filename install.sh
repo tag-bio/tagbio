@@ -7,13 +7,13 @@ echo "Installing tagbio R version $TAGBIO_R_VERSION"
 
 # package dependencies
 echo "Installing tagbio R system dependencies"
-# apt-get update
-# apt-get install -y \
-#   libcairo2-dev \
-#   libcurl4-openssl-dev \
-#   libfontconfig1-dev \
-#   libssl-dev \
-#   libxml2-dev
+apt-get update
+apt-get install -y \
+  libcairo2-dev \
+  libcurl4-openssl-dev \
+  libfontconfig1-dev \
+  libssl-dev \
+  libxml2-dev
 
 conda config --add channels bioconda
 conda config --add channels conda-forge
