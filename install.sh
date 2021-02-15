@@ -26,6 +26,7 @@ conda install \
   r-argparse \
   r-broom \
   r-docopt \
+  r-dplyr \
   r-gridextra \
   r-httr \
   r-modelr \
