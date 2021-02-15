@@ -18,7 +18,7 @@ apt-get install -y \
 
 conda config --add channels bioconda
 conda config --add channels conda-forge
-conda update --all -y
+# conda update --all -y
 conda install \
   bioconductor-gsva \
   docopt \
