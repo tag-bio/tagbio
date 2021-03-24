@@ -20,10 +20,6 @@ updated TagbioResult object
 \description{
 This method adds results to a TagbioResult object
 }
-\examples{
-tag_result <- TagbioResult()
-addResult(tag_result, "my_pdf_file.pdf", result_type = "pdf")
-}
 \seealso{
 \code{\link{TagbioData}}
 }
