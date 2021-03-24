@@ -24,7 +24,7 @@ TagbioData <- setClass(
 
 #' Get data from a TagbioData object.
 #'
-#' This convenience method returns the data.frame component of a TagbioData object.  If a 
+#' This convenience method returns the data.frame component of a TagbioData object.  If a
 #' data_type is provided, only results of this type are returned in the data.frame.
 #'
 #' @param tag_data TagbioData object
@@ -33,8 +33,7 @@ TagbioData <- setClass(
 #' @return data.frame of data
 #' @export
 #' @examples
-#' tag_data <- TagbioData()
-#' getDataFrame(tag_data)
+
 setGeneric(
     "getDataFrame",
     def=function(tag_data, data_type = NA, row_name = "") {
@@ -59,7 +58,7 @@ setMethod(
 
         if (row_name != "") {
             df <- df %>% column_to_rownames(var = row_name)
-        }        
+        }
         return(df)
     }
 )
@@ -74,8 +73,6 @@ setMethod(
 #' @slot url URL of the FC.  Should end with a forward slash.
 #' @slot api_key API key of the FC (if not open)
 #' @examples
-#' fc_hnsc <- FC(name = "fc-hnsc", 
-#'      url = "https://fc-genesig-gateway-azure.dev.tag.bio/fc-svc/fc-hnsc/")
 #' @export FC
 #' @exportClass FC
 FC <- setClass(
@@ -86,36 +83,6 @@ FC <- setClass(
   prototype(name = "", url = "", api_key = "")
 )
 
-# TODO - support protocol and script objects to help user build
-
-# #' An S4 class representing a tag.bio protocol instance.
-# #'
-# #' The ProtocolInstance class represents a tag.bio protocol.  The
-# #' object has the protocol name and specifies what data should
-# #' be downloaded from the protocol through the API query.
-# #'
-# #' @slot name name of the protocol (default 'download')
-# #' @slot arguments a list of arguments to specify the API query
-# #' @slot version protocol version (default 'N/A')
-# #' @slot require_auth protocol requires athetication (default FALSE)
-# #' @examples
-# #' protocol_instance <- ProtocolInstance(name = "download", 
-# #'      arguments = list(expression = c("A1CF","A2M"),
-# #'      clinical_categorical_variables = c("clinical.SAMPLE_ID")))
-# #' @export ProtocolInstance
-# #' @exportClass ProtocolInstance
-# ProtocolInstance <- setClass(
-#   "ProtocolInstance",
-#   representation(name = "character",
-#                  arguments = "list",
-#                  version = "character",
-#                  require_auth = "logical"),
-#   prototype(name = "download", arguments = list(), version = "N/A", require_auth = FALSE)
-# )
-# setGeneric("as.list")
-# setMethod("as.list", c(x = "ProtocolInstance"), function(x) {
-#   return(list(name = x@name, arguments = x@arguments, version = x@version, require_auth = x@require_auth))
-# })
 
 #' Retrieve data from a tag.bio flux capacitor
 #'
@@ -126,19 +93,13 @@ FC <- setClass(
 #' @export
 #' @seealso \code{\link{TagbioResult}},\code{\link{FC}},\code{\link{ProtocolInstance}}
 #' @examples
-#' fc_hnsc <- FC(name = "fc-hnsc", 
-#'      url = "https://fc-genesig-gateway-azure.dev.tag.bio/fc-svc/fc-hnsc/")
-#' protocol_instance <- ProtocolInstance(name = "download", 
-#'      arguments = list(expression = c("A1CF","A2M"),
-#'      clinical_categorical_variables = c("clinical.SAMPLE_ID")))
-#' getTagData(fc_hnsc, protocol_instance)
-#'
-getTagData <- function(fc, protocol_instance = NULL, script = NULL, 
+
+getTagData <- function(fc, protocol_instance = NULL, script = NULL,
                        username = NULL, password = NULL) {
 
     print("Getting tag data")
 
-    # if no protocol or script, we return an empty TagbioData 
+    # if no protocol or script, we return an empty TagbioData
     if (is.null(protocol_instance) && is.null(script)) {
         tag_data <- TagbioData()
         return(tag_data)
@@ -152,12 +113,12 @@ getTagData <- function(fc, protocol_instance = NULL, script = NULL,
     )
 
     if (!is.null(protocol_instance)) {
-        jsonPayload$protocol_instance = protocol_instance 
+        jsonPayload$protocol_instance = protocol_instance
     }
 
     if (!is.null(script)) {
         jsonPayload = script
-        jsonPayload$api_key = fc@api_key 
+        jsonPayload$api_key = fc@api_key
     }
 
     # add query to url
@@ -182,7 +143,7 @@ getTagData <- function(fc, protocol_instance = NULL, script = NULL,
                               encoding = "UTF-8")
 
     # set up the tagbio.data instance
-    tag_data <- TagbioData(data.frame = tag_data_frame) 
+    tag_data <- TagbioData(data.frame = tag_data_frame)
     return(tag_data)
 }
 
@@ -191,11 +152,11 @@ getTagData <- function(fc, protocol_instance = NULL, script = NULL,
 #' The TagbioResult class allows the user to return data to the tag.bio
 #' platform.  It is typically only used in user-defined protocol methods
 #' called from the flux capacitor.
-#' 
+#'
 #' Results are typically stored in a file either as a data frame or a
 #' plot saved in a graphics format or HTML.  Any messages not part of
-#' the results can be placed in the message file.  
-#' 
+#' the results can be placed in the message file.
+#'
 #' A TagbioResults is typically prepopulated and passed to a user-
 #' defined R function.  The type and paths direct the user what output
 #' is expected and where results should be saved.
@@ -228,8 +189,6 @@ TagbioResult <- setClass(
 #' @export
 #' @seealso \code{\link{TagbioData}}
 #' @examples
-#' tag_result <- TagbioResult()
-#' addResult(tag_result, "my_pdf_file.pdf", result_type = "pdf")
 setGeneric(
     "addResult",
     def=function(tag_result, result_data, result_type)
@@ -272,75 +231,5 @@ setMethod(
         }
 
         return(tag_result)
-    }
-)
-
-#' Add pdf to a TagbioResult.
-#'
-#' This method starts the graphics device driver for producing PDF graphics and
-#' adds to TagbioResult object
-#'
-#' @param tag_result tagResult object
-#' @export
-#' @seealso \code{\link{pdf}}
-#' @examples
-#' tag_result <- TagbioResult()
-#' pdf(tag_result)
-
-setGeneric("pdf")
-
-setMethod(
-    "pdf",
-    signature("TagbioResult"),
-    function(file, width, height, onefile, family, title, fonts, version, paper, 
-    encoding, bg, fg, pointsize, pagecentre, colormodel, useDingbats, 
-    useKerning, fillOddEven, compress) {
-        pdf(file = file@pdf, width, height, onefile, family, title, fonts, version, paper, 
-            encoding, bg, fg, pointsize, pagecentre, colormodel, useDingbats, 
-            useKerning, fillOddEven, compress)
-    }
-)
-
-#' Add svg to a TagbioResult.
-#'
-#' This method starts the graphics device driver for producing SVG graphics and
-#' adds to TagbioResult object
-#'
-#' @param tag_result tagResult object
-#' @export
-#' @seealso \code{\link{svglite}}
-#' @examples
-#' tag_result <- TagbioResult()
-#' svglite(tag_result)
-
-setGeneric("svglite", package = "svglite")
-
-setMethod(
-    "svglite",
-    signature("TagbioResult"),
-    function(file, width, height, bg, pointsize, standalone, system_fonts, user_fonts) {
-        svglite(file = file@svg, width, height, bg, pointsize, standalone, system_fonts, user_fonts)
-    }
-)
-
-#' Add png to a TagbioResult.
-#'
-#' This method starts the graphics device driver for producing png graphics and
-#' adds to TagbioResult object
-#'
-#' @param tag_result tagResult object
-#' @export
-#' @seealso \code{\link{png}}
-#' @examples
-#' tag_result <- TagbioResult()
-#' png(tag_result)
-
-setGeneric("png")
-
-setMethod(
-    "png",
-    signature("TagbioResult"),
-    function(filename) {
-        png(filename = filename@png, width = 6, height = 8, units = 'in', res = 500)
     }
 )

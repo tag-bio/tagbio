@@ -25,15 +25,6 @@ A tagbio.data object with data.frame populated by query
 \description{
 Retrieve data from a tag.bio flux capacitor
 }
-\examples{
-fc_hnsc <- FC(name = "fc-hnsc", 
-     url = "https://fc-genesig-gateway-azure.dev.tag.bio/fc-svc/fc-hnsc/")
-protocol_instance <- ProtocolInstance(name = "download", 
-     arguments = list(expression = c("A1CF","A2M"),
-     clinical_categorical_variables = c("clinical.SAMPLE_ID")))
-getTagData(fc_hnsc, protocol_instance)
-
-}
 \seealso{
 \code{\link{TagbioResult}},\code{\link{FC}},\code{\link{ProtocolInstance}}
 }
