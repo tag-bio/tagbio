@@ -30,6 +30,7 @@ conda install \
   r-dplyr \
   r-gridextra \
   r-httr \
+  r-lifecycle \
   r-modelr \
   r-qpdf \
   r-rjson \
