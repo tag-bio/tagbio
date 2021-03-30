@@ -32,6 +32,7 @@ conda install \
   r-httr \
   r-lifecycle \
   r-modelr \
+  r-pillar \
   r-qpdf \
   r-rjson \
   r-svglite \
