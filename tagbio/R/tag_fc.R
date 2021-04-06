@@ -88,10 +88,14 @@ parse_collection_values <- function(res_values) {
   # 2.52.4 after use data_reference_type, before uses variable_type
   # data_reference_type (new)
 
-  if (is.null(res_values$data_reference_type)) {
-    variable_type <- res_values$variable_type
+  if (is.null(res_values$data_function_type)) {
+    if (is.null(res_values$data_reference_type)) {
+      variable_type <- res_values$variable_type
+    } else {
+      variable_type <- res_values$data_reference_type
+    }
   } else {
-    variable_type <- res_values$data_reference_type
+    variable_type <- res_values$data_function_type
   }
 
   tag_coll <- switch(variable_type,
