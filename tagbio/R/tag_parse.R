@@ -49,7 +49,7 @@ check_variable <- function(collection_defs, collection_variable) {
     variable_name <- collection_variable[2]
     if (collection_name %in% names(collection_defs)) {
       collection <- collection_defs[[collection_name]]
-      tag_var <- switch(collection@data_reference_type,
+      tag_var <- switch(collection@data_function_type,
                         categorical = CategoricalVariable(collection = collection,
                                                           variable = variable_name),
                         numeric = NumericVariable(collection = collection,
@@ -178,7 +178,7 @@ tag_categorical_func_list <- list(
 # if a symbol has the delimiter in it then we check that
 tag_env <- function(fc, expr) {
   names <- all_names(expr)
-  delim <- fc@con@qdelim
+  delim <- fc@qdelim
 
   # functions...
   fn_env <- rlang::as_environment(tag_numeric_func_list, rlang::caller_env())
@@ -234,7 +234,7 @@ tag_select_names <- function(x) {
 tag_select_eval <- function(fc, ...) {
 
   names <- unlist(map(rlang::exprs(...), tag_select_names))
-  delim <- fc@con@qdelim
+  delim <- fc@qdelim
 
   # check names for variables and add to environment
   tag_vars <- lapply(str_split(names, delim),
