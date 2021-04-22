@@ -19,7 +19,9 @@ parser$add_argument("-f", "--user_function", required = TRUE,
 parser$add_argument("-m", "--message_file", required = FALSE,
     help="Save messages to a file at this path.")
 parser$add_argument("-o", "--output_file", required = TRUE, 
-    help="Save result file to this path.")
+    help="Save result file to this path.  DEPRECATED.")
+parser$add_argument("-O", "--output_files", required = FALSE, nargs='+',
+    help="Result files given as key:path pairs.")
 parser$add_argument("-t", "--output_type", required = TRUE, 
     help="File type of result.", choices = c("csv", "html", "json", "pdf", "png"))
 parser$add_argument("-u", "--username", required = FALSE, default = NULL, 
