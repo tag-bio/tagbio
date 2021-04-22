@@ -19,12 +19,12 @@ setGeneric(
 
 NumericCollection <- setClass(
   "NumericCollection",
-  slots = c(collection = "character", data_reference_type = "character", collection_size = "numeric")
+  slots = c(collection = "character", data_function_type = "character", collection_size = "numeric")
 )
 
 setMethod("initialize", "NumericCollection",
           function(.Object, collection,  collection_size, ...) {
-            .Object@data_reference_type <- "numeric"
+            .Object@data_function_type <- "numeric"
             .Object@collection <- collection
             .Object@collection_size <- collection_size
             return(.Object)
@@ -34,7 +34,7 @@ setMethod("initialize", "NumericCollection",
 setMethod("to_json", "NumericCollection",
           function(.Object) {
             json <- list()
-            json[['variable_type']] <- .Object@data_reference_type # TODO
+            json[['variable_type']] <- .Object@data_function_type # TODO
             json[['collection']] <- .Object@collection
             return(json)
           }
@@ -49,13 +49,13 @@ setMethod("to_json", "NumericCollection",
 
 CategoricalCollection <- setClass(
   "CategoricalCollection",
-  slots = c(collection = "character", data_reference_type = "character",
+  slots = c(collection = "character", data_function_type = "character",
             collection_size = "numeric", collection_entity_count = "numeric")
 )
 
 setMethod("initialize", "CategoricalCollection",
           function(.Object, collection, collection_size, collection_entity_count, ...) {
-            .Object@data_reference_type <- "categorical"
+            .Object@data_function_type <- "categorical"
             .Object@collection <- collection
             .Object@collection_size <- collection_size
             .Object@collection_entity_count <- collection_entity_count
@@ -66,7 +66,7 @@ setMethod("initialize", "CategoricalCollection",
 setMethod("to_json", "CategoricalCollection",
           function(.Object) {
             json <- list()
-            json[['variable_type']] <- .Object@data_reference_type
+            json[['variable_type']] <- .Object@data_function_type
             json[['collection']] <- .Object@collection
             return(json)
           }
@@ -81,12 +81,12 @@ setMethod("to_json", "CategoricalCollection",
 
 NumericVariable <- setClass(
   "NumericVariable",
-  slots = c(collection = "NumericCollection", data_reference_type = "character", variable = "character")
+  slots = c(collection = "NumericCollection", data_function_type = "character", variable = "character")
 )
 
 setMethod("initialize", "NumericVariable",
           function(.Object, collection, variable, ...) {
-            .Object@data_reference_type <- "numeric"
+            .Object@data_function_type <- "numeric"
             .Object@collection <- collection
             .Object@variable <- variable
             return(.Object)
@@ -96,7 +96,7 @@ setMethod("initialize", "NumericVariable",
 setMethod("to_json", "NumericVariable",
           function(.Object) {
             json <- list()
-            json[['variable_type']] <- .Object@data_reference_type
+            json[['variable_type']] <- .Object@data_function_type
             json[['collection']] <- .Object@collection@collection
             json[['variable']] <- .Object@variable
             return(json)
@@ -111,12 +111,12 @@ setMethod("to_json", "NumericVariable",
 
 CategoricalVariable <- setClass(
   "CategoricalVariable",
-  slots = c(collection = "CategoricalCollection", data_reference_type = "character", variable = "character")
+  slots = c(collection = "CategoricalCollection", data_function_type = "character", variable = "character")
 )
 
 setMethod("initialize", "CategoricalVariable",
           function(.Object, collection,  variable, ...) {
-            .Object@data_reference_type <- "categorical"
+            .Object@data_function_type <- "categorical"
             .Object@collection <- collection
             .Object@variable <- variable
             return(.Object)
@@ -126,7 +126,7 @@ setMethod("initialize", "CategoricalVariable",
 setMethod("to_json", "CategoricalVariable",
           function(.Object) {
             json <- list()
-            json[['variable_type']] <- .Object@data_reference_type
+            json[['variable_type']] <- .Object@data_function_type
             json[['collection']] <- .Object@collection
             json[['variable']] <- .Object@variable
             return(json)
@@ -142,14 +142,14 @@ setMethod("to_json", "CategoricalVariable",
 
 NumericSlice <- setClass(
   "NumericSlice",
-  slots = c(data_reference_type = "character", criterion = "NumericVariable", operator = "character",
+  slots = c(data_function_type = "character", criterion = "NumericVariable", operator = "character",
             value = "numeric", percentile = "numeric")
 )
 
 setMethod("initialize", "NumericSlice",
           function(.Object, criterion, operator,
                    value = numeric(), percentile = numeric(), ...) {
-            .Object@data_reference_type <- "numeric-slice"
+            .Object@data_function_type <- "numeric-slice"
             .Object@operator <- operator
             .Object@criterion <- criterion
             .Object@value <- value
@@ -164,12 +164,12 @@ setMethod("to_json", "NumericSlice",
             json <- list()
             json[['operator']] <- .Object@operator
             json[['value']] <- .Object@value
-            json[['variable_type']] <- .Object@data_reference_type
+            json[['variable_type']] <- .Object@data_function_type
 
             criterion <- list()
             criterion[['collection']] <- .Object@collection@collection
             criterion[['variable']] <- tagvar@variable
-            criterion[['variable_type']] <- tagvar@data_reference_type
+            criterion[['variable_type']] <- tagvar@data_function_type
             json[['criterion']] <- criterion
             return(json)
           }
@@ -183,7 +183,7 @@ setMethod("to_json", "NumericSlice",
 
 CategoricalBatch <- setClass(
   "CategoricalBatch",
-  slots = c(data_reference_type = "character",
+  slots = c(data_function_type = "character",
             collection = "CategoricalCollection",
             operator = "character",
             variables = "list")
@@ -191,7 +191,7 @@ CategoricalBatch <- setClass(
 
 setMethod("initialize", "CategoricalBatch",
           function(.Object, collection,  operator, variables, ...) {
-            .Object@data_reference_type <- "categorical-batch"
+            .Object@data_function_type <- "categorical-batch"
             .Object@operator <- operator
             .Object@collection <- collection
             .Object@variables <- variables
@@ -204,7 +204,7 @@ setMethod("to_json", "CategoricalBatch",
             json <- list()
             json[['operator']] <- .Object@operator
             json[['collection']] <- .Object@collection@collection
-            json[['variable_type']] <- .Object@data_reference_type
+            json[['variable_type']] <- .Object@data_function_type
             json[['variables']] <- .Object@variables
             return(json)
           }
@@ -218,14 +218,14 @@ setMethod("to_json", "CategoricalBatch",
 
 CategoricalCompound <- setClass(
   "CategoricalCompound",
-  slots = c(data_reference_type = "character",
+  slots = c(data_function_type = "character",
             criteria = "list",
             operator = "character")
 )
 
 setMethod("initialize", "CategoricalCompound",
           function(.Object, criteria = list(),  operator, ...) {
-            .Object@data_reference_type <- "categorical-compound" # TODO: convert to set-operation
+            .Object@data_function_type <- "categorical-compound" # TODO: convert to set-operation
             .Object@operator <- operator
             .Object@criteria <- criteria
             return(.Object)
@@ -236,7 +236,7 @@ setMethod("to_json", "CategoricalCompound",
           function(.Object) {
             json <- list()
             json[['operator']] <- .Object@operator
-            json[['variable_type']] <- .Object@data_reference_type # TODO
+            json[['variable_type']] <- .Object@data_function_type # TODO
             crit_list = list()
             cnt <- 1
             for (crit in .Object@criteria) {
