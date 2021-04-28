@@ -236,7 +236,7 @@ get_info <- function(url, api_key) {
   }
 
   r <- httr::POST(url,
-                  body = jsonPayload,
+                  #body = jsonPayload,
                   #httr::verbose(),
                   httr::authenticate(api_data[1], api_data[2], type = "basic"),
                   encode = "json")
