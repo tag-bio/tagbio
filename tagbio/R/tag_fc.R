@@ -14,12 +14,12 @@ library(rlang)
 #'
 #' @slot url url to the tagbio server
 #' @slot api_key tagbio api key
-#' @slot qdelim delimiter used to separate collections and variables
 #' @export tagConnect
 #' @exportClass tagConnect
 tagConnect <- setClass(
   "tagConnect",
-  slots = c(url = "character", api_key = "character", qdelim = "character")
+  slots = c(host_url = "character", api_key = "character",
+      url = "character")
 )
 
 tag_load_config <- function() {
@@ -35,18 +35,18 @@ tag_load_config <- function() {
 }
 
 setMethod("initialize", "tagConnect",
-  function(.Object, url = "", api_key = "", qdelim = " = ", ...) {
-    .Object@qdelim <- qdelim
+  function(.Object, host_url = "", api_key = "", url = "", ...) {
 
     config_data <- tag_load_config()
+    url <- host_url
 
     # look other places for url/api key
     if (url == "") {
-      if (Sys.getenv("TAGBIO_HOST") != "") {
-        url <- Sys.getenv("TAGBIO_HOST")
+      if (Sys.getenv("TAGBIO_HOST_URL") != "") {
+        url <- Sys.getenv("TAGBIO_HOST_URL")
       } else {
-        if ("TAGBIO_HOST" %in% names(config_data)) {
-          url <- config_data[["TAGBIO_HOST"]]
+        if ("TAGBIO_HOST_URL" %in% names(config_data)) {
+          url <- config_data[["TAGBIO_HOST_URL"]]
         } else {
           url <- "http://localhost:8000"
         }
@@ -80,6 +80,80 @@ setMethod(
   }
 )
 
+#' @export
+setMethod(
+  "summary",
+  signature = c(object = "tagConnect"),
+  function(object, ...) {
+    # returns FC data as a tibble
+    kung_url <- paste0(object@url, "/kung-services/db/capacitors")
+
+    # use api key
+    api_data <- unlist(strsplit(object@api_key, ":"))
+    if (length(api_data) != 2) {
+      api_data <- c("", "") # defaults to empty user/pwd
+    }
+
+    r <- httr::GET(kung_url,
+                    httr::authenticate(api_data[1], api_data[2], type = "basic"),
+                    encode = "json")
+    fcs_json <- httr::content(r)
+    fcs_tbl <- data.frame(do.call(rbind, fcs_json))
+
+    if (!("key" %in% colnames(fcs_tbl))) {
+      if (("localhost" %in% object@url) | ("128.0.0.1" %in% object@url)) {
+        return(
+          tibble(key = c("localhost"), site = c("localhost"), description = c("localhost"),
+            displayname = c("localhost"), url = c(object@url))
+        )
+      } else {
+        print("Unable to get FC data")
+        # default to localhost?
+        return(NULL)
+      }
+    } else {
+
+      # remove extraneous rows and columns
+      fcs_tbl <- fcs_tbl %>%
+        filter(site != "NULL") %>%
+        select(key, site, description, displayname, url)
+
+      return(fcs_tbl)
+    }
+  }
+)
+
+#' @export
+setGeneric(
+  "tagListFCs",
+  def = function(.data = "tagConnect") {
+    standardGeneric("tagListFCs")
+  }
+)
+
+setMethod(
+  "tagListFCs",
+  signature = c(.data),
+  function(.data) {
+    fcs_tbl <- summary(.data)
+
+    if (is.null(fcs_tbl)) {
+      return(c())
+    } else {
+      return(unlist(fcs_tbl %>% pull(key)))
+    }
+  }
+)
+
+#' @export
+setMethod(
+  "tbl",
+  signature = c(src = "tagConnect"),
+  function(src, fc) {
+    return(tbl_tag(fc = fc, con = src))
+  }
+)
+
 #############################################
 ## tagbio_fc
 
@@ -88,10 +162,14 @@ parse_collection_values <- function(res_values) {
   # 2.52.4 after use data_reference_type, before uses variable_type
   # data_reference_type (new)
 
-  if (is.null(res_values$data_reference_type)) {
-    variable_type <- res_values$variable_type
+  if (is.null(res_values$data_function_type)) {
+    if (is.null(res_values$data_reference_type)) {
+      variable_type <- res_values$variable_type
+    } else {
+      variable_type <- res_values$data_reference_type
+    }
   } else {
-    variable_type <- res_values$data_reference_type
+    variable_type <- res_values$data_function_type
   }
 
   tag_coll <- switch(variable_type,
@@ -112,10 +190,11 @@ parse_collection_query <- function(query_res) {
   return(collection_defs)
 }
 
-get_collection_defs <- function(con) {
+get_collection_defs <- function(url, api_key) {
 
   # use the collections method to pull summary data from FC
-  url <- paste0(con@url, "/q")
+  url <- paste0(url, "/q")
+
   jsonPayload <- list(
     zip = TRUE,
     groups = c("developer")
@@ -128,7 +207,7 @@ get_collection_defs <- function(con) {
   jsonPayload[['script']] = script
 
   # use api key
-  api_data <- unlist(strsplit(con@api_key, ":"))
+  api_data <- unlist(strsplit(api_key, ":"))
   if (length(api_data) != 2) {
     api_data <- c("", "") # defaults to empty user/pwd
   }
@@ -144,20 +223,20 @@ get_collection_defs <- function(con) {
 
 }
 
-get_info <- function(con) {
+get_info <- function(url, api_key) {
 
   # use the /s method to pull info about the FC
-  url <- paste0(con@url, "/s")
+  url <- paste0(url, "/s")
   jsonPayload <- list()
 
   # use api key
-  api_data <- unlist(strsplit(con@api_key, ":"))
+  api_data <- unlist(strsplit(api_key, ":"))
   if (length(api_data) != 2) {
     api_data <- c("", "") # defaults to empty user/pwd
   }
 
   r <- httr::POST(url,
-                  body = jsonPayload,
+                  #body = jsonPayload,
                   #httr::verbose(),
                   httr::authenticate(api_data[1], api_data[2], type = "basic"),
                   encode = "json")
@@ -182,30 +261,40 @@ tagbio_fc <- setClass(
   "tagbio_fc",
   slots = c(fc = "character",
             con = "tagConnect",
+            qdelim = "character",
             qselect = "list",
             qfilter = "list",
-            collection_defs = "list")
+            collection_defs = "list",
+            url = "character")
 )
 
 setMethod("initialize", "tagbio_fc",
-          function(.Object, fc, con, qselect = list(), qfilter = list(), ...) {
+          function(.Object, fc, con,  qdelim = " = ", qselect = list(), qfilter = list(), ...) {
             .Object@fc <- fc
             .Object@con <- con
             .Object@qselect <- qselect
             .Object@qfilter <- qfilter
-            .Object@collection_defs <- get_collection_defs(con)
+            .Object@qdelim <- qdelim
+
+            # set up FC URL
+            .Object@url <- con@url
+            if (fc != "") {
+              .Object@url <- paste0(.Object@url, "/fc-svc/", fc)
+            }
+
+            .Object@collection_defs <- get_collection_defs(.Object@url, con@api_key)
             return(.Object)
           }
 )
 
 tag_summary_row <- function(x) {
-  res <- switch(x@data_reference_type,
+  res <- switch(x@data_function_type,
                 numeric = tibble(collection = x@collection,
-                                 collection_type = x@data_reference_type,
+                                 collection_type = x@data_function_type,
                                  collection_size =  x@collection_size,
                                  collection_entity_count = NA),
                 categorical = tibble(collection = x@collection,
-                                     collection_type = x@data_reference_type,
+                                     collection_type = x@data_function_type,
                                      collection_size =  x@collection_size,
                                      collection_entity_count = x@collection_entity_count))
   return(res)
@@ -235,7 +324,7 @@ setMethod(
   signature = c(.data = "tagbio_fc"),
   function(.data) {
     # returns FC provenance information
-    return(get_info(.data@con))
+    return(get_info(.data@url, .data@con@api_key))
   }
 )
 
@@ -349,8 +438,8 @@ setMethod(
 
     # use the download method to pull data from FC
     tc <- x@con
-    url <- paste0(tc@url, "/q")
-    qdelim <- paste0("\\s*", tc@qdelim, "\\s*")
+    url <- paste0(x@url, "/q")
+    qdelim <- paste0("\\s*", x@qdelim, "\\s*")
     jsonPayload <- list(
       zip = TRUE,
       groups = c("developer")
