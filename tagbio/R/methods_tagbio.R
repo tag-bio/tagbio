@@ -34,6 +34,8 @@ TagbioData <- setClass(
 #' @export
 #' @examples
 
+## TODO: DEPRECATE
+
 setGeneric(
     "getDataFrame",
     def=function(tag_data, data_type = NA, row_name = "") {
@@ -62,6 +64,29 @@ setMethod(
         return(df)
     }
 )
+
+setMethod(
+    "getDataFrame",
+    signature = "TagbioData",
+    function(tag_data, data_type = NA, row_name = "") {
+        df <- tag_data@data.frame
+
+        if (!is.na(data_type)) {
+            # escape parens
+            data_type <- gsub("\\(", "\\\\(", gsub("\\)", "\\\\)", data_type))
+
+            type_eq <- paste0(data_type, " = ")
+            df <- df %>% select(matches(paste0("^(", type_eq, ".*|", row_name, ")$"))) %>%
+                set_names(~stringr::str_replace_all(., type_eq, ""))
+        }
+
+        if (row_name != "") {
+            df <- df %>% column_to_rownames(var = row_name)
+        }
+        return(df)
+    }
+)
+
 
 #' An S4 class representing a tag.bio flux capacitor (FC)
 #'
