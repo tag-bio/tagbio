@@ -184,7 +184,7 @@ parse_collection_query <- function(query_res) {
 # general method for all http post calls to tag
 
 fc_post_call <- function(query_type, url, api_key, return_type = "json", jsonPayload = NA) {
-  
+
   # set up url
   url <- paste0(url, "/", query_type)
 
@@ -282,9 +282,9 @@ setMethod(
   function(object, ...) {
     # return collections as a tibble
     coll_tibs <- lapply(get_collection_defs(object), tag_summary_row)
-    print("Updated?")
-    print(object@collection_defs)
-    print("Done")
+    #print("Updated?")
+    #print(object@collection_defs)
+    #print("Done")
     return(do.call(rbind, coll_tibs))
   }
 )
@@ -346,18 +346,18 @@ setMethod(
 
       collections_json <- fc_post_call("q", data@url, data@con@api_key, "json", jsonPayload)
       data@collection_defs <- parse_collection_query(collections_json)
-      
+
       # TODO - lazy load!!!
-      
+
       #name <- deparse(substitute(data))
-      
+
       # get around pass by value!
       #env <- parent.frame()
       #while(!is_empty(env)) {
       #  assign(name, data, envir=env)
       #  env <- parent.env(env)
       #}
-    } 
+    }
     return(data@collection_defs)
   }
 )
@@ -463,7 +463,7 @@ setMethod(
 
     # use the download method to pull data from FC
     tc <- x@con
-    
+
     qdelim <- paste0("\\s*", x@qdelim, "\\s*")
     jsonPayload <- list(
       zip = TRUE,
