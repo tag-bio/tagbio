@@ -75,7 +75,7 @@ setGeneric("tbl", dplyr::tbl)
 setMethod(
   "tbl",
   signature = c(src = "tagConnect"),
-  function(src, fc) {
+  function(src, fc = "") {
     return(tbl_tag(fc = fc, con = src))
   }
 )
@@ -101,7 +101,7 @@ setMethod(
     fcs_tbl <- data.frame(do.call(rbind, fcs_json))
 
     if (!("key" %in% colnames(fcs_tbl))) {
-      if (("localhost" %in% object@url) | ("128.0.0.1" %in% object@url)) {
+      if ((grepl("localhost", object@url)) | (grepl("128.0.0.1",object@url))) {
         return(
           tibble(key = c("localhost"), site = c("localhost"), description = c("localhost"),
             displayname = c("localhost"), url = c(object@url))
@@ -145,15 +145,6 @@ setMethod(
   }
 )
 
-#' @export
-setMethod(
-  "tbl",
-  signature = c(src = "tagConnect"),
-  function(src, fc) {
-    return(tbl_tag(fc = fc, con = src))
-  }
-)
-
 #############################################
 ## tagbio_fc
 
@@ -190,21 +181,12 @@ parse_collection_query <- function(query_res) {
   return(collection_defs)
 }
 
-get_collection_defs <- function(url, api_key) {
+# general method for all http post calls to tag
 
-  # use the collections method to pull summary data from FC
-  url <- paste0(url, "/q")
+fc_post_call <- function(query_type, url, api_key, return_type = "json", jsonPayload = NA) {
 
-  jsonPayload <- list(
-    zip = TRUE,
-    groups = c("developer")
-  )
-
-  script <- list(
-    method = "collection"
-  )
-
-  jsonPayload[['script']] = script
+  # set up url
+  url <- paste0(url, "/", query_type)
 
   # use api key
   api_data <- unlist(strsplit(api_key, ":"))
@@ -212,35 +194,28 @@ get_collection_defs <- function(url, api_key) {
     api_data <- c("", "") # defaults to empty user/pwd
   }
 
-  r <- httr::POST(url,
-                  body = jsonPayload,
-                  #httr::verbose(),
+  if (query_type == "s") {
+    r <- httr::POST(url,
                   httr::authenticate(api_data[1], api_data[2], type = "basic"),
                   encode = "json")
-  collections_json <- httr::content(r)
-
-  return(parse_collection_query(collections_json))
-
+  } else {
+    r <- httr::POST(url,
+                  body = jsonPayload,
+                  httr::authenticate(api_data[1], api_data[2], type = "basic"),
+                  encode = "json")
+  }
+  if (return_type == "json") {
+    return(httr::content(r))
+  } else {
+    return(httr::content(r, as = "parsed", type = "text/csv",
+                                    encoding = "UTF-8"))
+  }
 }
 
 get_info <- function(url, api_key) {
 
-  # use the /s method to pull info about the FC
-  url <- paste0(url, "/s")
-  jsonPayload <- list()
-
-  # use api key
-  api_data <- unlist(strsplit(api_key, ":"))
-  if (length(api_data) != 2) {
-    api_data <- c("", "") # defaults to empty user/pwd
-  }
-
-  r <- httr::POST(url,
-                  #body = jsonPayload,
-                  #httr::verbose(),
-                  httr::authenticate(api_data[1], api_data[2], type = "basic"),
-                  encode = "json")
-  info_json <- httr::content(r)
+  # use s query to get fc info
+  info_json <- fc_post_call("s", url, api_key)
 
   # update time stamps
   info_json$start_time <- as.POSIXct(as.numeric(info_json$start_time) / 1000,
@@ -259,8 +234,8 @@ get_info <- function(url, api_key) {
 
 tagbio_fc <- setClass(
   "tagbio_fc",
-  slots = c(fc = "character",
-            con = "tagConnect",
+  slots = c(con = "tagConnect",
+            fc = "character",
             qdelim = "character",
             qselect = "list",
             qfilter = "list",
@@ -269,22 +244,22 @@ tagbio_fc <- setClass(
 )
 
 setMethod("initialize", "tagbio_fc",
-          function(.Object, fc, con,  qdelim = " = ", qselect = list(), qfilter = list(), ...) {
-            .Object@fc <- fc
-            .Object@con <- con
-            .Object@qselect <- qselect
-            .Object@qfilter <- qfilter
-            .Object@qdelim <- qdelim
+  function(.Object, con, fc = "", qdelim = " = ", qselect = list(), qfilter = list(), ...) {
+    .Object@fc <- fc
+    .Object@con <- con
+    .Object@qselect <- qselect
+    .Object@qfilter <- qfilter
+    .Object@qdelim <- qdelim
 
-            # set up FC URL
-            .Object@url <- con@url
-            if (fc != "") {
-              .Object@url <- paste0(.Object@url, "/fc-svc/", fc)
-            }
+    # set up FC URL
+    .Object@url <- con@url
+    if (fc != "") {
+      .Object@url <- paste0(.Object@url, "/fc-svc/", fc)
+    }
 
-            .Object@collection_defs <- get_collection_defs(.Object@url, con@api_key)
-            return(.Object)
-          }
+    .Object@collection_defs <- list()
+    return(.Object)
+  }
 )
 
 tag_summary_row <- function(x) {
@@ -306,7 +281,10 @@ setMethod(
   signature = c(object = "tagbio_fc"),
   function(object, ...) {
     # return collections as a tibble
-    coll_tibs <- lapply(object@collection_defs, tag_summary_row)
+    coll_tibs <- lapply(get_collection_defs(object), tag_summary_row)
+    #print("Updated?")
+    #print(object@collection_defs)
+    #print("Done")
     return(do.call(rbind, coll_tibs))
   }
 )
@@ -334,6 +312,53 @@ setMethod(
   signature = c(x = "tagbio_fc"),
   function(x) {
     list(x@fc)
+  }
+)
+
+
+#' @export
+setGeneric(
+  "get_collection_defs",
+  def = function(data) {
+    standardGeneric("get_collection_defs")
+  }
+)
+
+setMethod(
+  "get_collection_defs",
+  signature = c(data = "tagbio_fc"),
+  function(data) {
+
+    # lazy loaded attribute
+    if (length(data@collection_defs) == 0) {
+      # assume not loaded
+      # use the collections method to pull summary data from FC
+      jsonPayload <- list(
+        zip = TRUE,
+        groups = c("developer")
+      )
+
+      script <- list(
+        method = "collection"
+      )
+
+      jsonPayload[['script']] = script
+
+      collections_json <- fc_post_call("q", data@url, data@con@api_key, "json", jsonPayload)
+      data@collection_defs <- parse_collection_query(collections_json)
+
+      # TODO - lazy load!!!
+
+      #name <- deparse(substitute(data))
+
+      # get around pass by value!
+      #env <- parent.frame()
+      #while(!is_empty(env)) {
+      #  assign(name, data, envir=env)
+      #  env <- parent.env(env)
+      #}
+    }
+    return(data@collection_defs)
   }
 )
 
@@ -438,7 +463,7 @@ setMethod(
 
     # use the download method to pull data from FC
     tc <- x@con
-    url <- paste0(x@url, "/q")
+
     qdelim <- paste0("\\s*", x@qdelim, "\\s*")
     jsonPayload <- list(
       zip = TRUE,
@@ -465,29 +490,13 @@ setMethod(
 
     jsonPayload[['script']] = script
 
-    # use api key
-    api_data <- unlist(strsplit(tc@api_key, ":"))
-    if (length(api_data) != 2) {
-      api_data <- c("", "") # defaults to empty user/pwd
-    }
-
-    r <- httr::POST(url,
-                    body = jsonPayload,
-                    #httr::verbose(),
-                    httr::authenticate(api_data[1], api_data[2], type = "basic"),
-                    encode = "json")
-
-    tag_data_frame <- httr::content(r, as = "parsed", type = "text/csv",
-                                    encoding = "UTF-8")
-
+    tag_data_frame <- fc_post_call("q", x@url, tc@api_key, "text", jsonPayload)
 
     tibble(tag_data_frame)
   }
 )
 
-
-tbl_tag <- function(fc, con = NULL) {
+tbl_tag <- function(fc = "", con = NULL) {
   # creates a structure to hold the connection, FC name
   tagbio_fc(fc = fc, con = con, qselect = list(), qfilter = list())
 }
-
