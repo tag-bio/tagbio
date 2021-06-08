@@ -186,7 +186,7 @@ tag_env <- function(fc, expr) {
 
   # check names for variables and add to environment
   tag_vars <- lapply(str_split(names, delim),
-                     function(x) { check_variable(fc@collection_defs, x) })
+                     function(x) { check_variable(get_collection_defs(fc), x) })
 
   tag_vars <- set_names(tag_vars, names)
   #tag_vars <- tag_vars[lengths(tag_vars) != 0] # drops empty entries
@@ -238,7 +238,7 @@ tag_select_eval <- function(fc, ...) {
 
   # check names for variables and add to environment
   tag_vars <- lapply(str_split(names, delim),
-                     function(x) { check_variable(fc@collection_defs, x) })
+                     function(x) { check_variable(get_collection_defs(fc), x) })
 
   tag_vars <- set_names(tag_vars, names)
   tag_vars <- tag_vars[lengths(tag_vars) != 0] # drops empty entries
