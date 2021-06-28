@@ -9,6 +9,7 @@
 ## Command line options
 suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("rjson"))
+suppressPackageStartupMessages(library("tidyverse"))
 suppressPackageStartupMessages(library("tagbio"))
 parser <- ArgumentParser()
 

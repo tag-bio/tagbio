@@ -160,19 +160,20 @@ setMethod("initialize", "NumericSlice",
 
 
 setMethod("to_json", "NumericSlice",
-          function(.Object) {
-            json <- list()
-            json[['operator']] <- .Object@operator
-            json[['value']] <- .Object@value
-            json[['variable_type']] <- .Object@data_function_type
+  function(.Object) {
+    json <- list()
+    json[['operator']] <- .Object@operator
+    json[['value']] <- .Object@value
+    json[['variable_type']] <- .Object@data_function_type
 
-            criterion <- list()
-            criterion[['collection']] <- .Object@collection@collection
-            criterion[['variable']] <- tagvar@variable
-            criterion[['variable_type']] <- tagvar@data_function_type
-            json[['criterion']] <- criterion
-            return(json)
-          }
+    criterion <- list()
+    tagvar <- .Object@criterion
+    criterion[['collection']] <- tagvar@collection@collection
+    criterion[['variable']] <- tagvar@variable
+    criterion[['variable_type']] <- tagvar@data_function_type
+    json[['criterion']] <- criterion
+    return(json)
+  }
 )
 
 #' An S4 class representing tag.bio CategoricalBatch

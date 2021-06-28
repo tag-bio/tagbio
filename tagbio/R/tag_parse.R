@@ -202,6 +202,7 @@ tag_env <- function(fc, expr) {
 
 #' @export
 to_tag <- function(fc, x) {
+  print("Tag you're it")
   expr <- enexpr(x)
   out <- rlang::eval_bare(expr, tag_env(fc = fc, expr))
   return(out)
