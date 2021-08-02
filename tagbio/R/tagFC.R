@@ -109,6 +109,7 @@ get_collection_defs <- function(.data) {
   UseMethod("get_collection_defs", .data)
 }
 
+#' @export
 get_collection_defs.tagFC <- function(.data) {
 
   # lazy loaded attribute
@@ -138,6 +139,7 @@ get_analysis_variables <- function(.data) {
   UseMethod("get_analysis_variables", .data)
 }
 
+#' @export
 get_analysis_variables.tagFC <- function(.data) {
 
   # build up analysis variables from select
@@ -187,6 +189,7 @@ get_background <- function(.data) {
   UseMethod("get_background", .data)
 }
 
+#' @export
 get_background.tagFC <- function(.data) {
   # empty background if no filters have been specified
   if (length(.data$qfilter) == 0) {
@@ -249,6 +252,7 @@ run_protocol <- function(fc, protocol_instance) {
   UseMethod("run_protocol", fc)
 }
 
+#' @export
 run_protocol.tagFC <- function(fc, protocol_instance) {
 
   # use the download method to pull data from FC
@@ -272,6 +276,7 @@ run_script <- function(fc, script) {
   UseMethod("run_script", fc)
 }
 
+#' @export
 run_script.tagFC <- function(fc, script) {
 
   # use the download method to pull data from FC
