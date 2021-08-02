@@ -104,8 +104,6 @@ tagConnect <- function(host_url = "", api_key = "", url = "") {
   if (substr(url, nurl, nurl) == "/") {
     url <- substr(url, 1, nurl-1)
   }
-  print("Tag Connect URL:")
-  print(url)
 
   tc$url <- url
 
