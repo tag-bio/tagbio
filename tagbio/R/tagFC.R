@@ -58,7 +58,7 @@ tagFC <- function(con, fc = "", qdelim = " = ") {
   # set up FC URL
   fc_obj$url <- con$url
 
-  if (fc != "") {
+  if ((fc != "") & (fc != "localhost")) {
     fc_obj$url <- paste0(fc_obj$url, "/fc-svc/", fc)
   }
 
@@ -283,9 +283,6 @@ run_script.tagFC <- function(fc, script) {
   tc <- fc$con
 
   jsonPayload <- script
-
-  print("FC URL")
-  print(fc$url)
 
   tag_data_frame <- fc_post_call("q", fc$url, tc$api_key, "text", jsonPayload)
 
