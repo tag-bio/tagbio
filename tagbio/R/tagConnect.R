@@ -81,7 +81,10 @@ tagConnect <- function(host_url = "", api_key = "", url = "") {
 
   # get configuration from sys variables or file
   config_data <- tag_load_config()
-  url <- host_url
+
+  if (url == "") {
+    url <- host_url
+  }
 
   # look other places for url/api key
   if (url == "") {
@@ -95,6 +98,13 @@ tagConnect <- function(host_url = "", api_key = "", url = "") {
       }
     }
   }
+
+  # drop trailing slash if it exists
+  nurl <- nchar(url)
+  if (substr(url, nurl, nurl) == "/") {
+    url <- substr(url, 1, nurl-1)
+  }
+
   tc$url <- url
 
   if (api_key == "") {
