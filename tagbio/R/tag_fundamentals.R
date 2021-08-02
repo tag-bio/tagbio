@@ -1,251 +1,265 @@
-library(tidyverse)
-library(rlang)
 
 # R objects mirroring tag's variables and collections
+
+#' Translate tag data constructs as JSON
+#'
+#' The \code{to_json} method converts tag data constructs to JSON, typically for
+#' communicating with the API or creating configuration files.
+#'
+#' @slot .Object a tag data object
+#'
+#' @examples
+#' # TODO
+#'
 #' @export
+to_json <- function (.Object, ...) {
+  UseMethod("to_json", .Object)
+}
 
-setGeneric(
-  "to_json",
-  def = function(.Object) {
-    standardGeneric("to_json")
+#' An S3 class representing tag.bio NumericCollection
+#'
+#'
+#' @export
+NumericCollection <- function(collection,  collection_size, ...) {
+  .Object <- list(
+    data_function_type = "numeric",
+    collection = collection,
+    collection_size = collection_size
+  )
+  class(.Object) <- "NumericCollection"
+  .Object
+}
+
+#' @export
+to_json.NumericCollection <- function(.Object) {
+  json <- list()
+  json[['variable_type']] <- .Object$data_function_type # TODO
+  json[['collection']] <- .Object$collection
+  return(json)
+}
+
+
+
+#' An S3 class representing tag.bio CategoricalCollection
+#'
+#'
+#' @export
+CategoricalCollection <- function(collection, collection_size, collection_entity_count, ...) {
+  .Object <- list(
+    data_function_type = "categorical",
+    collection = collection,
+    collection_size = collection_size,
+    collection_entity_count = collection_entity_count
+  )
+  class(.Object) <- "CategoricalCollection"
+  .Object
+}
+
+#' @export
+to_json.CategoricalCollection <- function(.Object) {
+  json <- list()
+  json[['variable_type']] <- .Object$data_function_type # TODO
+  json[['collection']] <- .Object$collection
+  return(json)
+}
+
+
+#' An S3 class representing tag.bio NumericVariable
+#'
+#'
+#' @export
+NumericVariable <- function(collection, variable, ...) {
+  .Object <- list(
+    data_function_type = "numeric",
+    collection = collection,
+    variable = variable
+  )
+  class(.Object) <- "NumericVariable"
+  .Object
+}
+
+#' @export
+to_json.NumericVariable <- function(.Object) {
+  json <- list()
+  json[['variable_type']] <- .Object$data_function_type
+  json[['collection']] <- .Object$collection$collection
+  json[['variable']] <- .Object$variable
+  return(json)
+}
+
+
+
+#' An S3 class representing a CategoricalVariable
+#'
+#' @seealso
+#' Useful links:
+#' \itemize{
+#' \item \url{https://code.tag.bio/docs/variable-object-reference#categorical} tag.bio documentation
+#' }
+#'
+#'
+#' @slot collection a categorical collection
+#' @slot variable a categorical variable
+#'
+#' @examples
+#' cvr <- CategoricalVariable("color", "red")
+#'
+#' @export
+CategoricalVariable <- function(collection, variable, ...) {
+  .Object <- list(
+    data_function_type = "categorical",
+    collection = collection,
+    variable = variable
+  )
+  class(.Object) <- "CategoricalVariable"
+  .Object
+}
+
+#' @export
+to_json.CategoricalVariable <- function(.Object) {
+  json <- list()
+  json[['variable_type']] <- .Object$data_function_type
+  json[['collection']] <- .Object$collection
+  json[['variable']] <- .Object$variable
+  return(json)
+}
+
+
+#' An S3 class representing a NumericSlice
+#'
+#' @seealso
+#' Useful links:
+#' \itemize{
+#' \item \url{https://code.tag.bio/docs/variable-object-reference#numericslice} tag.bio documentation
+#' }
+#'
+#'
+#' @slot criterion a numeric variable being compared
+#' @slot operator "<", "<=", "==", "!=", ">=", ">"
+#' @slot value numeric comparator
+#' @slot percentile percentile comparator
+#'
+#' @examples
+#' ns <- NumericSlice("carat", ">", 0.3)
+#'
+#' @export
+NumericSlice <- function(criterion, operator,
+                         value = numeric(), percentile = numeric(), ...) {
+  .Object <- list(
+    data_function_type = "numeric-slice",
+    operator = operator,
+    criterion = criterion,
+    value = value,
+    percentile = percentile
+  )
+  class(.Object) <- "NumericSlice"
+  .Object
+}
+
+#' @export
+to_json.NumericSlice <- function(.Object) {
+  json <- list()
+  json[['operator']] <- .Object$operator
+  json[['value']] <- .Object$value
+  json[['variable_type']] <- .Object$data_function_type
+
+  criterion <- list()
+  tagvar <- .Object$criterion
+  criterion[['collection']] <- tagvar$collection$collection
+  criterion[['variable']] <- tagvar$variable
+  criterion[['variable_type']] <- tagvar$data_function_type
+  json[['criterion']] <- criterion
+  return(json)
+}
+
+
+#' An S3 class representing a CategoricalBatch
+#'
+#' Represents an AND or OR of variables in the collection
+#'
+#' @seealso
+#' Useful links:
+#' \itemize{
+#' \item \url{https://code.tag.bio/docs/variable-object-reference} tag.bio documentation
+#' }
+#'
+#'
+#' @slot collection a categorical collection
+#' @slot operator "AND", "OR"
+#' @slot variables list of variables to be combined
+#'
+#' @examples
+#' cb <- CategoricalBatch("Title", "OR", c("The Matrix", "Casablanca"))
+#'
+#' @export
+CategoricalBatch <- function(collection,  operator, variables, ...) {
+  .Object <- list(
+    data_function_type = "categorical-batch",
+    operator = operator,
+    collection = collection,
+    variables = variables
+  )
+  class(.Object) <- "CategoricalBatch"
+  .Object
+}
+
+#' @export
+to_json.CategoricalBatch <- function(.Object) {
+  json <- list()
+  json[['operator']] <- .Object$operator
+  json[['collection']] <- .Object$collection$collection
+  json[['variables']] <- .Object$variables
+  json[['variable_type']] <- .Object$data_function_type
+
+  return(json)
+}
+
+
+#' An S3 class representing a CategoricalCompound
+#'
+#' A categorical-compound variable object converts two or more categorical variable
+#' objects representing variables into the intersection or the union of those two sets.
+#' If the operator attribute is AND, the categorical variable objects in the criteria
+#' attribute will be intersected.
+#'
+#' @seealso
+#' Useful links:
+#' \itemize{
+#' \item \url{https://code.tag.bio/docs/variable-object-reference#categoricalcompound} tag.bio documentation
+#' }
+#'
+#'
+#' @slot criteria list of categorical variable objects
+#' @slot operator "AND", "OR"
+#'
+#' @examples
+#' cc <- CategoricalCompound(c(), "AND")
+#'
+#' @export
+CategoricalCompound <- function(criteria = list(),  operator, ...) {
+  .Object <- list(
+    data_function_type = "categorical-compound",
+    operator = operator,
+    criteria = criteria
+  )
+  class(.Object) <- "CategoricalCompound"
+  .Object
+}
+
+#' @export
+to_json.CategoricalCompound <- function(.Object) {
+  json <- list()
+  json[['operator']] <- .Object$operator
+  json[['variable_type']] <- .Object$data_function_type
+  crit_list = list()
+  cnt <- 1
+  for (crit in .Object$criteria) {
+    print(crit)
+    crit_list[[cnt]] <- to_json(crit)
+    cnt <- cnt + 1
   }
-)
+  json[['criteria']] <- crit_list
 
-#' An S4 class representing tag.bio NumericCollection
-#'
-#'
-#' @export NumericCollection
-#' @exportClass NumericCollection
+  return(json)
+}
 
-NumericCollection <- setClass(
-  "NumericCollection",
-  slots = c(collection = "character", data_function_type = "character", collection_size = "numeric")
-)
-
-setMethod("initialize", "NumericCollection",
-          function(.Object, collection,  collection_size, ...) {
-            .Object@data_function_type <- "numeric"
-            .Object@collection <- collection
-            .Object@collection_size <- collection_size
-            return(.Object)
-          }
-)
-
-setMethod("to_json", "NumericCollection",
-          function(.Object) {
-            json <- list()
-            json[['variable_type']] <- .Object@data_function_type # TODO
-            json[['collection']] <- .Object@collection
-            return(json)
-          }
-)
-
-
-#' An S4 class representing tag.bio CategoricalCollection
-#'
-#'
-#' @export CategoricalCollection
-#' @exportClass CategoricalCollection
-
-CategoricalCollection <- setClass(
-  "CategoricalCollection",
-  slots = c(collection = "character", data_function_type = "character",
-            collection_size = "numeric", collection_entity_count = "numeric")
-)
-
-setMethod("initialize", "CategoricalCollection",
-          function(.Object, collection, collection_size, collection_entity_count, ...) {
-            .Object@data_function_type <- "categorical"
-            .Object@collection <- collection
-            .Object@collection_size <- collection_size
-            .Object@collection_entity_count <- collection_entity_count
-            return(.Object)
-          }
-)
-
-setMethod("to_json", "CategoricalCollection",
-          function(.Object) {
-            json <- list()
-            json[['variable_type']] <- .Object@data_function_type
-            json[['collection']] <- .Object@collection
-            return(json)
-          }
-)
-
-
-#' An S4 class representing tag.bio NumericVariable
-#'
-#'
-#' @export NumericVariable
-#' @exportClass NumericVariable
-
-NumericVariable <- setClass(
-  "NumericVariable",
-  slots = c(collection = "NumericCollection", data_function_type = "character", variable = "character")
-)
-
-setMethod("initialize", "NumericVariable",
-          function(.Object, collection, variable, ...) {
-            .Object@data_function_type <- "numeric"
-            .Object@collection <- collection
-            .Object@variable <- variable
-            return(.Object)
-          }
-)
-
-setMethod("to_json", "NumericVariable",
-          function(.Object) {
-            json <- list()
-            json[['variable_type']] <- .Object@data_function_type
-            json[['collection']] <- .Object@collection@collection
-            json[['variable']] <- .Object@variable
-            return(json)
-          }
-)
-
-#' An S4 class representing tag.bio CategoricalVariable
-#'
-#'
-#' @export CategoricalVariable
-#' @exportClass CategoricalVariable
-
-CategoricalVariable <- setClass(
-  "CategoricalVariable",
-  slots = c(collection = "CategoricalCollection", data_function_type = "character", variable = "character")
-)
-
-setMethod("initialize", "CategoricalVariable",
-          function(.Object, collection,  variable, ...) {
-            .Object@data_function_type <- "categorical"
-            .Object@collection <- collection
-            .Object@variable <- variable
-            return(.Object)
-          }
-)
-
-setMethod("to_json", "CategoricalVariable",
-          function(.Object) {
-            json <- list()
-            json[['variable_type']] <- .Object@data_function_type
-            json[['collection']] <- .Object@collection
-            json[['variable']] <- .Object@variable
-            return(json)
-          }
-)
-
-
-#' An S4 class representing tag.bio NumericSlice
-#'
-#'
-#' @export NumericSlice
-#' @exportClass NumericSlice
-
-NumericSlice <- setClass(
-  "NumericSlice",
-  slots = c(data_function_type = "character", criterion = "NumericVariable", operator = "character",
-            value = "numeric", percentile = "numeric")
-)
-
-setMethod("initialize", "NumericSlice",
-          function(.Object, criterion, operator,
-                   value = numeric(), percentile = numeric(), ...) {
-            .Object@data_function_type <- "numeric-slice"
-            .Object@operator <- operator
-            .Object@criterion <- criterion
-            .Object@value <- value
-            .Object@percentile <- percentile
-            return(.Object)
-          }
-)
-
-
-setMethod("to_json", "NumericSlice",
-  function(.Object) {
-    json <- list()
-    json[['operator']] <- .Object@operator
-    json[['value']] <- .Object@value
-    json[['variable_type']] <- .Object@data_function_type
-
-    criterion <- list()
-    tagvar <- .Object@criterion
-    criterion[['collection']] <- tagvar@collection@collection
-    criterion[['variable']] <- tagvar@variable
-    criterion[['variable_type']] <- tagvar@data_function_type
-    json[['criterion']] <- criterion
-    return(json)
-  }
-)
-
-#' An S4 class representing tag.bio CategoricalBatch
-#'
-#'
-#' @export CategoricalBatch
-#' @exportClass CategoricalBatch
-
-CategoricalBatch <- setClass(
-  "CategoricalBatch",
-  slots = c(data_function_type = "character",
-            collection = "CategoricalCollection",
-            operator = "character",
-            variables = "list")
-)
-
-setMethod("initialize", "CategoricalBatch",
-          function(.Object, collection,  operator, variables, ...) {
-            .Object@data_function_type <- "categorical-batch"
-            .Object@operator <- operator
-            .Object@collection <- collection
-            .Object@variables <- variables
-            return(.Object)
-          }
-)
-
-setMethod("to_json", "CategoricalBatch",
-          function(.Object) {
-            json <- list()
-            json[['operator']] <- .Object@operator
-            json[['collection']] <- .Object@collection@collection
-            json[['variable_type']] <- .Object@data_function_type
-            json[['variables']] <- .Object@variables
-            return(json)
-          }
-)
-
-#' An S4 class representing tag.bio CategoricalCompound
-#'
-#'
-#' @export CategoricalCompound
-#' @exportClass CategoricalCompound
-
-CategoricalCompound <- setClass(
-  "CategoricalCompound",
-  slots = c(data_function_type = "character",
-            criteria = "list",
-            operator = "character")
-)
-
-setMethod("initialize", "CategoricalCompound",
-          function(.Object, criteria = list(),  operator, ...) {
-            .Object@data_function_type <- "categorical-compound" # TODO: convert to set-operation
-            .Object@operator <- operator
-            .Object@criteria <- criteria
-            return(.Object)
-          }
-)
-
-setMethod("to_json", "CategoricalCompound",
-          function(.Object) {
-            json <- list()
-            json[['operator']] <- .Object@operator
-            json[['variable_type']] <- .Object@data_function_type # TODO
-            crit_list = list()
-            cnt <- 1
-            for (crit in .Object@criteria) {
-              crit_list[[cnt]] <- to_json(crit)
-              cnt <- cnt + 1
-            }
-            json[['criteria']] <- crit_list
-
-            return(json)
-          }
-)
