@@ -1,4 +1,3 @@
-library(rlang)
 
 # Converts dplyr to tagbio.R object representation
 
@@ -49,7 +48,7 @@ check_variable <- function(collection_defs, collection_variable) {
     variable_name <- collection_variable[2]
     if (collection_name %in% names(collection_defs)) {
       collection <- collection_defs[[collection_name]]
-      tag_var <- switch(collection@data_function_type,
+      tag_var <- switch(collection$data_function_type,
                         categorical = CategoricalVariable(collection = collection,
                                                           variable = variable_name),
                         numeric = NumericVariable(collection = collection,
@@ -76,12 +75,13 @@ comparator_opposites <- list(
 tag_numeric_slice_op <- function(op) {
 
   # handle numeric and cat
-  new_function(
+  rlang::new_function(
     rlang::exprs(e1 = , e2 = ),
     rlang::expr(
       # test signature - if we don't handle the pass to parent environment
       if (is(e1, "NumericVariable")) {
         if (is(e2, "numeric")) {
+          print("SLICE YES")
           NumericSlice(criterion = e1, operator = !!op, value = e2)
         } else {
           # if e2 is another type, raise error for now... more work to do...
@@ -125,7 +125,7 @@ tag_numeric_func_list <- list(
 tag_categorical_batch_op <- function(op, batch_op) {
 
   # handle categorical batch operators
-  new_function(
+  rlang::new_function(
     rlang::exprs(e1 = , e2 = ),
     rlang::expr(
       # test signature - if we don't handle the pass to parent environment
@@ -178,7 +178,7 @@ tag_categorical_func_list <- list(
 # if a symbol has the delimiter in it then we check that
 tag_env <- function(fc, expr) {
   names <- all_names(expr)
-  delim <- fc@qdelim
+  delim <- fc$qdelim
 
   # functions...
   fn_env <- rlang::as_environment(tag_numeric_func_list, rlang::caller_env())
@@ -187,8 +187,8 @@ tag_env <- function(fc, expr) {
   # check names for variables and add to environment
   tag_vars <- lapply(str_split(names, delim),
                      function(x) { check_variable(get_collection_defs(fc), x) })
-
-  tag_vars <- set_names(tag_vars, names)
+  print(tag_vars)
+  tag_vars <- purrr::set_names(tag_vars, names)
   #tag_vars <- tag_vars[lengths(tag_vars) != 0] # drops empty entries
   tag_vars <- rlang::as_environment(tag_vars, parent = fc_env)
 
@@ -202,7 +202,6 @@ tag_env <- function(fc, expr) {
 
 #' @export
 to_tag <- function(fc, x) {
-  print("Tag you're it")
   expr <- enexpr(x)
   out <- rlang::eval_bare(expr, tag_env(fc = fc, expr))
   return(out)
@@ -235,15 +234,15 @@ tag_select_names <- function(x) {
 tag_select_eval <- function(fc, ...) {
 
   names <- unlist(map(rlang::exprs(...), tag_select_names))
-  delim <- fc@qdelim
+  delim <- fc$qdelim
 
   # check names for variables and add to environment
   tag_vars <- lapply(str_split(names, delim),
                      function(x) { check_variable(get_collection_defs(fc), x) })
 
-  tag_vars <- set_names(tag_vars, names)
+  tag_vars <- purrr::set_names(tag_vars, names)
   tag_vars <- tag_vars[lengths(tag_vars) != 0] # drops empty entries
-  sim_data <- as_tibble(rlang::rep_named(names(tag_vars), list(logical())))
+  sim_data <- tibble::as_tibble(rlang::rep_named(names(tag_vars), list(logical())))
 
   loc <- tidyselect::eval_select(rlang::expr(c(...)), sim_data)
   return(tag_vars[loc])
