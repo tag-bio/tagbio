@@ -58,7 +58,7 @@ tagFC <- function(con, fc = "", qdelim = " = ") {
   # set up FC URL
   fc_obj$url <- con$url
 
-  if ((fc != "") & (fc != "localhost")) {
+  if ((fc != "") & (fc != "fc-local")) {
     fc_obj$url <- paste0(fc_obj$url, "/fc-svc/", fc)
   }
 
