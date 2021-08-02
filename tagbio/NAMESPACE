@@ -2,7 +2,12 @@
 
 S3method(collect,tagFC)
 S3method(filter,tagFC)
+S3method(get_analysis_variables,tagFC)
+S3method(get_background,tagFC)
+S3method(get_collection_defs,tagFC)
 S3method(print,tagFC)
+S3method(run_protocol,tagFC)
+S3method(run_script,tagFC)
 S3method(select,tagFC)
 S3method(summary,tagConnect)
 S3method(summary,tagFC)
