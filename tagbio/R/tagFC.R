@@ -282,7 +282,11 @@ run_script.tagFC <- function(fc, script) {
   # use the download method to pull data from FC
   tc <- fc$con
 
-  jsonPayload <- script
+  jsonPayload <- list(
+    zip = TRUE,
+    groups = c("developer"),
+    script = script
+  )
 
   tag_data_frame <- fc_post_call("q", fc$url, tc$api_key, "text", jsonPayload)
 
