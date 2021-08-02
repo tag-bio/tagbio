@@ -284,6 +284,9 @@ run_script.tagFC <- function(fc, script) {
 
   jsonPayload <- script
 
+  print("FC URL")
+  print(fc$url)
+
   tag_data_frame <- fc_post_call("q", fc$url, tc$api_key, "text", jsonPayload)
 
   # set up the tagData instance
