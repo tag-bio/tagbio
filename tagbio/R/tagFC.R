@@ -246,7 +246,7 @@ collect.tagFC <- function(x) {
 
 #' @export
 run_protocol <- function(fc, protocol_instance) {
-  UseMethod("run_protocol", fc, protocol_instance)
+  UseMethod("run_protocol", fc)
 }
 
 run_protocol.tagFC <- function(fc, protocol_instance) {
@@ -269,7 +269,7 @@ run_protocol.tagFC <- function(fc, protocol_instance) {
 
 #' @export
 run_script <- function(fc, script) {
-  UseMethod("run_script", fc, script)
+  UseMethod("run_script", fc)
 }
 
 run_script.tagFC <- function(fc, script) {
