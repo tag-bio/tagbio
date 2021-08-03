@@ -2,6 +2,7 @@
 
 S3method(collect,tagFC)
 S3method(filter,tagFC)
+S3method(getDataFrame,tagData)
 S3method(get_analysis_variables,tagFC)
 S3method(get_background,tagFC)
 S3method(get_collection_defs,tagFC)
