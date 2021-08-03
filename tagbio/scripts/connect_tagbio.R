@@ -35,9 +35,6 @@ args <- parser$parse_args()
 fc_data <- fromJSON(file = args$fc_data)
 fc_name <- fc_data$fc$name
 tag_con <- tagConnect(url = fc_data$fc$url)
-print("URL:")
-print(fc_data$fc$url)
-
 fc <- tagFC(tag_con, fc_name)
 
 ## Look for protocol instance or script
