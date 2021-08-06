@@ -7,10 +7,13 @@
 #
 
 ## Command line options
+print("Starting connect_tagbio.R script, version 1.1.18")
 suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("rjson"))
 suppressPackageStartupMessages(library("tidyverse"))
 suppressPackageStartupMessages(library("tagbio"))
+si <- sessionInfo()
+print(paste("Tagbio SDK Version:", si$otherPkgs$tagbio$Version))
 parser <- ArgumentParser()
 
 parser$add_argument("-d", "--fc_data", required = TRUE,
