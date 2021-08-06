@@ -1,6 +1,6 @@
 ---
 title: "Using the Tag.bio R SDK"
-output: rmarkdown::html_vignette
+output: pdf_document
 vignette: >
   %\VignetteIndexEntry{tagbio-vignette}
   %\VignetteEngine{knitr::rmarkdown}
