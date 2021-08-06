@@ -1,0 +1,10 @@
+install.packages("argparse",repos = "http://cran.us.r-project.org")
+install.packages("httr",repos = "http://cran.us.r-project.org")
+install.packages("qpdf",repos = "http://cran.us.r-project.org")
+install.packages("rjson",repos = "http://cran.us.r-project.org")
+install.packages("gridExtra",repos = "http://cran.us.r-project.org")
+install.packages("tidyverse",repos = "http://cran.us.r-project.org")
+install.packages("knitr",repos = "http://cran.us.r-project.org")
+install.packages("rmarkdown",repos = "http://cran.us.r-project.org")
+install.packages("tagbio_1.1.18.tgz", repos = NULL, type = "source")
+
