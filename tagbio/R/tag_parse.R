@@ -81,7 +81,6 @@ tag_numeric_slice_op <- function(op) {
       # test signature - if we don't handle the pass to parent environment
       if (is(e1, "NumericVariable")) {
         if (is(e2, "numeric")) {
-          print("SLICE YES")
           NumericSlice(criterion = e1, operator = !!op, value = e2)
         } else {
           # if e2 is another type, raise error for now... more work to do...
@@ -187,7 +186,7 @@ tag_env <- function(fc, expr) {
   # check names for variables and add to environment
   tag_vars <- lapply(str_split(names, delim),
                      function(x) { check_variable(get_collection_defs(fc), x) })
-  print(tag_vars)
+
   tag_vars <- purrr::set_names(tag_vars, names)
   #tag_vars <- tag_vars[lengths(tag_vars) != 0] # drops empty entries
   tag_vars <- rlang::as_environment(tag_vars, parent = fc_env)

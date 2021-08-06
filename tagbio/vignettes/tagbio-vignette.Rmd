@@ -1,0 +1,121 @@
+---
+title: "Using the Tag.bio R SDK"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{tagbio-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Installation
+
+#### Clone the tagbio.R Repo
+
+The tag.bio R SDK is currently under active development and is not yet published to the [CRAN package repository](https://cran.r-project.org/).  Until it is published, the SDK should be downloaded as a zipped repository from:
+
+  - [TODO:find home for SDK](www.google.com)
+  
+Unzip the file after it has downloaded.
+
+
+#### Install the SDK
+
+Open a command prompt and navigate to where you saved the unzipped tag.bio SDK file.  From the command line, type the following commands:
+
+```{bash, eval=F}
+cd tagbio
+Rscript INSTALL.R
+```
+
+This will install all required R packages including the current production version of the tag.bio R SDK.
+
+## Quick Start
+
+#### Sign Up For a tag.bio Account
+
+The fastest way to get started using tag.bio is through its self-registration demo site.  If you have not done so already, visit the demo site at [https://aws-demo.tag.bio](https://aws-demo.tag.bio) and register as a new user.  The demo site contains a number of public data sets which you can view and analyze using tag.bio's web interface.  In addition, you may launch tag.bio's [Developer Studio](https://jupyter-aws-demo.tag.bio/), a Jupyter Lab instance with R and Python SDK libraries pre-installed.
+
+#### Get an API Key
+
+You will need to acquire an API key if you want SDK access to tag.bio data products, like the demo site.  Follow the `API keys` link on the left side of the [demo home page](https://aws-demo.tag.bio/home) or go directly to the page following this url: [https://aws-demo.tag.bio/api_keys](https://aws-demo.tag.bio/api_keys).
+
+Click the ` + Add key ` button and copy the API key presented in the pop-up.  Copy and save this key somewhere safe as it is not recoverable.  If you do ever lose your key, you may come back to this site, delete the old key and create a new one.
+
+#### Launch R
+
+With your API key in hand, you are ready to start using the tag.bio SDK!  Open a local instance of R using your favorite application or IDE (R command line, RStudio, an R notebook from Jupyter, etc).
+
+First we'll connect to the tag.bio demo site:
+
+```{r, eval=F}
+# install tidyverse and tagbio's SDK
+library(tidyverse)
+library(tagbio)
+
+# paste in your API key here
+tag_con <- tagConnect(host_url = "https://aws-demo-cluster.dev.tag.bio", 
+                      api_key = "<API_KEY>")
+```
+
+```{r, echo=F,warning=F,message=F}
+
+# do it for real using local API KEY
+# install tidyverse and tagbio's SDK
+library(tidyverse)
+library(tagbio)
+
+# paste in your API key here
+tag_con <- tagConnect(host_url = "https://aws-demo-cluster.dev.tag.bio")
+
+```
+
+Make sure you replace `<API_KEY>` with the API key you acquired in previous steps.  Note that it is not good practice to include your API key in your R code as others may easily discover it.  Later, we will show you how to keep your key private.
+
+Let's take a look at what data products are available at the tag.bio demo site.
+
+```{r}
+# view data products
+summary(tag_con)
+```
+
+We have several data products available including movie data from the entertainment website
+Netflix (`fc-celluloid`) as well as data from the [Pan-Cancer Atlas](https://www.cell.com/pb-assets/consortium/pancanceratlas/pancani3/index.html) (`fc-catalyze`).
+
+Let's explore the data from Pan-Cancer Atlas:
+
+```{r}
+# connect to the data product
+fc <- tagFC(tag_con, "fc-catalyze")
+
+# view the data collections
+summary(fc)
+```
+
+This biological data set includes experimental results in over 11,000 tumors from 33 of the most prevalent forms of cancer.  One could spend a career mining and exploring this rich data set (many have), but we will settle for something more modest.  Let's look at how many patients we have for each cancer type.
+
+```{r, fig.height=8, fig.width=8}
+
+# pull unique patient-cancer list from data product
+patients_per_cancer <- fc %>% 
+  select(`Patient ID`, `Cancer Subtype`) %>%
+  collect() %>%
+  filter(!is.na(`Cancer Subtype` != "NA")) %>%
+  distinct()
+
+# make a graph
+ggplot(patients_per_cancer, aes(x = `Cancer Subtype`, fill = `Cancer Subtype`)) +
+  geom_bar(stat = "count") +
+  coord_flip() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+                                   legend.position = "none") +
+  ggtitle("Number Patients per Cancer Subtype")
+
+```

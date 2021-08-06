@@ -128,7 +128,6 @@ get_collection_defs.tagFC <- function(.data) {
     jsonPayload[['script']] = script
     collections_json <- fc_post_call("q", .data$url, .data$con$api_key, "json", jsonPayload)
 
-    print(collections_json)
     .data$collection_defs <- parse_collection_query(collections_json)
   }
   return(.data$collection_defs)
