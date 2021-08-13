@@ -1,10 +1,10 @@
 ---
 title: "Using the Tag.bio R SDK"
-output: pdf_document
-vignette: >
-  %\VignetteIndexEntry{tagbio-vignette}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+output:
+  rmarkdown::html_vignette: default
+  pdf_document: default
+vignette: |
+  %\VignetteIndexEntry{tagbio-vignette} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 The tag.bio R SDK is currently under active development and is not yet published to the [CRAN package repository](https://cran.r-project.org/).  Until it is published, the SDK should be downloaded as a zipped repository from:
 
-  - [TODO:find home for SDK](www.google.com)
+  - [Bitbucket](https://bitbucket.org/cloudfolks/tagbio/get/master.zip)
   
 Unzip the file after it has downloaded.
 
@@ -110,7 +110,7 @@ patients_per_cancer <- fc %>%
   distinct()
 
 # make a graph
-ggplot(patients_per_cancer, aes(x = `Cancer Subtype`, fill = `Cancer Subtype`)) +
+ggplot(patients_per_cancer, aes(x = `Cancer Subtype`)) +
   geom_bar(stat = "count") +
   coord_flip() +
   theme_bw() +
