@@ -94,6 +94,7 @@ info <- function (.data, ...) {
   UseMethod("info", .data)
 }
 
+#' @export
 info.tagFC <- function(.data) {
   # returns FC provenance information
   return(get_info(.data$url, .data$con$api_key))
