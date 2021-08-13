@@ -52,8 +52,6 @@ if (!is.null(fc_data[['script']])) {
     tag_data <- run_script(fc, script)
 }
 
-## Add to this the pass through attributes
-tag_data$parameters <- fc_data$passthrough_arguments
 
 ## Set up a tag result object with file paths
 tag_result <- tagResult(output_path = args$output_file,
@@ -63,7 +61,10 @@ if (!is.null(args$message_file)) {
 }
 
 # apply pass through arguments if exist
-tag_params <- get_parameters(tag_data)
+tag_params <- NULL
+if (!is.null(tag_data)) {
+  tag_params <- get_parameters(tag_data)
+}
 output_set <- FALSE
 if (!is.null(tag_params) & !is.null(tag_params$output_file) & !is.null(tag_params$output_type)) {
     tag_result <- add_result_file(tag_result, tag_params$output_file[1], tag_params$output_type[1])
@@ -78,8 +79,11 @@ if (grepl(".Rmd", args$user_function)) {
   rmarkdown::render(args$user_function,
                     params = list(tag_data = tag_data, tag_result = tag_result),
                     output_file = args$output_file)
-  print("Done")
 } else {
+  ## Add to this the pass through attributes
+  tag_data$parameters <- fc_data$passthrough_arguments
+
+
   print("Executing function")
   ## Read in user function
   user_function <- dget(args$user_function)
