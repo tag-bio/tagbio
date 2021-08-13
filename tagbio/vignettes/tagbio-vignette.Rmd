@@ -18,11 +18,24 @@ knitr::opts_chunk$set(
 
 #### Clone the tagbio.R Repo
 
-The tag.bio R SDK is currently under active development and is not yet published to the [CRAN package repository](https://cran.r-project.org/).  Until it is published, the SDK should be downloaded as a zipped repository from:
+The tag.bio R SDK is currently under active development and is not yet published to the [CRAN package repository](https://cran.r-project.org/).  Until it is published, we will use
+the `remotes` R library to install tagbio directly from Bitbucket.
 
-  - [Bitbucket](https://bitbucket.org/cloudfolks/tagbio/get/master.zip)
-  
-Unzip the file after it has downloaded.
+Open R or RStudio and enter the following:
+
+```{r, eval = F}
+# If you don't have Rtools installed already, run the following
+install.packages("installr")
+library(installr)
+install.Rtools()
+```
+
+
+```{r, eval = F}
+install.packages("remotes")
+library(remotes)
+install_bitbucket("cloudfolks/tagbio", ref = "master", subdir = "tagbio")
+```
 
 
 #### Install the SDK
@@ -92,7 +105,7 @@ Let's explore the data from Pan-Cancer Atlas:
 
 ```{r}
 # connect to the data product
-fc <- tagFC(tag_con, "fc-catalyze")
+fc <- tbl(tag_con, "fc-catalyze")
 
 # view the data collections
 summary(fc)
