@@ -240,6 +240,9 @@ collect.tagFC <- function(x) {
     script[['background']] <- to_json(background)
   }
 
+  print("COLLECT")
+  print(script)
+
   jsonPayload[['script']] = script
 
   tag_data_frame <- fc_post_call("q", x$url, tc$api_key, "text", jsonPayload)
