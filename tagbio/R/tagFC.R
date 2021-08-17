@@ -293,10 +293,7 @@ run_script.tagFC <- function(fc, script) {
     script = script
   )
 
-  print("Running query")
-  print(jsonPayload)
   tag_data_frame <- fc_post_call("q", fc$url, tc$api_key, "text", jsonPayload)
-  print(tag_data_frame)
 
   # set up the tagData instance
   tag_data <- tagData(results = tibble::tibble(tag_data_frame))
@@ -363,6 +360,8 @@ fc_post_call <- function(query_type, url, api_key, return_type = "json", jsonPay
                     httr::authenticate(api_data[1], api_data[2], type = "basic"),
                     encode = "json")
   }
+  print("RESPONSE")
+  print(r)
   if (return_type == "json") {
     return(httr::content(r))
   } else {
