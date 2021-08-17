@@ -246,6 +246,7 @@ collect.tagFC <- function(x) {
   jsonPayload[['script']] = script
 
   tag_data_frame <- fc_post_call("q", x$url, tc$api_key, "text", jsonPayload)
+  print(tag_data_frame)
 
   tibble::tibble(tag_data_frame)
 }
