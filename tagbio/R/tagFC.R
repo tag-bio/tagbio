@@ -366,7 +366,7 @@ fc_post_call <- function(query_type, url, api_key, return_type = "json", jsonPay
     return(httr::content(r))
   } else {
     # wrote a parser here as content was giving floats as strings
-    res <- httr::content(r, as = "text", type = "text/csv", encoding = "UTF-8")
+    res <- paste0(httr::content(r, as = "text", type = "text/csv", encoding = "UTF-8"))
     print("Parsing...")
     print(tibble(read.table(text = res, header = T, sep = ",")))
     return(tibble(read.table(text = res, header = T, sep = ",")))
