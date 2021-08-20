@@ -7,7 +7,7 @@
 #
 
 ## Command line options
-print("Starting connect_tagbio.R script, version 1.1.19")
+print("Starting connect_tagbio.R script, version 1.1.20")
 suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("rjson"))
 suppressPackageStartupMessages(library("tidyverse"))
