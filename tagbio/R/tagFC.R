@@ -240,14 +240,9 @@ collect.tagFC <- function(x) {
     script[['background']] <- to_json(background)
   }
 
-  print("COLLECT")
-  print(script)
-
   jsonPayload[['script']] = script
 
   tag_data_frame <- fc_post_call("q", x$url, tc$api_key, "text", jsonPayload)
-  print("TAG DATA")
-  print(tag_data_frame)
 
   tibble::tibble(tag_data_frame)
 }
@@ -360,21 +355,13 @@ fc_post_call <- function(query_type, url, api_key, return_type = "json", jsonPay
                     httr::authenticate(api_data[1], api_data[2], type = "basic"),
                     encode = "json")
   }
-  print("RESPONSE")
-  print(r)
+
   if (return_type == "json") {
     return(httr::content(r))
   } else {
     # wrote a parser here as content was giving floats as strings
     res <- paste0(httr::content(r, as = "text", type = "text/csv", encoding = "UTF-8"))
-    print("Parsing...")
-    print(res)
-    print("YO")
     res_table <- read.table(text = res, header = T, sep = ",", check.names = F)
-    print(head(res_table))
-    print(dim(res_table))
-    print("TABLE")
-    print(tibble(res_table))
     return(tibble(res_table))
   }
 }
