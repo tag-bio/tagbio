@@ -372,6 +372,7 @@ fc_post_call <- function(query_type, url, api_key, return_type = "json", jsonPay
     print("YO")
     res_table <- read.table(text = res, header = T, sep = ",")
     print(res_table)
+    print(dim(res_table))
     print("TABLE")
     print(tibble(res_table))
     return(tibble(res_table))
