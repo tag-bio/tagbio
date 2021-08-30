@@ -1,7 +1,7 @@
 Package: tagbio
 Type: Package
 Title: tagbio: methods for interacting with the tag.bio analysis platform
-Version: 1.1.20
+Version: 1.1.21
 Author: J Ireland
 Maintainer: tag.bio <j@tagbio.com>
 Description: This library allows users to work with data from the tag.bio
@@ -11,7 +11,7 @@ Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
 biocViews: ThirdPartyClient
-Date/Publication: 2021-08-17
+Date/Publication: 2021-08-29
 RoxygenNote: 7.1.1
 Imports:
     argparse,

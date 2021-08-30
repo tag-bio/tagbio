@@ -3,11 +3,11 @@
 #
 # author: j@tag.bio
 # version: 0.5
-# last update: 2021.07.28
+# last update: 2021.08.29
 #
 
 ## Command line options
-print("Starting connect_tagbio.R script, version 1.1.20")
+print("Starting connect_tagbio.R script, version 1.1.21")
 suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("rjson"))
 suppressPackageStartupMessages(library("tidyverse"))
@@ -63,6 +63,9 @@ if (!is.null(args$message_file)) {
 # apply pass through arguments if exist
 tag_params <- NULL
 if (!is.null(tag_data)) {
+  ## Add to this the pass through attributes
+  tag_data$parameters <- fc_data$passthrough_arguments
+
   tag_params <- get_parameters(tag_data)
 }
 output_set <- FALSE
@@ -80,9 +83,6 @@ if (grepl(".Rmd", args$user_function)) {
                     params = list(tag_data = tag_data, tag_result = tag_result),
                     output_file = args$output_file)
 } else {
-  ## Add to this the pass through attributes
-  tag_data$parameters <- fc_data$passthrough_arguments
-
 
   print("Executing function")
   ## Read in user function
