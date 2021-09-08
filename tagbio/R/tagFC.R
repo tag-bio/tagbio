@@ -69,6 +69,7 @@ tagFC <- function(con, fc = "", qdelim = " = ") {
 # parse JSON from FC
 
 tag_summary_row <- function(x) {
+
   res <- switch(x$data_function_type,
                 numeric = tibble::tibble(collection = x$collection,
                                          collection_type = x$data_function_type,
@@ -77,14 +78,25 @@ tag_summary_row <- function(x) {
                 categorical = tibble::tibble(collection = x$collection,
                                              collection_type = x$data_function_type,
                                              collection_size =  x$collection_size,
-                                             collection_entity_count = x$collection_entity_count))
+                                             collection_entity_count = x$collection_entity_count),
+                `numeric-matrix` = tibble::tibble(collection = x$collection,
+                                                  collection_type = x$data_function_type,
+                                                  collection_size =  x$collection_size,
+                                                  collection_entity_count = x$collection_entity_count),
+                `categorical-matrix` = tibble::tibble(collection = x$collection,
+                                                      collection_type = x$data_function_type,
+                                                      collection_size =  x$collection_size,
+                                                      collection_entity_count = x$collection_entity_count),
+                `data-frame-numeric` = tibble::tibble(collection = x$collection,
+                                                    collection_type = x$data_function_type,
+                                                    collection_size =  x$collection_size,
+                                                    collection_entity_count = x$collection_entity_count))
   return(res)
 }
 
 #' @export
 summary.tagFC <- function(object, ...) {
   # return collections as a tibble
-  get_collection_defs(object)
   coll_tibs <- lapply(get_collection_defs(object), tag_summary_row)
   return(do.call(rbind, coll_tibs))
 }
@@ -130,6 +142,7 @@ get_collection_defs.tagFC <- function(.data) {
     collections_json <- fc_post_call("q", .data$url, .data$con$api_key, "json", jsonPayload)
 
     .data$collection_defs <- parse_collection_query(collections_json)
+
   }
   return(.data$collection_defs)
 }
@@ -313,12 +326,22 @@ parse_collection_values <- function(res_values) {
     variable_type <- res_values$data_function_type
   }
 
+  # TODO - SUPPORT FOR DATA FRAMES...
   tag_coll <- switch(variable_type,
                      numeric = NumericCollection(collection = res_values$collection$name,
                                                  collection_size = res_values$`collection-size`),
                      categorical = CategoricalCollection(collection = res_values$collection$name,
                                                          collection_size = res_values$`collection-size`,
-                                                         collection_entity_count = res_values$`collection-entity-count`))
+                                                         collection_entity_count = res_values$`collection-entity-count`),
+                     `numeric-matrix` = CategoricalCollection(collection = res_values$collection$name,
+                                                              collection_size = res_values$`collection-size`,
+                                                              collection_entity_count = res_values$`collection-entity-count`),
+                     `categorical-matrix` = CategoricalCollection(collection = res_values$collection$name,
+                                                                  collection_size = res_values$`collection-size`,
+                                                                  collection_entity_count = res_values$`collection-entity-count`),
+                     `data-frame-numeric` = CategoricalCollection(collection = res_values$collection$name,
+                                                                collection_size = res_values$`collection-size`,
+                                                                collection_entity_count = res_values$`collection-entity-count`))
 
   return(tag_coll)
 }
@@ -346,14 +369,42 @@ fc_post_call <- function(query_type, url, api_key, return_type = "json", jsonPay
   }
 
   if (query_type == "s") {
-    r <- httr::POST(url,
+    r <- tryCatch({httr::POST(url,
                     httr::authenticate(api_data[1], api_data[2], type = "basic"),
-                    encode = "json")
+                    encode = "json")},
+                  error=function(cond) {
+                    print(paste0("Error.  Was not able to connect to: ",url,".  Please check URL."))
+                    return()
+                  })
   } else {
-    r <- httr::POST(url,
+    r <- tryCatch({httr::POST(url,
                     body = jsonPayload,
                     httr::authenticate(api_data[1], api_data[2], type = "basic"),
-                    encode = "json")
+                    encode = "json")},
+                  error=function(cond) {
+                    print(paste0("Error.  Was not able to connect to: ",url,".  Please check URL."))
+                    return()
+                  })
+  }
+
+  if (is.null(r)) {
+    return()
+  }
+
+  # check status!
+  call_status <- r$status_code
+  if (call_status != 200) {
+    if (call_status == 401) {
+      print("Authentication failed.  Please check API key.")
+      return()
+    }
+    if (call_status == 500) {
+      print("Server error.")
+      return()
+    }
+    print("Error connecting to tag.bio API.")
+    print(call_status)
+    return()
   }
 
   if (return_type == "json") {
