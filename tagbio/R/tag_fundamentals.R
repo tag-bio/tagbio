@@ -33,7 +33,7 @@ NumericCollection <- function(collection,  collection_size, ...) {
 #' @export
 to_json.NumericCollection <- function(.Object) {
   json <- list()
-  json[['variable_type']] <- .Object$data_function_type # TODO
+  json[['data_function_type']] <- .Object$data_function_type # TODO
   json[['collection']] <- .Object$collection
   return(json)
 }
@@ -58,7 +58,7 @@ CategoricalCollection <- function(collection, collection_size, collection_entity
 #' @export
 to_json.CategoricalCollection <- function(.Object) {
   json <- list()
-  json[['variable_type']] <- .Object$data_function_type # TODO
+  json[['data_function_type']] <- .Object$data_function_type # TODO
   json[['collection']] <- .Object$collection
   return(json)
 }
@@ -81,7 +81,7 @@ NumericVariable <- function(collection, variable, ...) {
 #' @export
 to_json.NumericVariable <- function(.Object) {
   json <- list()
-  json[['variable_type']] <- .Object$data_function_type
+  json[['data_function_type']] <- .Object$data_function_type
   json[['collection']] <- .Object$collection$collection
   json[['variable']] <- .Object$variable
   return(json)
@@ -118,7 +118,7 @@ CategoricalVariable <- function(collection, variable, ...) {
 #' @export
 to_json.CategoricalVariable <- function(.Object) {
   json <- list()
-  json[['variable_type']] <- .Object$data_function_type
+  json[['data_function_type']] <- .Object$data_function_type
   json[['collection']] <- .Object$collection
   json[['variable']] <- .Object$variable
   return(json)
@@ -161,13 +161,13 @@ to_json.NumericSlice <- function(.Object) {
   json <- list()
   json[['operator']] <- .Object$operator
   json[['value']] <- .Object$value
-  json[['variable_type']] <- .Object$data_function_type
+  json[['data_function_type']] <- .Object$data_function_type
 
   criterion <- list()
   tagvar <- .Object$criterion
   criterion[['collection']] <- tagvar$collection$collection
   criterion[['variable']] <- tagvar$variable
-  criterion[['variable_type']] <- tagvar$data_function_type
+  criterion[['data_function_type']] <- tagvar$data_function_type
   json[['criterion']] <- criterion
   return(json)
 }
@@ -209,7 +209,7 @@ to_json.CategoricalBatch <- function(.Object) {
   json[['operator']] <- .Object$operator
   json[['collection']] <- .Object$collection$collection
   json[['variables']] <- .Object$variables
-  json[['variable_type']] <- .Object$data_function_type
+  json[['data_function_type']] <- .Object$data_function_type
 
   return(json)
 }
@@ -250,7 +250,7 @@ CategoricalCompound <- function(criteria = list(),  operator, ...) {
 to_json.CategoricalCompound <- function(.Object) {
   json <- list()
   json[['operator']] <- .Object$operator
-  json[['variable_type']] <- .Object$data_function_type
+  json[['data_function_type']] <- .Object$data_function_type
   crit_list = list()
   cnt <- 1
   for (crit in .Object$criteria) {

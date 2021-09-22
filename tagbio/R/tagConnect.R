@@ -179,9 +179,33 @@ summary.tagConnect <- function(object, ...) {
     api_data <- c("", "") # defaults to empty user/pwd
   }
 
-  r <- httr::GET(kung_url,
+  r <- tryCatch({httr::GET(kung_url,
                  httr::authenticate(api_data[1], api_data[2], type = "basic"),
-                 encode = "json")
+                 encode = "json")},
+                error=function(cond) {
+                  print(paste0("Error.  Was not able to connect to: ",kung_url,".  Please check URL."))
+                  return()
+                })
+  if (is.null(r)) {
+    return()
+  }
+
+  # check status!
+  call_status <- r$status_code
+  if (call_status != 200) {
+    if (call_status == 401) {
+      print("Authentication failed.  Please check API key.")
+      return()
+    }
+    if (call_status == 500) {
+      print("Server error.")
+      return()
+    }
+    print("Error connecting to tag.bio API.")
+    print(call_status)
+    return()
+  }
+
   fcs_json <- null_to_na_recurse(httr::content(r))
   fcs_tbl <- fcs_json %>% map_df(flatten_df)
 
