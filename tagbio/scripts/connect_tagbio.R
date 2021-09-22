@@ -66,13 +66,15 @@ tag_data <- NULL
 if (!is.null(fc_data[['protocol_instance']])) {
     prot_inst <- fc_data[['protocol_instance']]
     tag_data <- run_protocol(fc, prot_inst)
-}
-
-if (!is.null(fc_data[['script']])) {
+} else {
+  if (!is.null(fc_data[['script']])) {
     script <- fc_data[['script']]
     tag_data <- run_script(fc, script)
+  } else {
+    # create an empty tag_data object
+    tag_data <- tagData(results = tibble::tibble())
+  }
 }
-print(tag_data)
 
 ## Set up a tag result object with file paths
 tag_result <- tagResult(output_path = args$output_file,
@@ -89,6 +91,14 @@ if (!is.null(tag_data)) {
 
   tag_params <- get_parameters(tag_data)
 }
+
+# add in additional parameters
+tag_data$parameters$fc_api_key <- fc_api_key
+tag_data$parameters$fc_authorization <- fc_authorization
+tag_data$parameters$fc_user_email <- fc_user_email
+tag_data$parameters$fc_blob_id <- fc_blob_id
+
+
 output_set <- FALSE
 if (!is.null(tag_params) & !is.null(tag_params$output_file) & !is.null(tag_params$output_type)) {
     tag_result <- add_result_file(tag_result, tag_params$output_file[1], tag_params$output_type[1])
