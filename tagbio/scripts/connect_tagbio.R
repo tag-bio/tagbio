@@ -44,16 +44,16 @@ print(fc_data)
 
 ## new params
 fc_api_key <- NULL
-if (!is.null(fc_params['api_key'])) {
-  fc_api_key <- fc_params['api_key']
+if (!is.null(fc_data['api_key'])) {
+  fc_api_key <- fc_data['api_key']
 }
 fc_authorization <- NULL
 if (!is.null(fc_params['authorization'])) {
   fc_authorization <- fc_params['authorization']
 }
 fc_user_email <- NULL
-if (!is.null(fc_params['user_email'])) {
-  fc_user_email <- fc_params['user_email']
+if (!is.null(fc_data$request['email'])) {
+  fc_user_email <- fc_data$request['email']
 }
 fc_blob_id <- NULL
 if (!is.null(fc_params['blob_id'])) {
