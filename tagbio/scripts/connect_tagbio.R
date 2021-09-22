@@ -53,7 +53,7 @@ if (!is.null(fc_params['authorization'])) {
 }
 fc_user_email <- NULL
 if (!is.null(fc_data$request['email'])) {
-  fc_user_email <- fc_data$request['email']
+  fc_user_email <- fc_data$request$email
 }
 fc_blob_id <- NULL
 if (!is.null(fc_params['blob_id'])) {
