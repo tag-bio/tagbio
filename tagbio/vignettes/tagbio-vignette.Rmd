@@ -1,8 +1,8 @@
 ---
 title: "Using the Tag.bio R SDK"
 output:
-  rmarkdown::html_vignette: default
   pdf_document: default
+  rmarkdown::html_vignette: default
 vignette: |
   %\VignetteIndexEntry{tagbio-vignette} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
 ---
@@ -16,20 +16,18 @@ knitr::opts_chunk$set(
 
 ## Installation
 
-#### Clone the tagbio.R Repo
-
 The tag.bio R SDK is currently under active development and is not yet published to the [CRAN package repository](https://cran.r-project.org/).  Until it is published, we will use
 the `remotes` R library to install tagbio directly from Bitbucket.
 
-Open R or RStudio and enter the following:
+Open R or RStudio.  If you don't have Rtools installed already, run the following:
 
 ```{r, eval = F}
-# If you don't have Rtools installed already, run the following
 install.packages("installr")
 library(installr)
 install.Rtools()
 ```
 
+Next, to install or update the tag.bio R SDK, run the following. 
 
 ```{r, eval = F}
 install.packages("remotes")
@@ -37,17 +35,7 @@ library(remotes)
 install_bitbucket("cloudfolks/tagbio", ref = "master", subdir = "tagbio")
 ```
 
-
-#### Install the SDK
-
-Open a command prompt and navigate to where you saved the unzipped tag.bio SDK file.  From the command line, type the following commands:
-
-```{bash, eval=F}
-cd tagbio
-Rscript INSTALL.R
-```
-
-This will install all required R packages including the current production version of the tag.bio R SDK.
+That should do it!
 
 ## Quick Start
 
