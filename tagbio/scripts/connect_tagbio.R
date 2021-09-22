@@ -3,11 +3,11 @@
 #
 # author: j@tag.bio
 # version: 0.5
-# last update: 2021.08.29
+# last update: 2021.09.22
 #
 
 ## Command line options
-print("Starting connect_tagbio.R script, version 1.1.22")
+print("Starting connect_tagbio.R script, version 1.1.23")
 suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("rjson"))
 suppressPackageStartupMessages(library("tidyverse"))
@@ -36,8 +36,29 @@ args <- parser$parse_args()
 
 ## Read in the fc params and create FC and protocol instances
 fc_data <- fromJSON(file = args$fc_data)
-fc_name <- fc_data$fc$name
-tag_con <- tagConnect(url = fc_data$fc$url)
+fc_params <- fc_data$fc
+fc_name <- fc_params$name
+fc_url <- fc_params$url
+
+## new params
+fc_api_key <- NULL
+if (!is.null(fc_params['api_key'])) {
+  fc_api_key <- fc_params['api_key']
+}
+fc_authorization <- NULL
+if (!is.null(fc_params['authorization'])) {
+  fc_authorization <- fc_params['authorization']
+}
+fc_user_email <- NULL
+if (!is.null(fc_params['user_email'])) {
+  fc_user_email <- fc_params['user_email']
+}
+fc_blob_id <- NULL
+if (!is.null(fc_params['blob_id'])) {
+  fc_blob_id <- fc_params['blob_id']
+}
+
+tag_con <- tagConnect(url = fc_url)
 fc <- tagFC(tag_con, fc_name)
 
 ## Look for protocol instance or script
@@ -51,7 +72,7 @@ if (!is.null(fc_data[['script']])) {
     script <- fc_data[['script']]
     tag_data <- run_script(fc, script)
 }
-
+print(tag_data)
 
 ## Set up a tag result object with file paths
 tag_result <- tagResult(output_path = args$output_file,
