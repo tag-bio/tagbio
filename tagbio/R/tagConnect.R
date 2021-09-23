@@ -15,16 +15,6 @@ KUNG_CAPACITORS <- "/kung-services/db/capacitors"
 HOME_ENV <- "HOME"
 CONFIG_FILE <- ".tagbio.json"
 
-# From https://github.com/jeroen/jsonlite/issues/70
-# - drops NULLS from JSON results
-null_to_na_recurse <- function(obj) {
-  if (is.list(obj)) {
-    obj <- jsonlite:::null_to_na(obj)
-    obj <- lapply(obj, null_to_na_recurse)
-  }
-  return(obj)
-}
-
 #' An S3 class representing a connection to a tag.bio server
 #'
 #' The tagConnect class establishes a connection to a local or remote

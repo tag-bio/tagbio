@@ -93,7 +93,7 @@ Let's explore the data from Pan-Cancer Atlas:
 
 ```{r}
 # connect to the data product
-fc <- tagFC(tag_con, "fc-catalyze")
+fc <- tbl(tag_con, "fc-catalyze")
 
 # view the data collections
 summary(fc)
