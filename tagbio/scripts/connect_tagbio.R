@@ -40,7 +40,7 @@ fc_params <- fc_data$fc
 fc_name <- fc_params$name
 fc_url <- fc_params$url
 print("DATA")
-print(fc_data)
+print(args$fc_data)
 
 ## new params
 fc_api_key <- NULL
