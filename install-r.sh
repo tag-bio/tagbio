@@ -10,7 +10,8 @@ conda install mamba -n base -c conda-forge
 mamba install \
   r-base=$R_BASE_VERSION \
   r-essentials \
-  r-littler
+  r-littler \
+  -r -c conda-forge
 
 ln -s /usr/lib/R/site-library/littler/examples/install.r /usr/local/bin/install.r
 ln -s /usr/lib/R/site-library/littler/examples/install2.r /usr/local/bin/install2.r
