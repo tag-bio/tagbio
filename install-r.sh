@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+r-base#!/usr/bin/env sh
 set -e
 
 export R_BASE_VERSION=${1:-4.0.5}
