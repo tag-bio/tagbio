@@ -4,9 +4,6 @@ set -e
 export R_BASE_VERSION=${1:-4.0.2}
 export R_MAJOR=$(echo $R_BASE_VERSION|cut -b 1)
 
-conda config --add channels conda-forge
-conda install -y mamba -n base -c conda-forge
-
 mamba install -y -c conda-forge \
   r-base=$R_BASE_VERSION \
   r-essentials \
@@ -17,6 +14,6 @@ ln -s /usr/lib/R/site-library/littler/examples/install2.r /usr/local/bin/install
 ln -s /usr/lib/R/site-library/littler/examples/installGithub.r /usr/local/bin/installGithub.r
 ln -s /usr/lib/R/site-library/littler/examples/testInstalled.r /usr/local/bin/testInstalled.r
 
-conda clean --all -y
+mamba clean --all -y
 apt-get clean -y
 apt-get autoremove -y
