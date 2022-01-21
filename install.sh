@@ -14,7 +14,8 @@ apt-get install -y \
   libfontconfig1-dev \
   libssl-dev \
   libxml2-dev \
-  libxt-dev
+  libxt-dev \ 
+  apt-utils
 
 conda config --add channels bioconda
 conda config --add channels conda-forge
