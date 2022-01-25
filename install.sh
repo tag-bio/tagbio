@@ -9,14 +9,21 @@ echo "Installing tagbio R version $TAGBIO_R_VERSION"
 echo "Updating apt cache"
 apt-get update
 echo "Installing tagbio R system dependencies"
-apt-get install -y \
-  libcairo2-dev \
-  libcurl4-openssl-dev \
-  libfontconfig1-dev \
-  libssl-dev \
-  libxml2-dev \
-  libxt-dev \ 
-  apt-utils
+echo "Installing libcario2"
+#apt-get install -y \
+apt-get install -y  libcairo2-dev 
+echo "Installing libcurl4"
+apt-get install -y  libcurl4-openssl-dev 
+echo "Installing libfont"
+apt-get install -y  libfontconfig1-dev 
+echo "Installing libssl"
+apt-get install -y  libssl-dev 
+echo "Installing libxml"
+apt-get install -y  libxml2-dev 
+echo "Installing libxt"
+apt-get install -y  libxt-dev 
+echo "Installing apt-utils"
+apt-get install -y  apt-utils
 
 echo "Adding conda channels"
 conda config --add channels bioconda
