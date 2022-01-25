@@ -6,8 +6,9 @@ TAGBIO_R_VERSION=${1:-1.1.22}
 echo "Installing tagbio R version $TAGBIO_R_VERSION"
 
 # package dependencies
-echo "Installing tagbio R system dependencies"
+echo "Updating apt cache"
 apt-get update
+echo "Installing tagbio R system dependencies"
 apt-get install -y \
   libcairo2-dev \
   libcurl4-openssl-dev \
@@ -17,9 +18,11 @@ apt-get install -y \
   libxt-dev \ 
   apt-utils
 
+echo "Adding conda channels"
 conda config --add channels bioconda
 conda config --add channels conda-forge
 # conda update --all -y
+echo "Installing packages with mamba"
 mamba install -y -c bioconda -c conda-forge \
   bioconductor-gsva \
   docopt \
