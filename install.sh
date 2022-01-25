@@ -21,7 +21,6 @@ conda config --add channels bioconda
 conda config --add channels conda-forge
 # conda update --all -y
 mamba install -y -c bioconda -c conda-forge \
-#conda install \
   bioconductor-gsva \
   docopt \
   pip \
