@@ -7,6 +7,7 @@ export R_MAJOR=$(echo $R_BASE_VERSION|cut -b 1)
 mamba install -y -c conda-forge \
   r-base=$R_BASE_VERSION \
   r-essentials \
+  r-gt \
   r-littler 
 
 ln -s /usr/lib/R/site-library/littler/examples/install.r /usr/local/bin/install.r
