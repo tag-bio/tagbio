@@ -71,10 +71,8 @@ rmd_updater <- function(rmd_file, email, analysis_url) {
 
   # save new rmd to temp file
   rmd_out_file <- tempfile(pattern = "_tmp_", fileext = ".Rmd")
-  rmd_out_file <- "/Users/jireland/Downloads/foo.Rmd" # REMOVE
 
   con <- file(rmd_out_file, "w")
-
   write("---", con)
   write_yaml(yaml, con)
   write("---\n\n", con)
@@ -192,8 +190,7 @@ if (grepl(".Rmd", args$user_function)) {
                     output_file = args$output_file)
 
   # remove the temp file
-  print(rmd_tmp_file)
-  #file.remove(rmd_tmp_file)
+  file.remove(rmd_tmp_file)
 
 } else {
 
