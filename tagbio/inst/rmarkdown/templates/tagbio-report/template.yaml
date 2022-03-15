@@ -1,0 +1,4 @@
+name: tag.bio Rmarkdown report
+description: >
+   General starting point for creating a Rmarkdown report to be used with tag.bio
+create_dir: TRUE

@@ -64,6 +64,7 @@ CONFIG_FILE <- ".tagbio.json"
 #'
 #' @param host_url URL to the tag.bio server
 #' @param api_key tag.bio api key
+#' @param token alternative authentication based on bearer token
 #'
 #' @examples
 #' # connect to local host, no API key required
@@ -73,10 +74,11 @@ CONFIG_FILE <- ".tagbio.json"
 #' # explicit parameters (not recommended)
 #' tag_con <- tagConnect(host_url = "", api_key = "")
 #' @export
-tagConnect <- function(host_url = "", api_key = "", url = "") {
+tagConnect <- function(host_url = "", api_key = "", url = "", token = "") {
   tc <- list(host_url = host_url,
              api_key = api_key,
-             url = url)
+             url = url,
+             token = token)
   class(tc) <- "tagConnect"
 
   # get configuration from sys variables or file
@@ -117,6 +119,7 @@ tagConnect <- function(host_url = "", api_key = "", url = "") {
     }
   }
   tc$api_key <- api_key
+  tc$token <- token
 
   tc
 }
@@ -179,13 +182,25 @@ summary.tagConnect <- function(object, ...) {
     api_data <- c("", "") # defaults to empty user/pwd
   }
 
-  r <- tryCatch({httr::GET(kung_url,
-                 httr::authenticate(api_data[1], api_data[2], type = "basic"),
-                 encode = "json")},
-                error=function(cond) {
-                  print(paste0("Error.  Was not able to connect to: ",kung_url,".  Please check URL."))
-                  return()
-                })
+  if (api_data[1] == "") {
+    # use token based auth
+    r <- tryCatch({httr::GET(kung_url,
+                             add_headers(Authorization = object$token),
+                             encode = "json")},
+                  error=function(cond) {
+                    print(paste0("Error.  Was not able to connect to: ",kung_url,".  Please check URL."))
+                    return()
+                  })
+  } else {
+    # use api key
+    r <- tryCatch({httr::GET(kung_url,
+                   httr::authenticate(api_data[1], api_data[2], type = "basic"),
+                   encode = "json")},
+                  error=function(cond) {
+                    print(paste0("Error.  Was not able to connect to: ",kung_url,".  Please check URL."))
+                    return()
+                  })
+  }
   if (is.null(r)) {
     return()
   }
