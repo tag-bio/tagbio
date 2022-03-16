@@ -136,8 +136,6 @@ if (!is.null(fc_request['uuid'])) {
   fc_blob_id <- fc_request['uuid']
 }
 
-print(fc_url)
-
 # make connection
 if (is.null(fc_url)) {
   tag_con <- tagConnect()
