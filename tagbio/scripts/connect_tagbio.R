@@ -112,11 +112,17 @@ fc_data <- fromJSON(file = args$fc_data)
 fc_params <- fc_data$fc
 fc_request <- fc_data$request
 fc_name <- fc_params$name
-fc_url <- fc_params$url
 
 #print(fc_data)
-
-## new params
+# load params
+fc_url <- NULL
+if (!is.null(fc_params['fc-url'])) {
+  fc_url <- fc_params['fc-url']
+}
+fc_protocol_url <- NULL
+if (!is.null(fc_params['protocol-url'])) {
+  fc_protocol_url <- fc_params['protocol-url']
+}
 fc_token <- NULL
 if (!is.null(fc_request['auth'])) {
   fc_token <- fc_request['auth']
@@ -130,11 +136,14 @@ if (!is.null(fc_request['uuid'])) {
   fc_blob_id <- fc_request['uuid']
 }
 
-# add back after the hand-off is more stable
-# tag_con <- tagConnect(url = fc_url, token = fc_token)
-# fc <- tagFC(tag_con, fc_name)
-tag_con <- tagConnect()
-fc <- tagFC(tag_con)
+# make connection
+if (is.null(fc_url)) {
+  tag_con <- tagConnect()
+  fc <- tagFC(tag_con)
+} else {
+  tag_con <- tagConnect(url = fc_url)
+  fc <- tagFC(tag_con, fc_name)
+}
 
 ## Look for protocol instance or script
 tag_data <- NULL
@@ -183,7 +192,7 @@ if (!is.null(tag_params) & !is.null(tag_params$output_file) & !is.null(tag_param
 if (grepl(".Rmd", args$user_function)) {
   print("Knitting Rmd Now")
 
-  rmd_tmp_file <- rmd_updater(args$user_function, fc_user_email, fc_url)
+  rmd_tmp_file <- rmd_updater(args$user_function, fc_user_email, fc_protocol_url)
 
   rmarkdown::render(rmd_tmp_file,
                     params = list(tag_data = tag_data, tag_result = tag_result),
