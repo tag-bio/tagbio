@@ -1,0 +1,73 @@
+---
+title: "Report Title"
+date: "`r Sys.Date()`"
+toc-title: Table of Contents
+email: anonymous
+analysis_url: https://tag.bio/
+params:
+  tag_data: NULL
+  tag_result: NULL
+output:
+  tagbio::tag_report:
+    theme: default-color
+    highlight: github
+    toc: true
+    toc_depth: 3
+---
+
+
+```{r, include=FALSE}
+
+knitr::opts_chunk$set(
+  echo = FALSE, 
+  fig.width = 8,
+  fig.height = 6,
+  echo = F,
+  warning = F,
+  message = F
+)
+```
+
+```{r}
+library(tidyverse)
+library(tagbio)
+library(knitr)
+library(pander)
+
+# Load data from UI or running from R/Rstudio
+
+if (is.null(params$tag_data)) {
+  # Run from RStudio
+  tag_con <- tagConnect()
+  fc <- tbl(tag_con)
+  
+  # might want to select specific fields
+  fc_data <- fc %>% collect() 
+} else {
+  # Run from tag.bio UI
+  fc_data <- get_results(params$tag_data)
+  parameters <- get_parameters(params$tag_data)
+}
+
+```
+
+
+## Start of Report
+
+
+
+
+## Version and Provenance
+
+### Data Provenance
+
+```{r}
+pander(info(fc))
+```
+
+### Software Version
+
+```{r}
+pander(sessionInfo())
+```
+

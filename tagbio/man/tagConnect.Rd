@@ -4,12 +4,14 @@
 \alias{tagConnect}
 \title{An S3 class representing a connection to a tag.bio server}
 \usage{
-tagConnect(host_url = "", api_key = "", url = "")
+tagConnect(host_url = "", api_key = "", url = "", token = "")
 }
 \arguments{
 \item{host_url}{URL to the tag.bio server}
 
 \item{api_key}{tag.bio api key}
+
+\item{token}{alternative authentication based on bearer token}
 }
 \description{
 The tagConnect class establishes a connection to a local or remote
