@@ -2,11 +2,11 @@
 # connect_tagbio.R
 #
 # author: j@tag.bio
-# version: 0.7
-# last update: 2022.03.15
+# version: 0.8
+# last update: 2022.03.17
 #
 
-print("Starting connect_tagbio.R script, version 1.1.25")
+print("Starting connect_tagbio.R script, version 1.1.26")
 suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("rjson"))
 suppressPackageStartupMessages(library("tidyverse"))
@@ -137,11 +137,13 @@ if (!is.null(fc_request['uuid'])) {
 }
 
 # make connection
-if (is.null(fc_url)) {
+if (is.null(fc_url) | is.null(fc_token)) {
+  print("Using localhost to communicate with API.")
   tag_con <- tagConnect()
   fc <- tagFC(tag_con)
 } else {
-  tag_con <- tagConnect(url = fc_url)
+  print("Using token-based authentication to communicate with API.")
+  tag_con <- tagConnect(url = fc_url, token = fc_token)
   fc <- tagFC(tag_con, fc_name)
 }
 
