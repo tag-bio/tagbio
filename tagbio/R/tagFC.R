@@ -102,14 +102,14 @@ summary.tagFC <- function(object, ...) {
 }
 
 #' @export
-info <- function (.data, ...) {
+info <- function(.data, ...) {
   UseMethod("info", .data)
 }
 
 #' @export
 info.tagFC <- function(.data) {
   # returns FC provenance information
-  return(get_info(.data$url, .data$con$api_key))
+  return(get_info(.data$url, .data$con))
 }
 
 #' @export
@@ -139,7 +139,9 @@ get_collection_defs.tagFC <- function(.data) {
     )
 
     jsonPayload[['script']] = script
-    collections_json <- fc_post_call("q", .data$url, .data$con$api_key, "json", jsonPayload)
+    #collections_json <- fc_post_call("q", .data$url, .data$con$api_key,
+    #                                 "json", jsonPayload, token = .data$con$token)
+    collections_json <- api_post(.data$con, "q", .data$url, "json", jsonPayload)
 
     .data$collection_defs <- parse_collection_query(collections_json)
 
@@ -255,7 +257,9 @@ collect.tagFC <- function(x) {
 
   jsonPayload[['script']] = script
 
-  tag_data_frame <- fc_post_call("q", x$url, tc$api_key, "text", jsonPayload)
+  #tag_data_frame <- fc_post_call("q", x$url, tc$api_key, "text",
+  #                               jsonPayload, token=tc$token)
+  tag_data_frame <- api_post(tc, "q", x$url, "text")                               
 
   tibble::tibble(tag_data_frame)
 }
@@ -277,7 +281,9 @@ run_protocol.tagFC <- function(fc, protocol_instance) {
     protocol_instance = protocol_instance
   )
 
-  tag_data_frame <- fc_post_call("q", fc$url, tc$api_key, "text", jsonPayload)
+  #tag_data_frame <- fc_post_call("q", fc$url, tc$api_key, "text",
+  #                               jsonPayload, token=tc$token)
+  tag_data_frame <- api_post(tc, "q", fc$url, "text", jsonPayload)
 
   # set up the tagData instance
   tag_data <- tagData(results = tibble::tibble(tag_data_frame))
@@ -301,7 +307,9 @@ run_script.tagFC <- function(fc, script) {
     script = script
   )
 
-  tag_data_frame <- fc_post_call("q", fc$url, tc$api_key, "text", jsonPayload)
+  #tag_data_frame <- fc_post_call("q", fc$url, tc$api_key, "text",
+  #                               jsonPayload, token=tc$token)
+  tag_data_frame <- api_post(tc, "q", fc$url, "text", jsonPayload)
 
   # set up the tagData instance
   tag_data <- tagData(results = tibble::tibble(tag_data_frame))
@@ -355,72 +363,11 @@ parse_collection_query <- function(query_res) {
   return(collection_defs)
 }
 
-# general method for all http post calls to tag
-
-fc_post_call <- function(query_type, url, api_key, return_type = "json", jsonPayload = NA) {
-
-  # set up url
-  url <- paste0(url, "/", query_type)
-
-  # use api key
-  api_data <- unlist(strsplit(api_key, ":"))
-  if (length(api_data) != 2) {
-    api_data <- c("", "") # defaults to empty user/pwd
-  }
-
-  if (query_type == "s") {
-    r <- tryCatch({httr::POST(url,
-                    httr::authenticate(api_data[1], api_data[2], type = "basic"),
-                    encode = "json")},
-                  error=function(cond) {
-                    print(paste0("Error.  Was not able to connect to: ",url,".  Please check URL."))
-                    return()
-                  })
-  } else {
-    r <- tryCatch({httr::POST(url,
-                    body = jsonPayload,
-                    httr::authenticate(api_data[1], api_data[2], type = "basic"),
-                    encode = "json")},
-                  error=function(cond) {
-                    print(paste0("Error.  Was not able to connect to: ",url,".  Please check URL."))
-                    return()
-                  })
-  }
-
-  if (is.null(r)) {
-    return()
-  }
-
-  # check status!
-  call_status <- r$status_code
-  if (call_status != 200) {
-    if (call_status == 401) {
-      print("Authentication failed.  Please check API key.")
-      return()
-    }
-    if (call_status == 500) {
-      print("Server error.")
-      return()
-    }
-    print("Error connecting to tag.bio API.")
-    print(call_status)
-    return()
-  }
-
-  if (return_type == "json") {
-    return(httr::content(r))
-  } else {
-    # wrote a parser here as content was giving floats as strings
-    res <- paste0(httr::content(r, as = "text", type = "text/csv", encoding = "UTF-8"))
-    res_table <- read.table(text = res, header = T, sep = ",", check.names = F)
-    return(tibble(res_table))
-  }
-}
-
-get_info <- function(url, api_key) {
+get_info <- function(url, tc) {
 
   # use s query to get fc info
-  info_json <- fc_post_call("s", url, api_key)
+  #info_json <- fc_post_call("s", url, api_key, token = token)
+  info_json <- api_post(tc, "s", url)
 
   # update time stamps
   info_json$start_time <- as.POSIXct(as.numeric(info_json$start_time) / 1000,
