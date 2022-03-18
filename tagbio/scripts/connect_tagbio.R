@@ -6,7 +6,7 @@
 # last update: 2022.03.17
 #
 
-print("Starting connect_tagbio.R script, version 1.1.26")
+print("Starting connect_tagbio.R script, version 1.1.27")
 suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("rjson"))
 suppressPackageStartupMessages(library("tidyverse"))
@@ -137,6 +137,7 @@ if (!is.null(fc_request['uuid'])) {
 }
 
 # make connection
+
 if (is.null(fc_url) | is.null(fc_token)) {
   print("Using localhost to communicate with API.")
   tag_con <- tagConnect()
