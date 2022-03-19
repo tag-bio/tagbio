@@ -113,7 +113,6 @@ fc_params <- fc_data$fc
 fc_request <- fc_data$request
 fc_name <- fc_params$name
 
-#print(fc_data)
 # load params
 fc_url <- NULL
 if (!is.null(fc_params['fc-url'])) {
@@ -125,7 +124,8 @@ if (!is.null(fc_params['protocol-url'])) {
 }
 fc_token <- NULL
 if (!is.null(fc_request['auth'])) {
-  fc_token <- fc_request['auth']
+  # Removes "Bearer "
+  fc_token <- gsub(".* ", "", fc_request['auth'])
 }
 fc_user_email <- Sys.info()['user'] # default to local user
 if (('email' %in% fc_data) & !is.null(fc_data$request['email'])) {
