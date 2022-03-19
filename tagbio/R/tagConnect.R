@@ -188,7 +188,7 @@ api_auth_header.tagConnect <- function(object, url) {
   }
 
   # try token
-  if (object$token) {
+  if (object$token != "") {
     return(httr::add_headers(Authorization = object$token))
   }
 
