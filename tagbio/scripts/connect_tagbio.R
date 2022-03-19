@@ -6,7 +6,7 @@
 # last update: 2022.03.17
 #
 
-print("Starting connect_tagbio.R script, version 1.1.27")
+print("Starting connect_tagbio.R script, version 1.1.28")
 suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("rjson"))
 suppressPackageStartupMessages(library("tidyverse"))
@@ -144,6 +144,8 @@ if (is.null(fc_url) | is.null(fc_token)) {
   fc <- tagFC(tag_con)
 } else {
   print("Using token-based authentication to communicate with API.")
+  print(fc_url)
+  print(fc_token)
   tag_con <- tagConnect(url = fc_url, token = fc_token)
   fc <- tagFC(tag_con, fc_name)
 }
