@@ -165,7 +165,7 @@ tbl.tagConnect <- function(src = "tagConnect", fc = "") {
 # 2. When an API key is provided, connection is made using basic
 #    authentication with user name and password extracted from the
 #    API key.
-# 3. If not (1) and (2) and a token is provided, use token 
+# 3. If not (1) and (2) and a token is provided, use token
 #    authentication.
 
 #' @export
@@ -179,7 +179,7 @@ api_auth_header.tagConnect <- function(object, url) {
   if (grepl(LOCALHOST, url, ignore.case=T) | grepl(LOCALHOST_IP, url)) {
     # local mode - no auth
     return(httr::authenticate("", "", type = "basic")) # does this work?
-  } 
+  }
 
   # try use api key
   api_data <- unlist(strsplit(object$api_key, ":"))
@@ -211,7 +211,7 @@ api_get.tagConnect <- function(object, url) {
                    print(paste0("Error.  Was not able to connect to: ", url, ".  Please check URL."))
                    return()
                 })
-    
+
   if (is.null(r)) {
     return()
   }
@@ -265,7 +265,7 @@ api_post.tagConnect <- function(object, query_type, url,
                     print(paste0("Error.  Was not able to connect to: ",url,".  Please check URL."))
                     return()
                   })
-  } 
+  }
 
   if (is.null(r)) {
     return()
@@ -286,7 +286,7 @@ api_post.tagConnect <- function(object, query_type, url,
     print(call_status)
     return()
   }
-  
+
   if (return_type == "json") {
     return(httr::content(r))
   } else {
