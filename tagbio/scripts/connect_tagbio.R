@@ -2,18 +2,91 @@
 # connect_tagbio.R
 #
 # author: j@tag.bio
-# version: 0.5
-# last update: 2021.09.22
+# version: 0.8
+# last update: 2022.03.17
 #
 
-## Command line options
-print("Starting connect_tagbio.R script, version 1.1.22 - extra plugin params")
+print("Starting connect_tagbio.R script, version 1.1.28")
 suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("rjson"))
 suppressPackageStartupMessages(library("tidyverse"))
 suppressPackageStartupMessages(library("tagbio"))
+suppressPackageStartupMessages(library("yaml"))
+
+## simple Rmd reader
+rmd_reader <- function(rmd_file) {
+  yaml_content <- c()
+  in_yaml <- FALSE
+  other_content <- c()
+  con <- file(rmd_file, "r")
+  while (TRUE) {
+    line <- readLines(con, n=1)
+    if (length(line) == 0) {
+      break
+    }
+
+    if (grepl("^---", line)) {
+      in_yaml <- !in_yaml
+    } else {
+      if (in_yaml) {
+        yaml_content <- c(yaml_content, line)
+      } else {
+        other_content <- c(other_content, line)
+      }
+    }
+  }
+  return(list(yaml_content = yaml_content, other_content=other_content))
+}
+
+## updates rmd files with required fields
+rmd_updater <- function(rmd_file, email, analysis_url) {
+
+  rmd <- rmd_reader(rmd_file)
+
+  # check the yaml section
+  yaml <- read_yaml(text = paste(rmd$yaml_content, collapse="\n"))
+  yaml_fields <- names(yaml) # top level
+
+  # email
+  if (!("email" %in% yaml_fields) | is.na(yaml["email"])) {
+    yaml["email"] <- email
+  }
+
+  # analysis_url
+  if (!("analysis_url" %in% yaml_fields) | is.na(yaml["analysis_url"])) {
+    yaml["analysis_url"] <- analysis_url
+  }
+
+  # date
+  if (!("date" %in% yaml_fields) | is.na(yaml["date"])) {
+    yaml["date"] <- "`r Sys.Date()`"
+  }
+
+  # tag data and results - add these fields no matter what
+  if  (!("params" %in% yaml_fields) | is.na(yaml["params"])) {
+    yaml$params <- list()
+  }
+  yaml$params$tag_data <- ""
+  yaml$params$tag_result <- ""
+
+  # save new rmd to temp file
+  rmd_out_file <- tempfile(pattern = "_tmp_", fileext = ".Rmd")
+
+  con <- file(rmd_out_file, "w")
+  write("---", con)
+  write_yaml(yaml, con)
+  write("---\n\n", con)
+  write(paste(rmd$other_content, collapse="\n"), con)
+  write("\n", con)
+  close(con)
+
+  return(rmd_out_file)
+}
+
 si <- sessionInfo()
 print(paste("Tagbio SDK Version:", si$otherPkgs$tagbio$Version))
+
+## Command line options
 parser <- ArgumentParser()
 
 parser$add_argument("-d", "--fc_data", required = TRUE,
@@ -37,31 +110,45 @@ args <- parser$parse_args()
 ## Read in the fc params and create FC and protocol instances
 fc_data <- fromJSON(file = args$fc_data)
 fc_params <- fc_data$fc
+fc_request <- fc_data$request
 fc_name <- fc_params$name
-fc_url <- fc_params$url
-print("DATA")
-print(fc_data)
 
-## new params
-fc_api_key <- NULL
-if (!is.null(fc_data['api_key'])) {
-  fc_api_key <- fc_data['api_key']
+# load params
+fc_url <- NULL
+if (!is.null(fc_params['fc-url'])) {
+  fc_url <- fc_params['fc-url']
 }
-fc_authorization <- NULL
-if (!is.null(fc_params['authorization'])) {
-  fc_authorization <- fc_params['authorization']
+fc_protocol_url <- NULL
+if (!is.null(fc_params['protocol-url'])) {
+  fc_protocol_url <- fc_params['protocol-url']
 }
-fc_user_email <- NULL
-if (!is.null(fc_data$request['email'])) {
-  fc_user_email <- fc_data$request$email
+fc_token <- NULL
+if (!is.null(fc_request['auth'])) {
+  # Removes "Bearer "
+  fc_token <- gsub(".* ", "", fc_request['auth'])
+}
+fc_user_email <- Sys.info()['user'] # default to local user
+if (('email' %in% fc_data) & !is.null(fc_data$request['email'])) {
+  fc_user_email <- fc_request$email
 }
 fc_blob_id <- NULL
-if (!is.null(fc_params['blob_id'])) {
-  fc_blob_id <- fc_params['blob_id']
+if (!is.null(fc_request['uuid'])) {
+  fc_blob_id <- fc_request['uuid']
 }
 
-tag_con <- tagConnect(url = fc_url)
-fc <- tagFC(tag_con, fc_name)
+# make connection
+
+if (is.null(fc_url) | is.null(fc_token)) {
+  print("Using localhost to communicate with API.")
+  tag_con <- tagConnect()
+  fc <- tagFC(tag_con)
+} else {
+  print("Using token-based authentication to communicate with API.")
+  print(fc_url)
+  print(fc_token)
+  tag_con <- tagConnect(url = fc_url, token = fc_token)
+  fc <- tagFC(tag_con, fc_name)
+}
 
 ## Look for protocol instance or script
 tag_data <- NULL
@@ -95,8 +182,7 @@ if (!is.null(tag_data)) {
 }
 
 # add in additional parameters
-tag_data$parameters$fc_api_key <- fc_api_key
-tag_data$parameters$fc_authorization <- fc_authorization
+tag_data$parameters$token <- fc_token
 tag_data$parameters$fc_user_email <- fc_user_email
 tag_data$parameters$fc_blob_id <- fc_blob_id
 
@@ -107,14 +193,19 @@ if (!is.null(tag_params) & !is.null(tag_params$output_file) & !is.null(tag_param
     output_set <- TRUE
 }
 
-## TODO renv!!!
-
 ## render a notebook or execute function
 if (grepl(".Rmd", args$user_function)) {
-  print("Knitting Rmd")
-  rmarkdown::render(args$user_function,
+  print("Knitting Rmd Now")
+
+  rmd_tmp_file <- rmd_updater(args$user_function, fc_user_email, fc_protocol_url)
+
+  rmarkdown::render(rmd_tmp_file,
                     params = list(tag_data = tag_data, tag_result = tag_result),
                     output_file = args$output_file)
+
+  # remove the temp file
+  file.remove(rmd_tmp_file)
+
 } else {
 
   print("Executing function")
