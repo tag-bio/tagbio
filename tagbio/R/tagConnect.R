@@ -64,6 +64,7 @@ CONFIG_FILE <- ".tagbio.json"
 #'
 #' @param host_url URL to the tag.bio server
 #' @param api_key tag.bio api key
+#' @param token alternative authentication based on bearer token
 #'
 #' @examples
 #' # connect to local host, no API key required
@@ -73,10 +74,11 @@ CONFIG_FILE <- ".tagbio.json"
 #' # explicit parameters (not recommended)
 #' tag_con <- tagConnect(host_url = "", api_key = "")
 #' @export
-tagConnect <- function(host_url = "", api_key = "", url = "") {
+tagConnect <- function(host_url = "", api_key = "", url = "", token = "") {
   tc <- list(host_url = host_url,
              api_key = api_key,
-             url = url)
+             url = url,
+             token = token)
   class(tc) <- "tagConnect"
 
   # get configuration from sys variables or file
@@ -117,6 +119,7 @@ tagConnect <- function(host_url = "", api_key = "", url = "") {
     }
   }
   tc$api_key <- api_key
+  tc$token <- token
 
   tc
 }
@@ -153,6 +156,148 @@ tbl.tagConnect <- function(src = "tagConnect", fc = "") {
   return(tagFC(fc = fc, con = src))
 }
 
+# API authentication notes
+# There are three different modes for authenticating to the API:
+# 1. For an API call connected via localhost, no authentication is
+#    required.  Localhost is the assumed endpoint if:
+#    - no URL is provided
+#    - URL contains "localhost" or "127.0.0.1"
+# 2. When an API key is provided, connection is made using basic
+#    authentication with user name and password extracted from the
+#    API key.
+# 3. If not (1) and (2) and a token is provided, use token
+#    authentication.
+
+#' @export
+api_auth_header <- function(object, ...) {
+  UseMethod("api_auth_header", object)
+}
+
+#' @export
+api_auth_header.tagConnect <- function(object, url) {
+  # decide which authentication mode to use
+  if (grepl(LOCALHOST, url, ignore.case=T) | grepl(LOCALHOST_IP, url)) {
+    # local mode - no auth
+    return(httr::authenticate("", "", type = "basic")) # does this work?
+  }
+
+  # try use api key
+  api_data <- unlist(strsplit(object$api_key, ":"))
+  if (length(api_data) == 2) {
+    return(httr::authenticate(api_data[1], api_data[2], type = "basic"))
+  }
+
+  # try token
+  if (object$token != "") {
+    print(" - token (no bearer) -")
+    print(object$token)
+    return(httr::add_headers(Authorization = paste("Bearer", object$token)))
+  }
+
+  # TODO - error?
+  return("")
+}
+
+#' @export
+api_get <- function(object, ...) {
+  UseMethod("api_get", object)
+}
+
+#' @export
+api_get.tagConnect <- function(object, url) {
+
+  api_head <- api_auth_header(object, url)
+
+  r <- tryCatch({httr::GET(url, api_head, encode = "json")},
+                 error=function(cond) {
+                   print(paste0("Error.  Was not able to connect to: ", url, ".  Please check URL."))
+                   return()
+                })
+
+  if (is.null(r)) {
+    return()
+  }
+
+  # check status!
+  call_status <- r$status_code
+  if (call_status != 200) {
+    if (call_status == 401) {
+      print("Authentication failed.  Please check API key.")
+      return()
+    }
+    if (call_status == 500) {
+      print("Server error.")
+      return()
+    }
+    print("Error connecting to tag.bio API.")
+    print(call_status)
+    return()
+  }
+  return(r)
+}
+
+#' @export
+api_post <- function(object, ...) {
+  UseMethod("api_post", object)
+}
+
+# TODO: Document - all API posts should go through here.
+#' @export
+api_post.tagConnect <- function(object, query_type, url,
+                                return_type = "json", jsonPayload = NA) {
+
+  # set up url
+  url <- paste0(url, "/", query_type)
+
+  # determine authen
+  api_head <- api_auth_header(object, url)
+
+  if (query_type == "s") {
+    r <- tryCatch({httr::POST(url, api_head, encode = "json")},
+                   error=function(cond) {
+                     print(paste0("Error.  Was not able to connect to: ",url,".  Please check URL."))
+                     return()
+                  })
+  } else {
+    r <- tryCatch({httr::POST(url,
+                              body = jsonPayload,
+                              api_head,
+                              encode = "json")},
+                  error=function(cond) {
+                    print(paste0("Error.  Was not able to connect to: ",url,".  Please check URL."))
+                    return()
+                  })
+  }
+
+  if (is.null(r)) {
+    return()
+  }
+
+  # check status!
+  call_status <- r$status_code
+  if (call_status != 200) {
+    if (call_status == 401) {
+      print("Authentication failed.  Please check API key.")
+      return()
+    }
+    if (call_status == 500) {
+      print("Server error.")
+      return()
+    }
+    print("Error connecting to tag.bio API.")
+    print(call_status)
+    return()
+  }
+
+  if (return_type == "json") {
+    return(httr::content(r))
+  } else {
+    # wrote a parser here as content was giving floats as strings
+    res <- paste0(httr::content(r, as = "text", type = "text/csv", encoding = "UTF-8"))
+    res_table <- read.table(text = res, header = T, sep = ",", check.names = F)
+    return(tibble(res_table))
+  }
+}
 
 #' Create a table from a tag.bio data product
 #'
@@ -173,38 +318,8 @@ summary.tagConnect <- function(object, ...) {
   # returns FC data as a tibble
   kung_url <- paste0(object$url, KUNG_CAPACITORS)
 
-  # use api key
-  api_data <- unlist(strsplit(object$api_key, ":"))
-  if (length(api_data) != 2) {
-    api_data <- c("", "") # defaults to empty user/pwd
-  }
-
-  r <- tryCatch({httr::GET(kung_url,
-                 httr::authenticate(api_data[1], api_data[2], type = "basic"),
-                 encode = "json")},
-                error=function(cond) {
-                  print(paste0("Error.  Was not able to connect to: ",kung_url,".  Please check URL."))
-                  return()
-                })
-  if (is.null(r)) {
-    return()
-  }
-
-  # check status!
-  call_status <- r$status_code
-  if (call_status != 200) {
-    if (call_status == 401) {
-      print("Authentication failed.  Please check API key.")
-      return()
-    }
-    if (call_status == 500) {
-      print("Server error.")
-      return()
-    }
-    print("Error connecting to tag.bio API.")
-    print(call_status)
-    return()
-  }
+  # make api call
+  r <- api_get(object, kung_url)
 
   fcs_json <- null_to_na_recurse(httr::content(r))
   fcs_tbl <- fcs_json %>% map_df(flatten_df)
