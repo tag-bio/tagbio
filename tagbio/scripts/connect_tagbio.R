@@ -144,8 +144,7 @@ if (is.null(fc_url) | is.null(fc_token)) {
   fc <- tagFC(tag_con)
 } else {
   print("Using token-based authentication to communicate with API.")
-  print(fc_url)
-  print(fc_token)
+
   tag_con <- tagConnect(url = fc_url, token = fc_token)
   fc <- tagFC(tag_con, fc_name)
 }
@@ -199,7 +198,9 @@ if (grepl(".Rmd", args$user_function)) {
 
   rmd_tmp_file <- rmd_updater(args$user_function, fc_user_email, fc_protocol_url)
 
+  # knit directory set to user function in case there are other files loaded
   rmarkdown::render(rmd_tmp_file,
+                    knit_root_dir=dirname(args$user_function),
                     params = list(tag_data = tag_data, tag_result = tag_result),
                     output_file = args$output_file)
 
