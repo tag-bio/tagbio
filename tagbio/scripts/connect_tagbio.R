@@ -3,10 +3,10 @@
 #
 # author: j@tag.bio
 # version: 0.8
-# last update: 2022.03.17
+# last update: 2022.03.21
 #
 
-print("Starting connect_tagbio.R script, version 1.1.28")
+print("Starting connect_tagbio.R script, version 1.1.29")
 suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("rjson"))
 suppressPackageStartupMessages(library("tidyverse"))
@@ -70,7 +70,10 @@ rmd_updater <- function(rmd_file, email, analysis_url) {
   yaml$params$tag_result <- ""
 
   # save new rmd to temp file
-  rmd_out_file <- tempfile(pattern = "_tmp_", fileext = ".Rmd")
+  # - save to same directory as original so that other content is accessible
+  rmd_out_file <- tempfile(pattern = "_tmp_",
+                           tmpdir = dirname(rmd_file),
+                           fileext = ".Rmd")
 
   con <- file(rmd_out_file, "w")
   write("---", con)
@@ -199,8 +202,10 @@ if (grepl(".Rmd", args$user_function)) {
   rmd_tmp_file <- rmd_updater(args$user_function, fc_user_email, fc_protocol_url)
 
   # knit directory set to user function in case there are other files loaded
+  #protocol_dir <- paste0(getwd(), "/", dirname(args$user_function))
   rmarkdown::render(rmd_tmp_file,
-                    knit_root_dir=dirname(args$user_function),
+                    #intermediates_dir=protocol_dir,
+                    #knit_root_dir=protocol_dir,
                     params = list(tag_data = tag_data, tag_result = tag_result),
                     output_file = args$output_file)
 
