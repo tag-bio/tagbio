@@ -2,7 +2,7 @@
 set -e
 set +x
 
-TAGBIO_R_VERSION=${1:-1.1.29}
+TAGBIO_R_VERSION=${1:-1.1.30}
 echo "Installing tagbio R version $TAGBIO_R_VERSION"
 
 # package dependencies
@@ -38,7 +38,8 @@ conda install \
   r-svglite \
   r-tidyr \
   r-tidyverse \
-  r-yaml
+  r-yaml \
+  pandoc
 
 echo "Installing tagbio R package itself"
 R CMD INSTALL $TAGBIO_R_UTILS/tagbio_$TAGBIO_R_VERSION.tgz
