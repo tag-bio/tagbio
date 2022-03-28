@@ -259,7 +259,7 @@ collect.tagFC <- function(x) {
 
   #tag_data_frame <- fc_post_call("q", x$url, tc$api_key, "text",
   #                               jsonPayload, token=tc$token)
-  tag_data_frame <- api_post(tc, "q", x$url, "text", jsonPayload = jsonPayload)                               
+  tag_data_frame <- api_post(tc, "q", x$url, "text", jsonPayload = jsonPayload)
 
   tibble::tibble(tag_data_frame)
 }
@@ -368,6 +368,9 @@ get_info <- function(url, tc) {
   # use s query to get fc info
   #info_json <- fc_post_call("s", url, api_key, token = token)
   info_json <- api_post(tc, "s", url)
+
+  # drop assets for now
+  info_json$asset <- NULL
 
   # update time stamps
   info_json$start_time <- as.POSIXct(as.numeric(info_json$start_time) / 1000,
