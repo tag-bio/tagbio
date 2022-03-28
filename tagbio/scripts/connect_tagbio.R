@@ -3,10 +3,10 @@
 #
 # author: j@tag.bio
 # version: 0.8
-# last update: 2022.03.21
+# last update: 2022.03.25
 #
 
-print("Starting connect_tagbio.R script, version 1.1.29")
+print("Starting connect_tagbio.R script, version 1.1.30")
 suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("rjson"))
 suppressPackageStartupMessages(library("tidyverse"))
@@ -21,6 +21,7 @@ rmd_reader <- function(rmd_file) {
   con <- file(rmd_file, "r")
   while (TRUE) {
     line <- readLines(con, n=1)
+
     if (length(line) == 0) {
       break
     }
@@ -131,8 +132,8 @@ if (!is.null(fc_request['auth'])) {
   fc_token <- gsub(".* ", "", fc_request['auth'])
 }
 fc_user_email <- Sys.info()['user'] # default to local user
-if (('email' %in% fc_data) & !is.null(fc_data$request['email'])) {
-  fc_user_email <- fc_request$email
+if (('email' %in% fc_params) & !is.null(fc_params$request['email'])) {
+  fc_user_email <- fc_params$email
 }
 fc_blob_id <- NULL
 if (!is.null(fc_request['uuid'])) {
