@@ -55,7 +55,7 @@ rmd_updater <- function(rmd_file, email, analysis_url) {
 
   # analysis_url
   if (!("analysis_url" %in% yaml_fields) | is.na(yaml["analysis_url"])) {
-    yaml["analysis_url"] <- paste('"', analysis_url, '"', sep = '')
+    yaml["analysis_url"] <- analysis_url
   }
 
   # date
