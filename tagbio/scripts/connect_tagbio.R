@@ -55,7 +55,7 @@ rmd_updater <- function(rmd_file, email, analysis_url) {
 
   # analysis_url
   if (!("analysis_url" %in% yaml_fields) | is.na(yaml["analysis_url"])) {
-    yaml["analysis_url"] <- analysis_url
+    yaml["analysis_url"] <- paste('"', analysis_url, '"', sep = '')
   }
 
   # date
@@ -117,6 +117,8 @@ fc_params <- fc_data$fc
 fc_request <- fc_data$request
 fc_name <- fc_params$name
 
+#print(fc_data)
+
 # load params
 fc_url <- NULL
 if (!is.null(fc_params['fc-url'])) {
@@ -132,7 +134,7 @@ if (!is.null(fc_request['auth'])) {
   fc_token <- gsub(".* ", "", fc_request['auth'])
 }
 fc_user_email <- Sys.info()['user'] # default to local user
-if (('email' %in% fc_params) & !is.null(fc_params$request['email'])) {
+if (('email' %in% fc_params) & !is.null(fc_params['email'])) {
   fc_user_email <- fc_params$email
 }
 fc_blob_id <- NULL
