@@ -15,6 +15,16 @@ KUNG_CAPACITORS <- "/kung-services/db/capacitors"
 HOME_ENV <- "HOME"
 CONFIG_FILE <- ".tagbio.json"
 
+# From https://github.com/jeroen/jsonlite/issues/70
+# - drops NULLS from JSON results
+null_to_na_recurse <- function(obj) {
+  if (is.list(obj)) {
+    obj <- jsonlite:::null_to_na(obj)
+    obj <- lapply(obj, null_to_na_recurse)
+  }
+  return(obj)
+}
+
 #' An S3 class representing a connection to a tag.bio server
 #'
 #' The tagConnect class establishes a connection to a local or remote
@@ -183,6 +193,7 @@ api_auth_header.tagConnect <- function(object, url) {
 
   # try use api key
   api_data <- unlist(strsplit(object$api_key, ":"))
+
   if (length(api_data) == 2) {
     return(httr::authenticate(api_data[1], api_data[2], type = "basic"))
   }
@@ -205,7 +216,6 @@ api_get <- function(object, ...) {
 api_get.tagConnect <- function(object, url) {
 
   api_head <- api_auth_header(object, url)
-
   r <- tryCatch({httr::GET(url, api_head, encode = "json")},
                  error=function(cond) {
                    print(paste0("Error.  Was not able to connect to: ", url, ".  Please check URL."))
@@ -228,7 +238,6 @@ api_get.tagConnect <- function(object, url) {
       return()
     }
     print("Error connecting to tag.bio API.")
-    print(call_status)
     return()
   }
   return(r)
@@ -247,7 +256,7 @@ api_post.tagConnect <- function(object, query_type, url,
   # set up url
   url <- paste0(url, "/", query_type)
 
-  # determine authen
+  # determine authentication
   api_head <- api_auth_header(object, url)
 
   if (query_type == "s") {
@@ -280,6 +289,10 @@ api_post.tagConnect <- function(object, query_type, url,
     }
     if (call_status == 500) {
       print("Server error.")
+      return()
+    }
+    if (call_status == 502) {
+      print("FC appears to be offline.")
       return()
     }
     print("Error connecting to tag.bio API.")
