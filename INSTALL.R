@@ -6,5 +6,5 @@ install.packages("gridExtra",repos = "http://cran.us.r-project.org")
 install.packages("tidyverse",repos = "http://cran.us.r-project.org")
 install.packages("knitr",repos = "http://cran.us.r-project.org")
 install.packages("rmarkdown",repos = "http://cran.us.r-project.org")
-install.packages("tagbio_1.1.32.tgz", repos = NULL, type = "source")
+install.packages("tagbio_1.1.33.tgz", repos = NULL, type = "source")
 
