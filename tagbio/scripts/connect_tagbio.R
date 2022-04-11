@@ -134,8 +134,8 @@ if (!is.null(fc_request['auth'])) {
   fc_token <- gsub(".* ", "", fc_request['auth'])
 }
 fc_user_email <- Sys.info()['user'] # default to local user
-if (('email' %in% fc_params) & !is.null(fc_params['email'])) {
-  fc_user_email <- fc_params$email
+if (('email' %in% fc_request) & !is.null(fc_request['email'])) {
+  fc_user_email <- fc_request$email
 }
 fc_blob_id <- NULL
 if (!is.null(fc_request['uuid'])) {
