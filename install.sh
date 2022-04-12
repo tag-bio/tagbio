@@ -2,7 +2,7 @@
 set -e
 set +x
 
-TAGBIO_R_VERSION=${1:-1.1.33}
+TAGBIO_R_VERSION=${1:-1.1.34}
 echo "Installing tagbio R version $TAGBIO_R_VERSION"
 
 # package dependencies
