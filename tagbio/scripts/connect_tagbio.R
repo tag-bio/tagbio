@@ -6,7 +6,7 @@
 # last update: 2022.04.08
 #
 
-print("Starting connect_tagbio.R script, version 1.1.32")
+print("Starting connect_tagbio.R script, version 1.1.34")
 suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("rjson"))
 suppressPackageStartupMessages(library("tidyverse"))
@@ -121,25 +121,25 @@ fc_name <- fc_params$name
 
 # load params
 fc_url <- NULL
-if (!is.null(fc_params['fc-url'])) {
-  fc_url <- fc_params['fc-url']
+if (!is.null(fc_params$`fc-url`)) {
+  fc_url <- fc_params$`fc-url`
 }
 fc_protocol_url <- NULL
-if (!is.null(fc_params['protocol-url'])) {
-  fc_protocol_url <- fc_params['protocol-url']
+if (!is.null(fc_params$`protocol-url`)) {
+  fc_protocol_url <- fc_params$`protocol-url`
 }
 fc_token <- NULL
-if (!is.null(fc_request['auth'])) {
+if (!is.null(fc_request$auth)) {
   # Removes "Bearer "
-  fc_token <- gsub(".* ", "", fc_request['auth'])
+  fc_token <- gsub(".* ", "", fc_request$auth)
 }
 fc_user_email <- Sys.info()['user'] # default to local user
-if (('email' %in% fc_request) & !is.null(fc_request['email'])) {
+if (!is.null(fc_request$email)) {
   fc_user_email <- fc_request$email
 }
 fc_blob_id <- NULL
-if (!is.null(fc_request['uuid'])) {
-  fc_blob_id <- fc_request['uuid']
+if (!is.null(fc_request$uuid)) {
+  fc_blob_id <- fc_request$uuid
 }
 
 # make connection
