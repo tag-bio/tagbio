@@ -126,13 +126,13 @@ a:hover {
   line-height: 1;
 }
 .page-header .report-generated-info {
-  font-size: 0.875em;
+  font-size: 1.1em;
 }
 .page-header .analysis-url {
   margin-top: 5px;
 }
 .page-header .analysis-url, header .analysis-url a {
-  font-size: 12px;
+  font-size: 1.0em;;
 }
 .page-header .inner :last-child {
   margin-bottom: 0;
@@ -142,6 +142,7 @@ a:hover {
 /* Title & Description at the Top - For COLOR banner */
 .page-header .inner .title,
 .page-header .report-generated-info,
+.page-header .report-generated-info a,
 .page-header .analysis-url,
 .page-header .analysis-url a {
   color: #fff !important;
