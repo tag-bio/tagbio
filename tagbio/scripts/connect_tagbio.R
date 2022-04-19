@@ -6,7 +6,7 @@
 # last update: 2022.04.08
 #
 
-print("Starting connect_tagbio.R script, version 1.1.34")
+print("Starting connect_tagbio.R script, version 1.1.35")
 suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("rjson"))
 suppressPackageStartupMessages(library("tidyverse"))
