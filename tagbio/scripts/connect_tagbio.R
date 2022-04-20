@@ -55,6 +55,7 @@ rmd_updater <- function(rmd_file, email, analysis_url) {
 
   # analysis_url
   if (!("analysis_url" %in% yaml_fields) | is.na(yaml["analysis_url"])) {
+    analysis_url <- gsub("https://", "", analysis_url) # stops the auto formatting
     yaml["analysis_url"] <- analysis_url
   }
 
@@ -137,6 +138,8 @@ fc_user_email <- Sys.info()['user'] # default to local user
 if (!is.null(fc_request$email)) {
   fc_user_email <- fc_request$email
 }
+# we swap out the @ so that render does not change email into a link
+fc_user_email <- gsub("@", "<span>&#64;</span>", fc_user_email)
 fc_blob_id <- NULL
 if (!is.null(fc_request$uuid)) {
   fc_blob_id <- fc_request$uuid
@@ -204,16 +207,21 @@ if (grepl(".Rmd", args$user_function)) {
 
   rmd_tmp_file <- rmd_updater(args$user_function, fc_user_email, fc_protocol_url)
 
-  # knit directory set to user function in case there are other files loaded
-  #protocol_dir <- paste0(getwd(), "/", dirname(args$user_function))
-  rmarkdown::render(rmd_tmp_file,
-                    #intermediates_dir=protocol_dir,
-                    #knit_root_dir=protocol_dir,
-                    params = list(tag_data = tag_data, tag_result = tag_result),
-                    output_file = args$output_file)
-
-  # remove the temp file
-  file.remove(rmd_tmp_file)
+  tryCatch(
+    rmarkdown::render(rmd_tmp_file,
+                      #intermediates_dir=protocol_dir,
+                      #knit_root_dir=protocol_dir,
+                      params = list(tag_data = tag_data, tag_result = tag_result),
+                      output_file = args$output_file),
+    error=function(cond) {
+      message("Rmarkdown render has failed.")
+      message("Here's the error message:")
+      message(cond)
+    },
+    final=function() {
+      # remove the temp file
+      file.remove(rmd_tmp_file)
+    })
 
 } else {
 
