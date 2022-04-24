@@ -3,10 +3,10 @@
 #
 # author: j@tag.bio
 # version: 0.8
-# last update: 2022.04.08
+# last update: 2022.04.23
 #
 
-print("Starting connect_tagbio.R script, version 1.1.35")
+print("Starting connect_tagbio.R script, version 1.1.37")
 suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("rjson"))
 suppressPackageStartupMessages(library("tidyverse"))
@@ -55,7 +55,9 @@ rmd_updater <- function(rmd_file, email, analysis_url) {
 
   # analysis_url
   if (!("analysis_url" %in% yaml_fields) | is.na(yaml["analysis_url"])) {
-    analysis_url <- gsub("https://", "", analysis_url) # stops the auto formatting
+    if (!is.null(analysis_url)) {
+      analysis_url <- gsub("https://", "", analysis_url) # stops the auto formatting
+    }
     yaml["analysis_url"] <- analysis_url
   }
 
