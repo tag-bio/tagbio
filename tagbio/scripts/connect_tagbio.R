@@ -3,10 +3,10 @@
 #
 # author: j@tag.bio
 # version: 0.8
-# last update: 2022.04.23
+# last update: 2022.04.29
 #
 
-print("Starting connect_tagbio.R script, version 1.1.37")
+print("Starting connect_tagbio.R script, version 1.1.38")
 suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("rjson"))
 suppressPackageStartupMessages(library("tidyverse"))
@@ -219,11 +219,10 @@ if (grepl(".Rmd", args$user_function)) {
       message("Rmarkdown render has failed.")
       message("Here's the error message:")
       message(cond)
-    },
-    final=function() {
-      # remove the temp file
-      file.remove(rmd_tmp_file)
     })
+
+    # remove the temp file
+    file.remove(rmd_tmp_file)
 
 } else {
 
