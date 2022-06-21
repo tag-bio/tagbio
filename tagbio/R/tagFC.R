@@ -388,13 +388,6 @@ collect.tagFC <- function(x) {
 
   jsonPayload[['script']] = script
 
-  #tag_data_frame <- fc_post_call("q", x$url, tc$api_key, "text",
-  #                               jsonPayload, token=tc$token)
-
-  # TODO - set up a debug mode for creating these files
-  library(rjson)
-  write(toJSON(jsonPayload), "/Users/jireland/json_payload.json")
-
   tag_data_frame <- api_post(tc, "q", x$url, "text", jsonPayload = jsonPayload)
 
   tibble::tibble(tag_data_frame)
