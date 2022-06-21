@@ -200,21 +200,6 @@ print.tagFC <- function(x) {
   list(x$fc)
 }
 
-#### TODO - change name
-
-#' @export
-#col_names <- function(x, do.NULL = TRUE, prefix = "col") {
-#  UseMethod("col_names", x, do.NULL = TRUE, prefix = "col")
-#}
-
-#' @export
-#col_names.tagFC <- function(x, do.NULL = TRUE, prefix = "col") {
-#  # return collection names
-#  print("HERE")
-#  cols <- c("A", "B", "C")
-#  return(cols)
-#}
-
 #' @export
 get_collection_defs <- function(.data) {
   UseMethod("get_collection_defs", .data)
