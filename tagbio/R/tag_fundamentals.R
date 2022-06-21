@@ -254,7 +254,6 @@ to_json.CategoricalCompound <- function(.Object) {
   crit_list = list()
   cnt <- 1
   for (crit in .Object$criteria) {
-    print(crit)
     crit_list[[cnt]] <- to_json(crit)
     cnt <- cnt + 1
   }
