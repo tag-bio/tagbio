@@ -67,7 +67,6 @@ tagFC <- function(con, fc = "", qdelim = " = ") {
 
 
 # parse JSON from FC
-
 tag_summary_row <- function(x) {
 
   res <- switch(x$data_function_type,
@@ -103,8 +102,8 @@ summary.tagFC <- function(object, ...) {
 
 # colnames method
 # - returns back a mix of categorical collections and numeric variables
-colnames <- function(x, ...) UseMethod("colnames")
-colnames.default <- base::colnames
+
+#' @export
 colnames.tagFC <- function(x, ...) {
 
   # follow the same logic as select for specifying collection names
@@ -146,17 +145,18 @@ colnames.tagFC <- function(x, ...) {
     )
 
     jsonPayload[['script']] = script
+    jsonPayload[['stringify_names']] = "true"
 
     variables_json <- api_post(x$con, "q", x$url, "json", jsonPayload)
 
     for (res in variables_json$results) {
-      name <- res$values$collection$name
+      name <- res$values$collection
       if (is.null(var_defs[[name]])) {
         var_defs[[name]] <- list()
       }
       cnt <- length(var_defs[[name]]) + 1
       var_defs[[name]][[cnt]] <- list("collection" = name,
-                                      "variable" = res$values$variable$name)
+                                      "variable" = res$values$variable)
     }
   }
 
@@ -222,6 +222,7 @@ get_collection_defs.tagFC <- function(.data) {
     )
 
     jsonPayload[['script']] = script
+    jsonPayload[['stringify_names']] = "true"
     #collections_json <- fc_post_call("q", .data$url, .data$con$api_key,
     #                                 "json", jsonPayload, token = .data$con$token)
     collections_json <- api_post(.data$con, "q", .data$url, "json", jsonPayload)
@@ -252,8 +253,6 @@ get_variable_defs.tagFC <- function(.data, ...) {
     # nothing supplied, so use all collections
     collection_list <- names(collection_defs)
   }
-  print("CL")
-  print(collection_list)
 
   # use the variables method to pull variable data from FC
   jsonPayload <- list(
@@ -273,6 +272,7 @@ get_variable_defs.tagFC <- function(.data, ...) {
   )
 
   jsonPayload[['script']] = script
+  jsonPayload[['stringify_names']] = "true"
 
   variables_json <- api_post(.data$con, "q", .data$url, "json", jsonPayload)
   var_defs <- parse_variable_query(variables_json)
@@ -387,6 +387,7 @@ collect.tagFC <- function(x) {
   }
 
   jsonPayload[['script']] = script
+  jsonPayload[['stringify_names']] = "true"
 
   tag_data_frame <- api_post(tc, "q", x$url, "text", jsonPayload = jsonPayload)
 
@@ -465,18 +466,18 @@ parse_collection_values <- function(res_values) {
 
   # TODO - SUPPORT FOR DATA FRAMES...
   tag_coll <- switch(variable_type,
-                     numeric = NumericCollection(collection = res_values$collection$name,
+                     numeric = NumericCollection(collection = res_values$collection,
                                                  collection_size = res_values$`collection-size`),
-                     categorical = CategoricalCollection(collection = res_values$collection$name,
+                     categorical = CategoricalCollection(collection = res_values$collection,
                                                          collection_size = res_values$`collection-size`,
                                                          collection_entity_count = res_values$`collection-entity-count`),
-                     `numeric-matrix` = CategoricalCollection(collection = res_values$collection$name,
+                     `numeric-matrix` = CategoricalCollection(collection = res_values$collection,
                                                               collection_size = res_values$`collection-size`,
                                                               collection_entity_count = res_values$`collection-entity-count`),
-                     `categorical-matrix` = CategoricalCollection(collection = res_values$collection$name,
+                     `categorical-matrix` = CategoricalCollection(collection = res_values$collection,
                                                                   collection_size = res_values$`collection-size`,
                                                                   collection_entity_count = res_values$`collection-entity-count`),
-                     `data-frame-numeric` = CategoricalCollection(collection = res_values$collection$name,
+                     `data-frame-numeric` = CategoricalCollection(collection = res_values$collection,
                                                                 collection_size = res_values$`collection-size`,
                                                                 collection_entity_count = res_values$`collection-entity-count`))
 
@@ -511,10 +512,10 @@ parse_variable_values <- function(res_values) {
 
   # TODO - SUPPORT FOR OTHER DATA TYPES...
   tag_var <- switch(variable_type,
-                    numeric = NumericVariable(collection = res_values$collection$name,
-                                              variable = res_values$variable$name),
-                    categorical = CategoricalVariable(collection = res_values$collection$name,
-                                                      variable = res_values$variable$name)
+                    numeric = NumericVariable(collection = res_values$collection,
+                                              variable = res_values$variable),
+                    categorical = CategoricalVariable(collection = res_values$collection,
+                                                      variable = res_values$variable)
   )
   return(tag_var)
 }
