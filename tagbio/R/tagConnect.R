@@ -288,7 +288,8 @@ api_post.tagConnect <- function(object, query_type, url,
       return()
     }
     if (call_status == 500) {
-      print("Server error.")
+      status_message <- httr::content(r)
+      print(status_message$message)
       return()
     }
     if (call_status == 502) {
