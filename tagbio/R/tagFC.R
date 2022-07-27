@@ -67,7 +67,6 @@ tagFC <- function(con, fc = "", qdelim = " = ") {
 
 
 # parse JSON from FC
-
 tag_summary_row <- function(x) {
 
   res <- switch(x$data_function_type,
@@ -99,6 +98,90 @@ summary.tagFC <- function(object, ...) {
   # return collections as a tibble
   coll_tibs <- lapply(get_collection_defs(object), tag_summary_row)
   return(do.call(rbind, coll_tibs))
+}
+
+# colnames method
+# - returns back a mix of categorical collections and numeric variables
+
+#' @export
+colnames.tagFC <- function(x, ...) {
+
+  # follow the same logic as select for specifying collection names
+  qselect <- rlang::enexprs(...)
+  analysis_variables <- tag_select_eval(x, !!!qselect)
+
+  if (length(analysis_variables) == 0) {
+    # nothing specified, so we do all collections
+    analysis_variables <- get_collection_defs(x)
+  }
+
+  # loop through collections list and find any numeric collections
+  # that need to be expanded
+  num_colls <- list()
+  cnt <- 1
+
+  for (av in analysis_variables) {
+    if (av$data_function_type == "numeric") {
+      if (is.null(av$variable)) {
+        # not a variable
+        num_colls[[cnt]] <- list("data_function_type" = av$data_function_type, "collection" = av$collection)
+        cnt <- cnt + 1
+      }
+    }
+  }
+
+  # - lookup variables for num collections
+  var_defs <- list()
+  if (length(num_colls) > 0) {
+    # use the variables method to pull variable data from FC
+    jsonPayload <- list(
+      zip = TRUE,
+      groups = c("developer")
+    )
+
+    script <- list(
+      method = "variable",
+      analysis_variables = num_colls
+    )
+
+    jsonPayload[['script']] = script
+    jsonPayload[['stringify_names']] = "true"
+
+    variables_json <- api_post(x$con, "q", x$url, "json", jsonPayload)
+
+    for (res in variables_json$results) {
+      name <- res$values$collection
+      if (is.null(var_defs[[name]])) {
+        var_defs[[name]] <- list()
+      }
+      cnt <- length(var_defs[[name]]) + 1
+      var_defs[[name]][[cnt]] <- list("collection" = name,
+                                      "variable" = res$values$variable)
+    }
+  }
+
+  # loop through and create column names
+  delim <- x$qdelim
+  col_names <- c()
+
+  for (av in analysis_variables) {
+    if (av$data_function_type == "numeric") {
+      if (is.null(av$variable)) {
+      # use the values from query
+        if (!is.null(var_defs[[av$collection]])) {
+          for (res in var_defs[[av$collection]]) {
+            col_names <- c(col_names, paste0(res$collection, delim, res$variable))
+          }
+        }
+      } else {
+        # just use the existing numeric variable
+        col_names <- c(col_names, paste0(av$collection$collection, delim, av$variable))
+      }
+    } else {
+      col_names <- c(col_names, av$collection)
+    }
+  }
+  return(col_names)
 }
 
 #' @export
@@ -139,6 +222,7 @@ get_collection_defs.tagFC <- function(.data) {
     )
 
     jsonPayload[['script']] = script
+    jsonPayload[['stringify_names']] = "true"
     #collections_json <- fc_post_call("q", .data$url, .data$con$api_key,
     #                                 "json", jsonPayload, token = .data$con$token)
     collections_json <- api_post(.data$con, "q", .data$url, "json", jsonPayload)
@@ -147,6 +231,53 @@ get_collection_defs.tagFC <- function(.data) {
 
   }
   return(.data$collection_defs)
+}
+
+# DEPRECATED...
+#' @export
+get_variable_defs <- function(.data, ...) {
+  UseMethod("get_variable_defs", .data)
+}
+
+#' @export
+get_variable_defs.tagFC <- function(.data, ...) {
+
+  # user supplied list of collections if they desire just a subset
+  collection_list <- as.list(substitute(list(...)))[-1]
+  collection_list <- unlist(lapply(collection_list, paste))
+
+  # all collections in FC
+  collection_defs <- get_collection_defs(.data)
+
+  if (length(collection_list) == 0) {
+    # nothing supplied, so use all collections
+    collection_list <- names(collection_defs)
+  }
+
+  # use the variables method to pull variable data from FC
+  jsonPayload <- list(
+    zip = TRUE,
+    groups = c("developer")
+  )
+
+  # format collection list
+  anl_vars <- lapply(
+    collection_list, function(b) {
+      list("data_function_type" = collection_defs[[b]]$data_function_type,
+           "collection" = collection_defs[[b]]$collection)})
+
+  script <- list(
+    method = "variable",
+    analysis_variables = anl_vars
+  )
+
+  jsonPayload[['script']] = script
+  jsonPayload[['stringify_names']] = "true"
+
+  variables_json <- api_post(.data$con, "q", .data$url, "json", jsonPayload)
+  var_defs <- parse_variable_query(variables_json)
+
+  return(var_defs)
 }
 
 #' @export
@@ -256,9 +387,8 @@ collect.tagFC <- function(x) {
   }
 
   jsonPayload[['script']] = script
+  jsonPayload[['stringify_names']] = "true"
 
-  #tag_data_frame <- fc_post_call("q", x$url, tc$api_key, "text",
-  #                               jsonPayload, token=tc$token)
   tag_data_frame <- api_post(tc, "q", x$url, "text", jsonPayload = jsonPayload)
 
   tibble::tibble(tag_data_frame)
@@ -336,18 +466,18 @@ parse_collection_values <- function(res_values) {
 
   # TODO - SUPPORT FOR DATA FRAMES...
   tag_coll <- switch(variable_type,
-                     numeric = NumericCollection(collection = res_values$collection$name,
+                     numeric = NumericCollection(collection = res_values$collection,
                                                  collection_size = res_values$`collection-size`),
-                     categorical = CategoricalCollection(collection = res_values$collection$name,
+                     categorical = CategoricalCollection(collection = res_values$collection,
                                                          collection_size = res_values$`collection-size`,
                                                          collection_entity_count = res_values$`collection-entity-count`),
-                     `numeric-matrix` = CategoricalCollection(collection = res_values$collection$name,
+                     `numeric-matrix` = CategoricalCollection(collection = res_values$collection,
                                                               collection_size = res_values$`collection-size`,
                                                               collection_entity_count = res_values$`collection-entity-count`),
-                     `categorical-matrix` = CategoricalCollection(collection = res_values$collection$name,
+                     `categorical-matrix` = CategoricalCollection(collection = res_values$collection,
                                                                   collection_size = res_values$`collection-size`,
                                                                   collection_entity_count = res_values$`collection-entity-count`),
-                     `data-frame-numeric` = CategoricalCollection(collection = res_values$collection$name,
+                     `data-frame-numeric` = CategoricalCollection(collection = res_values$collection,
                                                                 collection_size = res_values$`collection-size`,
                                                                 collection_entity_count = res_values$`collection-entity-count`))
 
@@ -361,6 +491,42 @@ parse_collection_query <- function(query_res) {
   collection_defs <- purrr::set_names(collection_defs, lapply(collection_defs, function(x) {x$collection}))
 
   return(collection_defs)
+}
+
+# TODO - parse variables
+
+parse_variable_values <- function(res_values) {
+
+  # 2.52.4 after use data_reference_type, before uses variable_type
+  # data_reference_type (new)
+
+  if (is.null(res_values$data_function_type)) {
+    if (is.null(res_values$data_reference_type)) {
+      variable_type <- res_values$variable_type
+    } else {
+      variable_type <- res_values$data_reference_type
+    }
+  } else {
+    variable_type <- res_values$data_function_type
+  }
+
+  # TODO - SUPPORT FOR OTHER DATA TYPES...
+  tag_var <- switch(variable_type,
+                    numeric = NumericVariable(collection = res_values$collection,
+                                              variable = res_values$variable),
+                    categorical = CategoricalVariable(collection = res_values$collection,
+                                                      variable = res_values$variable)
+  )
+  return(tag_var)
+}
+
+parse_variable_query <- function(query_res) {
+  # parses variable query results to determine variables
+  res <- query_res$results
+  variable_defs <- lapply(res, function(x) {parse_variable_values(x$values)})
+  variable_defs <- purrr::set_names(variable_defs, lapply(variable_defs, function(x) {x$variable}))
+
+  return(variable_defs)
 }
 
 get_info <- function(url, tc) {
