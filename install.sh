@@ -11,19 +11,19 @@ apt-get update
 echo "Installing tagbio R system dependencies"
 echo "Installing libcario2"
 #apt-get install -y \
-apt-get install -y  libcairo2-dev 
+apt-get install --no-install-recommends -y  libcairo2-dev 
 echo "Installing libcurl4"
-apt-get install -y  libcurl4-openssl-dev 
+apt-get install --no-install-recommends -y  libcurl4-openssl-dev 
 echo "Installing libfont"
-apt-get install -y  libfontconfig1-dev 
+apt-get install --no-install-recommends -y  libfontconfig1-dev 
 echo "Installing libssl"
-apt-get install -y  libssl-dev 
+apt-get install --no-install-recommends -y  libssl-dev 
 echo "Installing libxml"
-apt-get install -y  libxml2-dev 
+apt-get install --no-install-recommends -y  libxml2-dev 
 echo "Installing libxt"
-apt-get install -y  libxt-dev 
+apt-get install --no-install-recommends -y  libxt-dev 
 echo "Installing apt-utils"
-apt-get install -y  apt-utils
+apt-get install --no-install-recommends -y  apt-utils
 
 echo "Adding conda channels"
 conda config --add channels bioconda
@@ -55,6 +55,7 @@ mamba install -y -c bioconda -c conda-forge \
 echo "Installing tagbio R package itself"
 R CMD INSTALL $TAGBIO_R_UTILS/tagbio_$TAGBIO_R_VERSION.tgz
 
+mamba clean --all -y
 conda clean --all -y
 apt-get clean -y
 apt-get autoremove -y
