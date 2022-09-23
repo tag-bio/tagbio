@@ -2,8 +2,12 @@
 set -e
 set +x
 
-TAGBIO_R_VERSION=${1:-1.1.43}
-echo "Installing tagbio R version $TAGBIO_R_VERSION"
+# Remember to update links before checking in code!
+# ln tagbio_1.1.44.tgz tagbio_latest.tgz 
+# ln tagbio_1.1.44.tar.gz tagbio_latest.tar.gz 
+# Retired:
+# TAGBIO_R_VERSION=${1:-1.1.44}
+# echo "Installing tagbio R version $TAGBIO_R_VERSION"
 
 # package dependencies
 echo "Updating apt cache"
@@ -53,7 +57,7 @@ mamba install -y -c bioconda -c conda-forge \
   pandoc
 
 echo "Installing tagbio R package itself"
-R CMD INSTALL $TAGBIO_R_UTILS/tagbio_$TAGBIO_R_VERSION.tgz
+R CMD INSTALL $TAGBIO_R_UTILS/tagbio_latest.tgz
 
 mamba clean --all -y
 conda clean --all -y
