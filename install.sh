@@ -38,7 +38,7 @@ mamba install -y -c bioconda -c conda-forge \
   bioconductor-gsva \
   docopt \
   pip \
-  python=3.8 \
+  python=3.10.5 \
   r-argparse \
   r-broom \
   r-docopt \
