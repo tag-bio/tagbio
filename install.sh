@@ -34,7 +34,7 @@ conda config --add channels bioconda
 conda config --add channels conda-forge
 # conda update --all -y
 echo "Installing packages with mamba"
-mamba install -y -c bioconda -c conda-forge \
+conda install -y -c bioconda -c conda-forge \
   bioconductor-gsva \
   docopt \
   pip \
