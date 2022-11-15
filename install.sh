@@ -33,11 +33,11 @@ echo "Adding conda channels"
 conda config --add channels bioconda
 conda config --add channels conda-forge
 # conda update --all -y
-echo "Installing packages with mamba"
+echo "Installing packages with conda"
 conda install -y -c bioconda -c conda-forge \
   docopt=0.6.2 \
   pip \
-  python=3.8 \
+  python=3.10 \
   r-argparse=2.1.6 \
   r-broom=1.0.1 \
   r-docopt=0.7.1 \
