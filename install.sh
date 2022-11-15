@@ -35,7 +35,6 @@ conda config --add channels conda-forge
 # conda update --all -y
 echo "Installing packages with mamba"
 conda install -y -c bioconda -c conda-forge \
-  bioconductor-gsva=1.42.0 \
   docopt=0.6.2 \
   pip \
   python=3.8 \
@@ -55,6 +54,8 @@ conda install -y -c bioconda -c conda-forge \
   r-tidyverse.1.3.2 \
   r-yaml=2.3.6 \
   pandoc=2.19.2
+
+  #bioconductor-gsva=1.42.0 \
 
 echo "Installing tagbio R package itself"
 R CMD INSTALL $TAGBIO_R_UTILS/tagbio_latest.tgz
