@@ -51,7 +51,7 @@ conda install -y -c bioconda -c conda-forge \
   r-rjson=0.2.21 \
   r-svglite=2.1.0 \
   r-tidyr=1.2.1 \
-  r-tidyverse.1.3.2 \
+  r-tidyverse=1.3.2 \
   r-yaml=2.3.6 \
   pandoc=2.19.2
 
