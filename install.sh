@@ -36,7 +36,6 @@ conda config --add channels conda-forge
 echo "Installing packages with conda"
 conda install -y -c bioconda -c conda-forge \
   docopt \
-  pip \
   python=3.10 \
   r-argparse \
   r-broom \
@@ -55,7 +54,8 @@ conda install -y -c bioconda -c conda-forge \
   r-yaml \
   pandoc
 
-  #bioconductor-gsva=1.42.0 \
+  #bioconductor-gsva=1.42.0 
+  #pip 
 
 echo "Installing tagbio R package itself"
 R CMD INSTALL $TAGBIO_R_UTILS/tagbio_latest.tgz
