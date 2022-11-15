@@ -38,7 +38,7 @@ conda install -y -c bioconda -c conda-forge \
   bioconductor-gsva=1.42.0 \
   docopt=0.6.2 \
   pip \
-  python=3.10 \
+  python=3.8 \
   r-argparse=2.1.6 \
   r-broom=1.0.1 \
   r-docopt=0.7.1 \

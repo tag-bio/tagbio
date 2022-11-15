@@ -14,6 +14,6 @@ ln -s /usr/lib/R/site-library/littler/examples/install2.r /usr/local/bin/install
 ln -s /usr/lib/R/site-library/littler/examples/installGithub.r /usr/local/bin/installGithub.r
 ln -s /usr/lib/R/site-library/littler/examples/testInstalled.r /usr/local/bin/testInstalled.r
 
-mamba clean --all -y
+conda clean --all -y
 apt-get clean -y
 apt-get autoremove -y
