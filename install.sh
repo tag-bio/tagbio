@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-#set -e
+set -e
 set +x
 
 # Remember to update links before checking in code!
@@ -45,7 +45,7 @@ conda install -y -c bioconda -c conda-forge \
   r-gridextra \
   r-httr \
   r-lifecycle \
-  r-modelri \
+  r-modelr \
   r-pillar \
   r-qpdf \
   r-rjson \
