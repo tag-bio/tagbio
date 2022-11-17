@@ -37,6 +37,7 @@ echo "Installing packages with conda"
 conda install -y -c bioconda -c conda-forge \
   docopt \
   python=3.10 \
+  pip \
   r-argparse \
   r-broom \
   r-docopt \
