@@ -54,9 +54,6 @@ conda install -y -c bioconda -c conda-forge \
   r-yaml \
   pandoc
 
-  #bioconductor-gsva=1.42.0 
-  #pip 
-
 echo "Installing tagbio R package itself"
 R CMD INSTALL $TAGBIO_R_UTILS/tagbio_latest.tgz
 
