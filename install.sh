@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-set -e
+#set -e
 set +x
 
 # Remember to update links before checking in code!
@@ -54,6 +54,7 @@ conda install -y -c bioconda -c conda-forge \
   r-yaml \
   pandoc
 
+echo "conda install exit: $?"
 echo "Installing tagbio R package itself"
 R CMD INSTALL $TAGBIO_R_UTILS/tagbio_latest.tgz
 
