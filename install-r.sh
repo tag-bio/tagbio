@@ -6,8 +6,8 @@ export R_MAJOR=$(echo $R_BASE_VERSION|cut -b 1)
 
 conda install -y -c conda-forge \
   r-base=$R_BASE_VERSION \
-  r-essentials=4.1 \
-  r-littler=0.3.17 
+  r-essentials \
+  r-littler
 
 ln -s /usr/lib/R/site-library/littler/examples/install.r /usr/local/bin/install.r
 ln -s /usr/lib/R/site-library/littler/examples/install2.r /usr/local/bin/install2.r
