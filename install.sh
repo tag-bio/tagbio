@@ -55,6 +55,7 @@ conda install -y -c bioconda -c conda-forge \
   pandoc
 
 echo "conda install exit: $?"
+exit 1
 echo "Installing tagbio R package itself"
 R CMD INSTALL $TAGBIO_R_UTILS/tagbio_latest.tgz
 
