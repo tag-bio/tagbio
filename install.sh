@@ -41,7 +41,7 @@ conda install -y -c bioconda -c conda-forge \
   r-argparse=2.1.6 \
   r-broom=1.0.1 \
   r-docopt=0.7.1 \
-  r-dplyr=1.2.2 \
+  r-dplyr=1.0.10 \
   r-gridextra=2.3 \
   r-httr=1.4.4 \
   r-lifecycle=1.0.3 \
@@ -51,7 +51,7 @@ conda install -y -c bioconda -c conda-forge \
   r-rjson=0.2.21 \
   r-svglite=2.1.0 \
   r-tidyr=1.2.1 \
-  r-tidyverse.1.3.2 \
+  r-tidyverse=1.3.2 \
   r-yaml=2.3.6 \
   pandoc=2.19.2
 
