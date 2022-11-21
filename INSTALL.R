@@ -5,6 +5,6 @@ install.packages("rjson",repos = "http://cran.us.r-project.org")
 install.packages("gridExtra",repos = "http://cran.us.r-project.org")
 install.packages("tidyverse",repos = "http://cran.us.r-project.org")
 install.packages("knitr",repos = "http://cran.us.r-project.org")
+install.packages("yaml",repos = "http://cran.us.r-project.org")
 install.packages("rmarkdown",repos = "http://cran.us.r-project.org")
-install.packages("tagbio_1.1.43.tgz", repos = NULL, type = "source")
-
+install.packages("tagbio_latest.tgz", repos = NULL, type = "source")
