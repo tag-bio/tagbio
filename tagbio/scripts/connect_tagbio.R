@@ -120,6 +120,8 @@ fc_params <- fc_data$fc
 fc_request <- fc_data$request
 fc_name <- fc_params$name
 
+print(fc_data)
+
 #print(fc_data)
 
 # load params
@@ -136,6 +138,7 @@ if (!is.null(fc_request$auth)) {
   # Removes "Bearer "
   fc_token <- gsub(".* ", "", fc_request$auth)
 }
+print(fc_request$auth)
 fc_user_email <- Sys.info()['user'] # default to local user
 if (!is.null(fc_request$email)) {
   fc_user_email <- fc_request$email
@@ -148,7 +151,8 @@ if (!is.null(fc_request$uuid)) {
 }
 
 # make connection
-
+print("TOKEN")
+print(fc_token)
 if (is.null(fc_url) | is.null(fc_token)) {
   print("Using localhost to communicate with API.")
   tag_con <- tagConnect()
