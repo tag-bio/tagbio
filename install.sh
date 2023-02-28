@@ -2,8 +2,12 @@
 set -e
 set +x
 
-TAGBIO_R_VERSION=${1:-1.1.43}
-echo "Installing tagbio R version $TAGBIO_R_VERSION"
+# Remember to update links before checking in code!
+# ln tagbio_1.1.44.tgz tagbio_latest.tgz 
+# ln tagbio_1.1.44.tar.gz tagbio_latest.tar.gz 
+# Retired:
+# TAGBIO_R_VERSION=${1:-1.1.44}
+# echo "Installing tagbio R version $TAGBIO_R_VERSION"
 
 # package dependencies
 echo "Updating apt cache"
@@ -29,31 +33,30 @@ echo "Adding conda channels"
 conda config --add channels bioconda
 conda config --add channels conda-forge
 # conda update --all -y
-echo "Installing packages with mamba"
-mamba install -y -c bioconda -c conda-forge \
-  bioconductor-gsva \
-  docopt \
+echo "Installing packages with conda"
+conda install -y -c bioconda -c conda-forge \
+  docopt=0.6.2 \
   pip \
-  python=3.8 \
-  r-argparse \
-  r-broom \
-  r-docopt \
-  r-dplyr \
-  r-gridextra \
-  r-httr \
-  r-lifecycle \
-  r-modelr \
-  r-pillar \
-  r-qpdf \
-  r-rjson \
-  r-svglite \
-  r-tidyr \
-  r-tidyverse \
-  r-yaml \
-  pandoc
+  python=3.10 \
+  r-argparse=2.1.6 \
+  r-broom=1.0.1 \
+  r-docopt=0.7.1 \
+  r-dplyr=1.0.10 \
+  r-gridextra=2.3 \
+  r-httr=1.4.4 \
+  r-lifecycle=1.0.3 \
+  r-modelr=0.1.9 \
+  r-pillar=1.8.1 \
+  r-qpdf=1.3.0 \
+  r-rjson=0.2.21 \
+  r-svglite=2.1.0 \
+  r-tidyr=1.2.1 \
+  r-tidyverse=1.3.2 \
+  r-yaml=2.3.6 \
+  pandoc=2.19.2
 
 echo "Installing tagbio R package itself"
-R CMD INSTALL $TAGBIO_R_UTILS/tagbio_$TAGBIO_R_VERSION.tgz
+R CMD INSTALL $TAGBIO_R_UTILS/tagbio_latest.tgz
 
 mamba clean --all -y
 conda clean --all -y
