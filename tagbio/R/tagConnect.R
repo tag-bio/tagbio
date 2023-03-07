@@ -204,7 +204,7 @@ api_auth_header.tagConnect <- function(object, url) {
   }
 
   # TODO - error?
-  return("")
+  return(list())
 }
 
 #' @export
@@ -219,6 +219,7 @@ api_get.tagConnect <- function(object, url) {
   r <- tryCatch({httr::GET(url, api_head, encode = "json")},
                  error=function(cond) {
                    print(paste0("Error.  Was not able to connect to: ", url, ".  Please check URL."))
+                   print(paste0(" Auth head: ", api_head))
                    return()
                 })
 
@@ -231,13 +232,19 @@ api_get.tagConnect <- function(object, url) {
   if (call_status != 200) {
     if (call_status == 401) {
       print("Authentication failed.  Please check API key.")
+      status_message <- httr::content(r)
+      print(status_message$message)
       return()
     }
     if (call_status == 500) {
       print("Server error.")
+      status_message <- httr::content(r)
+      print(status_message$message)
       return()
     }
-    print("Error connecting to tag.bio API.")
+    print("Error connecting to tag.bio API!")
+    status_message <- httr::content(r)
+    print(status_message$message)
     return()
   }
   return(r)
@@ -266,12 +273,20 @@ api_post.tagConnect <- function(object, query_type, url,
                      return()
                   })
   } else {
+
     r <- tryCatch({httr::POST(url,
                               body = jsonPayload,
                               api_head,
                               encode = "json")},
                   error=function(cond) {
                     print(paste0("Error.  Was not able to connect to: ",url,".  Please check URL."))
+                    api_head <- list()
+
+                    r <- httr::POST(url,
+                                    body = jsonPayload,
+                                    api_head,
+                                    encode = "json")
+
                     return()
                   })
   }
@@ -285,19 +300,37 @@ api_post.tagConnect <- function(object, query_type, url,
   if (call_status != 200) {
     if (call_status == 401) {
       print("Authentication failed.  Please check API key.")
+      print("Request:")
+      print(r$request)
+      print("Status:")
+      status_message <- httr::content(r)
+      print(status_message$message)
       return()
     }
     if (call_status == 500) {
+      print("Internal server error.")
+      print("Request:")
+      print(r$request)
+      print("Status:")
       status_message <- httr::content(r)
       print(status_message$message)
       return()
     }
     if (call_status == 502) {
       print("FC appears to be offline.")
+      print("Request:")
+      print(r$request)
+      print("Status:")
+      status_message <- httr::content(r)
+      print(status_message$message)
       return()
     }
-    print("Error connecting to tag.bio API.")
-    print(call_status)
+    print("Error connecting to tag.bio API")
+    print("Request:")
+    print(r$request)
+    print("Status:")
+    status_message <- httr::content(r)
+    print(status_message$message)
     return()
   }
 
