@@ -1,0 +1,65 @@
+---
+title: "Working With a Local Tag.bio Server"
+date: "`r Sys.Date()`"
+params:
+  tag_data: NULL
+  tag_result: NULL
+output:
+  tagbio::tag_report:
+    theme: default-color
+    highlight: github
+    toc: false
+---
+
+
+```{r, include=FALSE}
+
+knitr::opts_chunk$set(
+  fig.width = 8,
+  fig.height = 6,
+  echo = T,
+  warning = T,
+  message = T
+)
+```
+
+We start by bringing in the tagbio library.  If you don't have this installed, please do so now:
+
+```
+library(remotes)
+install_bitbucket("cloudfolks/tagbio", ref = "master", subdir = "tagbio")
+```
+
+Once installed, load the library.
+
+```{r}
+library(tagbio)
+```
+
+Next, we connect to our local tagbio server.  This should be running in a terminal on your computer or laptop and accepting requests at localhost:8000.  When running locally no URL or authentication is required to make a connection.
+
+```{r}
+tag_con <- tagConnect()
+```
+
+We next access the data product being served by the local server.  We do not need to specify which data product we are accessing because only one is being served.
+
+```{r}
+fc <- tbl(tag_con)
+```
+
+
+Let's look at what data collections are available for this data product.  Think of data collection as columns in a data frame.
+
+```{r}
+summary(fc)
+```
+
+Finally, let's grab the entire data product and import into a data frame/tibble.  This is only recommended for reasonably sized data products.  Otherwise, you likely will want to scope the data using selects and filters.
+
+```{r}
+fc %>% collect()
+```
+
+
+
