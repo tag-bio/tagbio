@@ -1,0 +1,78 @@
+---
+title: "Working With a Remote Tag.bio Server"
+date: "`r Sys.Date()`"
+params:
+  tag_data: NULL
+  tag_result: NULL
+output:
+  tagbio::tag_report:
+    theme: default-color
+    highlight: github
+    toc: false
+---
+
+
+```{r, include=FALSE}
+
+knitr::opts_chunk$set(
+  fig.width = 8,
+  fig.height = 6,
+  echo = T,
+  warning = T,
+  message = T
+)
+```
+
+We start by bringing in the tagbio library.  If you don't have this installed, please do so now:
+
+```
+library(remotes)
+install_bitbucket("cloudfolks/tagbio", ref = "master", subdir = "tagbio")
+```
+
+Once installed, load the library.
+
+```{r}
+library(tagbio)
+```
+
+Next, we connect to a remote tagbio server.  You'll need to get an API key if you don't have one yet from the tag.bio profile page (for example: [https://demo.tag.bio/profile](https://demo.tag.bio/profile) ).  The API key can be supplied as a parameter to the call, saved in a system parameter called `TAGBIO_API_KEY` or placed in a file called `.tagbio.json` in your `HOME` directory.
+
+```{r}
+tag_con <- tagConnect(host_url = "https://demo.tag.bio", 
+                      api_key = "<API_KEY>")
+```
+
+To see what data products are available on the remote server, we use the `summary` method.
+
+```{r}
+summary(tag_con)
+```
+
+The `key` column in the table lists the data product names.  We can access a data product this way:
+
+
+```{r}
+fc <- tbl(tag_con, 'fc-catalyze')
+```
+
+
+Let's look at what data collections are available for this data product.  Think of data collection as columns in a data frame.
+
+```{r}
+summary(fc)
+```
+
+Finally, let's grab data from the data product and lod into a tibble.  You can use familiar select/filter commands that should feel familiar.  The `collect` call initiates the download.
+
+```{r}
+# pull unique patient-cancer list from data product
+patients_per_cancer <- fc %>% 
+  select(`Patient ID`, `Cancer Subtype`) %>%
+  collect() %>%
+  filter(!is.na(`Cancer Subtype` != "NA")) %>%
+  distinct()
+```
+
+
+

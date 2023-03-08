@@ -1,0 +1,5 @@
+name: tag.bio Rmarkdown remote dev notebook
+description: >
+   A starting point for working with a remote server and accessing data
+   products.
+create_dir: TRUE
