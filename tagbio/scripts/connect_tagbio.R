@@ -151,15 +151,12 @@ if (!is.null(fc_request$uuid)) {
 }
 
 # make connection
-print("TOKEN")
-print(fc_token)
 if (is.null(fc_url) | is.null(fc_token)) {
   print("Using localhost to communicate with API.")
   tag_con <- tagConnect()
   fc <- tagFC(tag_con)
 } else {
   print("Using token-based authentication to communicate with API.")
-
   tag_con <- tagConnect(url = fc_url, token = fc_token)
   fc <- tagFC(tag_con, fc_name)
 }
@@ -199,7 +196,7 @@ if (!is.null(tag_data)) {
 tag_data$parameters$token <- fc_token
 tag_data$parameters$fc_user_email <- fc_user_email
 tag_data$parameters$fc_blob_id <- fc_blob_id
-
+tag_data$parameters$fc_url <- fc_url
 
 output_set <- FALSE
 if (!is.null(tag_params) & !is.null(tag_params$output_file) & !is.null(tag_params$output_type)) {
