@@ -16,7 +16,7 @@ HOME_ENV <- "HOME"
 CONFIG_FILE <- ".tagbio.json"
 
 print_error <- function(...) {
-  cat(sprinf(...), sep='', file=stderr())
+  cat(sprintf(...), sep='', file=stderr())
 }
 
 # From https://github.com/jeroen/jsonlite/issues/70
