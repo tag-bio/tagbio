@@ -15,6 +15,10 @@ KUNG_CAPACITORS <- "/kung-services/db/capacitors"
 HOME_ENV <- "HOME"
 CONFIG_FILE <- ".tagbio.json"
 
+print_error <- function(message) {
+  write(message, stderr())
+}
+
 # From https://github.com/jeroen/jsonlite/issues/70
 # - drops NULLS from JSON results
 null_to_na_recurse <- function(obj) {
@@ -218,8 +222,8 @@ api_get.tagConnect <- function(object, url) {
   api_head <- api_auth_header(object, url)
   r <- tryCatch({httr::GET(url, api_head, encode = "json")},
                  error=function(cond) {
-                   print(paste0("Error.  Was not able to connect to: ", url, ".  Please check URL."))
-                   print(paste0(" Auth head: ", api_head))
+                   print_error(paste0("Error.  Was not able to connect to: ", url, ".  Please check URL."))
+                   print_error(paste0(" Auth head: ", api_head))
                    return()
                 })
 
@@ -231,20 +235,20 @@ api_get.tagConnect <- function(object, url) {
   call_status <- r$status_code
   if (call_status != 200) {
     if (call_status == 401) {
-      print("Authentication failed.  Please check API key.")
+      print_error("Authentication failed.  Please check API key.")
       status_message <- httr::content(r)
-      print(status_message$message)
+      print_error(status_message$message)
       return()
     }
     if (call_status == 500) {
-      print("Server error.")
+      print_error("Server error.")
       status_message <- httr::content(r)
-      print(status_message$message)
+      print_error(status_message$message)
       return()
     }
-    print("Error connecting to tag.bio API!")
+    print_error("Error connecting to tag.bio API!")
     status_message <- httr::content(r)
-    print(status_message$message)
+    print_error(status_message$message)
     return()
   }
   return(r)
@@ -269,7 +273,7 @@ api_post.tagConnect <- function(object, query_type, url,
   if (query_type == "s") {
     r <- tryCatch({httr::POST(url, api_head, encode = "json")},
                    error=function(cond) {
-                     print(paste0("Error.  Was not able to connect to: ",url,".  Please check URL."))
+                     print_error(paste0("Error.  Was not able to connect to: ",url,".  Please check URL."))
                      return()
                   })
   } else {
@@ -279,7 +283,7 @@ api_post.tagConnect <- function(object, query_type, url,
                               api_head,
                               encode = "json")},
                   error=function(cond) {
-                    print(paste0("Error.  Was not able to connect to: ",url,".  Please check URL."))
+                    print_error(paste0("Error.  Was not able to connect to: ",url,".  Please check URL."))
                     api_head <- list()
 
                     r <- httr::POST(url,
@@ -299,38 +303,38 @@ api_post.tagConnect <- function(object, query_type, url,
   call_status <- r$status_code
   if (call_status != 200) {
     if (call_status == 401) {
-      print("Authentication failed.  Please check API key.")
-      print("Request:")
-      print(r$request)
-      print("Status:")
+      print_error("Authentication failed.  Please check API key.")
+      print_error("Request:")
+      print_error(r$request)
+      print_error("Status:")
       status_message <- httr::content(r)
-      print(status_message$message)
+      print_error(status_message$message)
       return()
     }
     if (call_status == 500) {
-      print("Internal server error.")
-      print("Request:")
-      print(r$request)
-      print("Status:")
+      print_error("Internal server error.")
+      print_error("Request:")
+      print_error(r$request)
+      print_error("Status:")
       status_message <- httr::content(r)
-      print(status_message$message)
+      print_error(status_message$message)
       return()
     }
     if (call_status == 502) {
-      print("FC appears to be offline.")
-      print("Request:")
-      print(r$request)
-      print("Status:")
+      print_error("FC appears to be offline.")
+      print_error("Request:")
+      print_error(r$request)
+      print_error("Status:")
       status_message <- httr::content(r)
-      print(status_message$message)
+      print_error(status_message$message)
       return()
     }
-    print("Error connecting to tag.bio API")
-    print("Request:")
-    print(r$request)
-    print("Status:")
+    print_error("Error connecting to tag.bio API")
+    print_error("Request:")
+    print_error(r$request)
+    print_error("Status:")
     status_message <- httr::content(r)
-    print(status_message$message)
+    print_error(status_message$message)
     return()
   }
 
@@ -376,7 +380,7 @@ summary.tagConnect <- function(object, ...) {
                displayname = c(LOCALHOST), url = c(object$url))
       )
     } else {
-      print("Unable to get FC data")
+      print_error("Unable to get FC data")
       # default to localhost?
       return(NULL)
     }
