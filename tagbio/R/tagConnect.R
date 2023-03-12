@@ -15,8 +15,12 @@ KUNG_CAPACITORS <- "/kung-services/db/capacitors"
 HOME_ENV <- "HOME"
 CONFIG_FILE <- ".tagbio.json"
 
-print_error <- function(...) {
-  cat(sprintf(...), sep='', file=stderr())
+print_error <- function(message) {
+  if (is_list(message)) {
+    write(toJSON(message,auto_unbox=TRUE), file=stderr())
+  } else {
+    write(message, file=stderr())
+  }
 }
 
 # From https://github.com/jeroen/jsonlite/issues/70
