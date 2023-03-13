@@ -198,6 +198,11 @@ tag_data$parameters$fc_user_email <- fc_user_email
 tag_data$parameters$fc_blob_id <- fc_blob_id
 tag_data$parameters$fc_url <- fc_url
 
+# A bit fragile, this assumes we can get the host URL by looking for the
+# "fc-svc" element in the FC url and trimming it away.  This host URL is
+# then made available for call backs to other FCs
+tag_data$parameters$host_url <- gsub("/fc-svc/.*", "", fc_url)
+
 output_set <- FALSE
 if (!is.null(tag_params) & !is.null(tag_params$output_file) & !is.null(tag_params$output_type)) {
     tag_result <- add_result_file(tag_result, tag_params$output_file[1], tag_params$output_type[1])
