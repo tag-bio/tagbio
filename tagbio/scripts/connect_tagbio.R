@@ -3,10 +3,10 @@
 #
 # author: j@tag.bio
 # version: 0.9
-# last update: 2023.02.27
+# last update: 2023.06.26
 #
 
-print("Starting connect_tagbio.R script, version 1.1.46")
+print("Starting connect_tagbio.R script, version 1.1.47")
 suppressPackageStartupMessages(library("argparse"))
 suppressPackageStartupMessages(library("rjson"))
 suppressPackageStartupMessages(library("tidyverse"))
@@ -120,10 +120,6 @@ fc_params <- fc_data$fc
 fc_request <- fc_data$request
 fc_name <- fc_params$name
 
-print(fc_data)
-
-#print(fc_data)
-
 # load params
 fc_url <- NULL
 if (!is.null(fc_params$`fc-url`)) {
@@ -138,7 +134,7 @@ if (!is.null(fc_request$auth)) {
   # Removes "Bearer "
   fc_token <- gsub(".* ", "", fc_request$auth)
 }
-print(fc_request$auth)
+
 fc_user_email <- Sys.info()['user'] # default to local user
 if (!is.null(fc_request$email)) {
   fc_user_email <- fc_request$email
