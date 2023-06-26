@@ -135,7 +135,7 @@ tag_categorical_batch_op <- function(op, batch_op) {
           #  e2 <- list(e2)
           #}
           CategoricalBatch(collection = e1, operator = !!batch_op,
-                           variables = list(e2))
+                           variables = e2) # was list(e2)
         } else {
           # if e2 is another type, raise error for now... more work to do...
           stop(paste("ERROR: Not supported for operator", !!op,
@@ -186,6 +186,11 @@ tag_env <- function(fc, expr) {
   # check names for variables and add to environment
   tag_vars <- lapply(str_split(names, delim),
                      function(x) { check_variable(get_collection_defs(fc), x) })
+
+  # remove any vars that come back as null
+  sel_vars <- !sapply(tag_vars, is.null)
+  tag_vars <- tag_vars[sel_vars]
+  names <- names[sel_vars]
 
   tag_vars <- purrr::set_names(tag_vars, names)
   #tag_vars <- tag_vars[lengths(tag_vars) != 0] # drops empty entries

@@ -210,7 +210,6 @@ to_json.CategoricalBatch <- function(.Object) {
   json[['collection']] <- .Object$collection$collection
   json[['variables']] <- .Object$variables
   json[['data_function_type']] <- .Object$data_function_type
-
   return(json)
 }
 
@@ -253,6 +252,7 @@ to_json.CategoricalCompound <- function(.Object) {
   json[['data_function_type']] <- .Object$data_function_type
   crit_list = list()
   cnt <- 1
+
   for (crit in .Object$criteria) {
     crit_list[[cnt]] <- to_json(crit)
     cnt <- cnt + 1
