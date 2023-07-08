@@ -165,7 +165,12 @@ if (!is.null(fc_data[['protocol_instance']])) {
 } else {
   if (!is.null(fc_data[['script']])) {
     script <- fc_data[['script']]
+    print("HERE")
+    print("Getting data")
+    print(script)
+    print("Script done")
     tag_data <- run_script(fc, script)
+    print(tag_data)
   } else {
     # create an empty tag_data object
     tag_data <- tagData(results = tibble::tibble())

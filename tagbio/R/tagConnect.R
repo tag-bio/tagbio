@@ -347,7 +347,8 @@ api_post.tagConnect <- function(object, query_type, url,
   } else {
     # wrote a parser here as content was giving floats as strings
     res <- paste0(httr::content(r, as = "text", type = "text/csv", encoding = "UTF-8"))
-    res_table <- read.table(text = res, header = T, sep = ",", check.names = F)
+    res_table <- read.table(text = res, header = T, sep = ",", check.names = F,
+                            quote = "\"")
     return(tibble(res_table))
   }
 }

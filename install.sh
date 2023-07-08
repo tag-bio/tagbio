@@ -3,10 +3,10 @@ set -e
 set +x
 
 # Remember to update links before checking in code!
-# ln tagbio_1.1.46.tgz tagbio_latest.tgz 
-# ln tagbio_1.1.46.tar.gz tagbio_latest.tar.gz 
+# ln tagbio_1.1.48.tgz tagbio_latest.tgz 
+# ln tagbio_1.1.48.tar.gz tagbio_latest.tar.gz 
 # Retired:
-# TAGBIO_R_VERSION=${1:-1.1.46}
+# TAGBIO_R_VERSION=${1:-1.1.48}
 # echo "Installing tagbio R version $TAGBIO_R_VERSION"
 
 # package dependencies
