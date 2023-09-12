@@ -6,8 +6,8 @@
 # last update: 2023.06.26
 #
 
-print("Starting connect_tagbio.R script, version 1.1.47")
-suppressPackageStartupMessages(library("argparse"))
+print("Starting connect_tagbio.R script, version 1.1.48")
+suppressPackageStartupMessages(library("optparse"))
 suppressPackageStartupMessages(library("rjson"))
 suppressPackageStartupMessages(library("tidyverse"))
 suppressPackageStartupMessages(library("tagbio"))
@@ -94,25 +94,47 @@ si <- sessionInfo()
 print(paste("Tagbio SDK Version:", si$otherPkgs$tagbio$Version))
 
 ## Command line options
-parser <- ArgumentParser()
+option_list = list(
+  make_option(c("-d", "--fc_data"), action="store", default=NA, type='character',
+              help="JSON file specifying FC and protocol."),
+  make_option(c("-f", "--user_function"), action="store", default=NA, type='character',
+              help="User function passed in a R file."),
+  make_option(c("-m", "--message_file"), action="store", default=NA, type='character',
+              help="Save messages to a file at this path."),
+  make_option(c("-o", "--output_file"), action="store", default=NA, type='character',
+              help="Save result file to this path.  DEPRECATED."),
+  make_option(c("-O", "--output_files"), action="store", default=NA, type='character',
+              help="Result files given as comma delimited key:path pairs."), 
+  make_option(c("-t", "--output_type"), action="store", default=NA, type='character',
+              help="File type of result.")
+)
+args = parse_args(OptionParser(option_list=option_list))
 
-parser$add_argument("-d", "--fc_data", required = TRUE,
-    help="JSON file specifying FC and protocol.")
-parser$add_argument("-f", "--user_function", required = TRUE,
-    help="User function passed in a R file.")
-parser$add_argument("-m", "--message_file", required = FALSE,
-    help="Save messages to a file at this path.")
-parser$add_argument("-o", "--output_file", required = TRUE,
-    help="Save result file to this path.  DEPRECATED.")
-parser$add_argument("-O", "--output_files", required = FALSE, nargs='+',
-    help="Result files given as key:path pairs.")
-parser$add_argument("-t", "--output_type", required = TRUE,
-    help="File type of result.", choices = c("csv", "html", "json", "pdf", "png"))
-parser$add_argument("-v", "--virtual_env", required = FALSE, default = NULL,
-    help="Virtual environment for running R.")
+# test for required options
+if (is.na(args$fc_data)) {
+  stop("fc_data is required.  See script usage (--help)")
+}
 
-args <- parser$parse_args()
+if (is.na(args$user_function)) {
+  stop("user_function is required.  See script usage (--help)")
+}
 
+if (is.na(args$output_file)) {
+  stop("output_file is required.  See script usage (--help)")
+}
+
+if (!is.na(args$output_files)) {
+  args$output_files <- unlist(strsplit(args$output_files,
+                                       ","))
+}
+
+if (is.na(args$output_type)) {
+  stop("output_type is required.  See script usage (--help)")
+}
+
+if (!(args$output_type %in% c("csv", "html", "json", "pdf", "png"))) {
+  stop("output_type must be one of: csv, html, json, pdf, png.  See script usage (--help)")
+}
 
 ## Read in the fc params and create FC and protocol instances
 fc_data <- fromJSON(file = args$fc_data)
@@ -165,12 +187,7 @@ if (!is.null(fc_data[['protocol_instance']])) {
 } else {
   if (!is.null(fc_data[['script']])) {
     script <- fc_data[['script']]
-    print("HERE")
-    print("Getting data")
-    print(script)
-    print("Script done")
     tag_data <- run_script(fc, script)
-    print(tag_data)
   } else {
     # create an empty tag_data object
     tag_data <- tagData(results = tibble::tibble())
