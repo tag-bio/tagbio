@@ -6,7 +6,7 @@
 # last update: 2023.06.26
 #
 
-print("Starting connect_tagbio.R script, version 1.1.48")
+print("Starting connect_tagbio.R script, version 1.1.49")
 suppressPackageStartupMessages(library("optparse"))
 suppressPackageStartupMessages(library("rjson"))
 suppressPackageStartupMessages(library("tidyverse"))
@@ -104,7 +104,7 @@ option_list = list(
   make_option(c("-o", "--output_file"), action="store", default=NA, type='character',
               help="Save result file to this path.  DEPRECATED."),
   make_option(c("-O", "--output_files"), action="store", default=NA, type='character',
-              help="Result files given as comma delimited key:path pairs."), 
+              help="Result files given as comma delimited key:path pairs."),
   make_option(c("-t", "--output_type"), action="store", default=NA, type='character',
               help="File type of result.")
 )
