@@ -29,7 +29,7 @@ apt-get install --no-install-recommends -y  libxt-dev
 echo "Installing apt-utils"
 apt-get install --no-install-recommends -y  apt-utils
 
-mamba update --all -y
+mamba update -n base mamba
 
 echo "Installing packages with mamba"
 mamba install -y -c conda-forge \
