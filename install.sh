@@ -29,26 +29,24 @@ apt-get install --no-install-recommends -y  libxt-dev
 echo "Installing apt-utils"
 apt-get install --no-install-recommends -y  apt-utils
 
-echo "Adding conda channels"
-conda config --add channels conda-forge
-# conda update --all -y
-echo "Installing packages with conda"
-conda install -y -c conda-forge \
+mamba update --all -y
+
+echo "Installing packages with mamba"
+mamba install -y -c conda-forge \
   docopt=0.6.2 \
+  pandoc=2.19.2 \
   r-optparse=1.7.3 \
   r-httr=1.4.4 \
   r-qpdf=1.3.0 \
   r-rjson=0.2.21 \
-  r-rmarkdown=2.24 \
   r-tidyverse=1.3.2 \
   r-yaml=2.3.6 \
-  pandoc=2.19.2
+  r-rmarkdown=2.24 \
+  r-knitr=1.4.0
   
-
 echo "Installing tagbio R package itself"
 R CMD INSTALL $TAGBIO_R_UTILS/tagbio_latest.tgz
 
 mamba clean --all -y
-conda clean --all -y
 apt-get clean -y
 apt-get autoremove -y
