@@ -4,6 +4,8 @@ set -e
 export R_BASE_VERSION=${1:-4.1.3}
 export R_MAJOR=$(echo $R_BASE_VERSION|cut -b 1)
 
+conda config --add channels conda-forge
+
 conda install -y -c conda-forge \
   r-base=$R_BASE_VERSION \
   r-essentials \
