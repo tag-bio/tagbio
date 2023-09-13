@@ -42,7 +42,7 @@ mamba install -y -c conda-forge \
   r-tidyverse=1.3.2 \
   r-yaml=2.3.6 \
   r-rmarkdown=2.24 \
-  r-knitr=1.4.0
+  r-knitr=1.40
   
 echo "Installing tagbio R package itself"
 R CMD INSTALL $TAGBIO_R_UTILS/tagbio_latest.tgz
