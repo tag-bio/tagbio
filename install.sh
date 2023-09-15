@@ -29,10 +29,8 @@ apt-get install --no-install-recommends -y  libxt-dev
 echo "Installing apt-utils"
 apt-get install --no-install-recommends -y  apt-utils
 
-mamba update -y -n base mamba
-
 echo "Installing packages with mamba"
-mamba install -y -c conda-forge \
+mamba install -y \
   docopt=0.6.2 \
   pandoc=2.19.2 \
   r-optparse=1.7.3 \

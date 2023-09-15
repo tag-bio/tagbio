@@ -4,8 +4,7 @@ set -e
 export R_BASE_VERSION=${1:-4.1.3}
 export R_MAJOR=$(echo $R_BASE_VERSION|cut -b 1)
 
-mamba config --add channels conda-forge
-mamba install -y -c conda-forge \
+mamba install -y \
   r-base=$R_BASE_VERSION \
   r-essentials \
   r-littler
