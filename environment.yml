@@ -9,11 +9,11 @@ dependencies:
   - r-httr
   - r-qpdf
   - r-rjson
-  - r-gridExtra
+  - r-gridextra
   - r-optparse
   - r-tidyverse
+  - r-knitr
   - r-yaml
   - r-rmarkdown
-  - r-knitr
   - docopt
   - pandoc
