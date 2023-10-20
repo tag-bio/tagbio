@@ -2,7 +2,7 @@ name: base
 channels:
   - conda-forge
 dependencies:
-  - r-base=4.1.*
+  - r-base=4.3.*
   - r-essentials
   - r-littler
   - r-argparse
