@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -e
 
-export R_BASE_VERSION=${1:-4.1.3}
+export R_BASE_VERSION=${1:-4.3.1}
 export R_MAJOR=$(echo $R_BASE_VERSION|cut -b 1)
 
 mamba install -y \

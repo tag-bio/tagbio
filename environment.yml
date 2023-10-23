@@ -11,7 +11,7 @@ dependencies:
   - r-rjson
   - r-gridextra
   - r-optparse
-  - r-tidyverse=1.3.*
+  - r-tidyverse
   - r-knitr
   - r-yaml
   - r-rmarkdown
