@@ -1,21 +1,21 @@
-FROM jupyter/datascience-notebook:lab-2.2.9
+# syntax=docker/dockerfile:1
+ARG JUPYTER_IMAGE_VERSION=lab-3.4.3
 
+FROM jupyter/datascience-notebook:${JUPYTER_IMAGE_VERSION}
+
+ENV TAGBIO_R_UTILS /tagbior
 ENV DEBIAN_FRONTEND noninteractive
 
+COPY . $TAGBIO_R_UTILS
+
 USER root
+SHELL ["/usr/bin/bash", "-c"]
 
-# update apt & conda base packages
-RUN apt-get update -y && apt-get upgrade -y
-RUN conda update --all -y
-
-# Installing R component
-ENV TAGBIO_R_UTILS /tagbior
-COPY . /tagbior
-RUN /tagbior/install.sh
-
-# run test script
-SHELL ["/opt/conda/condabin/conda", "run", "-n", "base", "/bin/bash", "-c"]
-RUN Rscript /tagbior/test/test-in-docker.R
+# Install system-level packages
+# Install Tag.bio SDK \
+# Run test script
+RUN install-system-packages.sh && \
+  install-tagbior-sdk.sh && \
+  Rscript $TAGBIO_R_UTILS/test/test-in-docker.R
 
 USER jovyan
-
