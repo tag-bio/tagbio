@@ -1,7 +1,7 @@
 {
     "fc":{
         "name": "fc-friday",  
-        "url": "https://fc-genesig-gateway-azure.dev.tag.bio/fc-svc/fc-friday/",
+        "url": "https://demo.tag.bio/fc-svc/fc-friday/",
         "api_key": ""
     },
     "protocol_instance": {

@@ -4,12 +4,9 @@ channels:
 dependencies:
   - r-base=4.3.*
   - r-essentials
-  - r-littler
-  - r-argparse
   - r-httr
   - r-qpdf
   - r-rjson
-  - r-gridextra
   - r-optparse
   - r-tidyverse
   - r-knitr
