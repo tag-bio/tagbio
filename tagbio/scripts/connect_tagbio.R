@@ -2,11 +2,11 @@
 # connect_tagbio.R
 #
 # author: j@tag.bio
-# version: 0.9
-# last update: 2023.06.26
+# version: 0.9.1
+# last update: 2024.03.14
 #
 
-print("Starting connect_tagbio.R script, version 1.1.49")
+print("Starting connect_tagbio.R script, version 1.1.50")
 suppressPackageStartupMessages(library("optparse"))
 suppressPackageStartupMessages(library("rjson"))
 suppressPackageStartupMessages(library("tidyverse"))
