@@ -132,8 +132,8 @@ if (is.na(args$output_type)) {
   stop("output_type is required.  See script usage (--help)")
 }
 
-if (!(args$output_type %in% c("csv", "html", "json", "pdf", "png"))) {
-  stop("output_type must be one of: csv, html, json, pdf, png.  See script usage (--help)")
+if (!(args$output_type %in% c("csv", "html", "json", "pdf", "png", "tar"))) {
+  stop("output_type must be one of: csv, html, json, pdf, png, tar.  See script usage (--help)")
 }
 
 ## Read in the fc params and create FC and protocol instances
