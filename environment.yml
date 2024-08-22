@@ -2,7 +2,7 @@ name: base
 channels:
   - conda-forge
 dependencies:
-  - r-base
+  - r-base=4.3.2
   - r-essentials
   - r-httr
   - r-qpdf
