@@ -243,6 +243,9 @@ if (grepl(".Rmd", args$user_function)) {
       message("Rmarkdown render has failed.")
       message("Here's the error message:")
       message(cond)
+
+      # quit script with error code
+      q(save = "no", status = 1)
     })
 
     # remove the temp file
