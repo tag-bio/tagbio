@@ -1,6 +1,6 @@
 name: base
 dependencies:
-  - r-base=4.3.2
+  - r-base=4.3.2=hb8ee39d_2
   - r-essentials
   - r-httr
   - r-qpdf
