@@ -1,5 +1,6 @@
 name: base
 dependencies:
+  - libjpeg-turbo=3.0.0=hd590300_1
   - r-base=4.3.2=hb8ee39d_2
   - r-essentials
   - r-httr
