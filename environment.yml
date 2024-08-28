@@ -1,6 +1,6 @@
 name: base
 dependencies:
-  - r-base=4.3.1
+  - r-base=4.3.2
   - r-essentials
   - r-httr
   - r-qpdf
@@ -10,5 +10,5 @@ dependencies:
   - r-knitr
   - r-yaml
   - r-rmarkdown
-  - docopt
+  - r-docopt
   - pandoc
