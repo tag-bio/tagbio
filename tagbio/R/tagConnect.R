@@ -17,7 +17,7 @@ CONFIG_FILE <- ".tagbio.json"
 
 print_error <- function(message) {
   if (is_list(message)) {
-    write(toJSON(message,auto_unbox=TRUE), file=stderr())
+    write(jsonlite::toJSON(message,auto_unbox=TRUE), file=stderr())
   } else {
     write(message, file=stderr())
   }
