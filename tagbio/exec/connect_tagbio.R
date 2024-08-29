@@ -2,8 +2,8 @@
 # connect_tagbio.R
 #
 # author: j@tag.bio
-# version: 0.9.1
-# last update: 2024.03.14
+# version: 0.9.2
+# last update: 2024.08.27
 #
 
 print("Starting connect_tagbio.R script, version 1.1.50")
@@ -243,6 +243,9 @@ if (grepl(".Rmd", args$user_function)) {
       message("Rmarkdown render has failed.")
       message("Here's the error message:")
       message(cond)
+
+      # quit script with error code
+      q(save = "no", status = 1)
     })
 
     # remove the temp file
