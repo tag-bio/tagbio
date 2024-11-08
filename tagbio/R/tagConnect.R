@@ -2,7 +2,7 @@
 # default localhost url
 LOCALHOST_URL <- "http://localhost:8000"
 LOCALHOST <- "localhost"
-LOCALHOST_IP <- "128.0.0.1"
+LOCALHOST_IP <- "127.0.0.1"
 
 # environment variables
 TAGBIO_HOST_URL <- "TAGBIO_HOST_URL"
