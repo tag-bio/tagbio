@@ -2,6 +2,7 @@
 % Please edit documentation in R/tagbio.R
 \docType{package}
 \name{tagbio}
+\alias{tagbio-package}
 \alias{tagbio}
 \title{tagbio: A package for working with the tag.bio analysis platform}
 \description{
