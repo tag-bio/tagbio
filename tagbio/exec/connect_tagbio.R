@@ -2,8 +2,8 @@
 # connect_tagbio.R
 #
 # author: j@tag.bio
-# version: 0.9.2
-# last update: 2024.08.27
+# version: 0.9.3
+# last update: 2024.11.18
 #
 
 print("Starting connect_tagbio.R script, version 1.1.51")
@@ -151,6 +151,12 @@ fc_protocol_url <- NULL
 if (!is.null(fc_params$`protocol-url`)) {
   fc_protocol_url <- fc_params$`protocol-url`
 }
+url <- NULL
+if (!is.null(fc_params$`url`)) {
+  url <- fc_params$`url`
+}
+print(paste("fc_url:", fc_url))
+print(paste("url:", url))
 fc_token <- NULL
 if (!is.null(fc_request$auth)) {
   # Removes "Bearer "
