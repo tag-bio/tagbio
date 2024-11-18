@@ -143,20 +143,21 @@ fc_request <- fc_data$request
 fc_name <- fc_params$name
 
 # load params
+# This is the full URL to the FC
 fc_url <- NULL
 if (!is.null(fc_params$`fc-url`)) {
   fc_url <- fc_params$`fc-url`
 }
+# This URL us used for adding links to reports
 fc_protocol_url <- NULL
 if (!is.null(fc_params$`protocol-url`)) {
   fc_protocol_url <- fc_params$`protocol-url`
 }
+# This URL is just local host
 url <- NULL
 if (!is.null(fc_params$`url`)) {
   url <- fc_params$`url`
 }
-print(paste("fc_url:", fc_url))
-print(paste("url:", url))
 fc_token <- NULL
 if (!is.null(fc_request$auth)) {
   # Removes "Bearer "
@@ -175,15 +176,16 @@ if (!is.null(fc_request$uuid)) {
 }
 
 # make connection
-if (is.null(fc_url) | is.null(fc_token)) {
-  print("Using localhost to communicate with API.")
-  tag_con <- tagConnect()
-  fc <- tagFC(tag_con)
-} else {
-  print("Using token-based authentication to communicate with API.")
-  tag_con <- tagConnect(url = fc_url, token = fc_token)
-  fc <- tagFC(tag_con, fc_name)
-}
+# - we are now always running locally
+#if (is.null(fc_url) | is.null(fc_token)) {
+print("Using localhost to communicate with API.")
+tag_con <- tagConnect()
+fc <- tagFC(tag_con)
+#} else {
+#  print("Using token-based authentication to communicate with API.")
+#  tag_con <- tagConnect(url = fc_url, token = fc_token)
+#  fc <- tagFC(tag_con, fc_name)
+#}
 
 ## Look for protocol instance or script
 tag_data <- NULL
