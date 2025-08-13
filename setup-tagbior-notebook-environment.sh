@@ -1,15 +1,16 @@
 #! /usr/bin/env bash
 set -ex
 
-mamba init bash
-source /root/.bashrc
 
-# CREATE TAGBIOPY-SPECIFIC NOTEBOOK
+eval "$(mamba shell hook --shell bash)"
+
+# CREATE TAGBIOR NOTEBOOK ENVIRONMENT
 mamba create -n tagbior-notebook
-mamba activate tagbior-notebook
 
 # ADD R DEPENDENCIES
-mamba env update -n $(echo $CONDA_DEFAULT_ENV) -f ${TAGBIO_R_UTILS}/environment.yml
+mamba env update -n tagbior-notebook -f "${TAGBIO_R_UTILS}"/environment.yml
 
-# INSTALL PYTHON SDK
-mamba run -n $(echo $CONDA_DEFAULT_ENV) R CMD INSTALL $TAGBIO_R_UTILS/tagbio_latest.tgz
+# INSTALL TAGBIOR SDK
+mamba run -n tagbior-notebook R CMD INSTALL "$TAGBIO_R_UTILS"/tagbio_latest.tgz
+
+mamba activate tagbior-notebook
