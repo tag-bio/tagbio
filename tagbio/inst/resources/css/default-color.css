@@ -412,8 +412,8 @@ body{counter-reset: section}
 }
 .main-content table th {
   font-weight: 700;
-  background-color: #007CB2;
-  color: #fff;
+  /* background-color: #007CB2;
+  color: #fff; */
 }
 .main-content table th,
 .main-content table td {
