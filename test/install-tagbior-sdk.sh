@@ -3,11 +3,16 @@ set -ex
 
 
 echo "
-************************
-Installing Tag.bio R SDK
-***     pip is $(which pip)    ***
-***     conda is $(which conda)    ***
-************************
+***************************************
+  Installing Tag.bio Python & R SDKs
+***       pip is $(which pip)       ***
+***     conda is $(which conda)     ***
+***      $(mamba --version)         ***
+***************************************
 "
-mamba env update -f ${TAGBIO_R_UTILS}/environment.yml
-mamba run -n base ${TAGBIO_R_UTILS}/install-package.sh
+
+# mamba bash hook
+eval "$(mamba shell hook --shell bash)"
+
+mamba env update -n base -f /environment.yml
+mamba run -n base R CMD INSTALL /tagbio_latest.tgz

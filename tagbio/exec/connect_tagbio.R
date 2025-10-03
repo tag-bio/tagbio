@@ -6,12 +6,18 @@
 # last update: 2024.11.18
 #
 
-print("Starting connect_tagbio.R script, version 1.1.53")
 suppressPackageStartupMessages(library("optparse"))
 suppressPackageStartupMessages(library("rjson"))
 suppressPackageStartupMessages(library("tidyverse"))
 suppressPackageStartupMessages(library("tagbio"))
 suppressPackageStartupMessages(library("yaml"))
+
+
+## print version info to console
+tagbio_pkg <- as.character(packageName("tagbio"))
+tagbio_ver <- as.character(packageVersion("tagbio"))
+cat(tagbio_pkg, "connect_tagbio.R script version:", tagbio_ver, "\n")
+
 
 ## simple Rmd reader
 rmd_reader <- function(rmd_file) {
@@ -36,7 +42,7 @@ rmd_reader <- function(rmd_file) {
       }
     }
   }
-  return(list(yaml_content = yaml_content, other_content=other_content))
+  return(list(yaml_content = yaml_content, other_content = other_content))
 }
 
 ## updates rmd files with required fields
@@ -83,7 +89,7 @@ rmd_updater <- function(rmd_file, email, analysis_url) {
   write("---", con)
   write_yaml(yaml, con)
   write("---\n\n", con)
-  write(paste(rmd$other_content, collapse="\n"), con)
+  write(paste(rmd$other_content, collapse = "\n"), con)
   write("\n", con)
   close(con)
 
