@@ -37,7 +37,7 @@ body {
 
 .inner {
   position: relative;
-  width: 840px;
+  width: 1260px;
   font-size: 1.1em;
   margin: 0 auto;
   text-align: left;
@@ -115,7 +115,7 @@ a:hover {
   padding: 50px 0;
 }
 .page-header .inner .content {
-  width: 600px;
+  width: 900px;
   display: inline-block;
   float: none;
 }
@@ -402,7 +402,7 @@ body{counter-reset: section}
   -webkit-overflow-scrolling: touch;
   border-collapse: collapse;
   border-spacing: 0;
-  max-width: 840px;
+  max-width: 1260px;
   overflow-x: scroll;
   margin: 16px 0;
   display: block;
@@ -412,8 +412,8 @@ body{counter-reset: section}
 }
 .main-content table th {
   font-weight: 700;
-  /* background-color: #007CB2;
-  color: #fff; */
+  background-color: #007CB2;
+  color: #fff;
 }
 .main-content table th,
 .main-content table td {
