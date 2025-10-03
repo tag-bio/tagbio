@@ -1,13 +1,13 @@
 dependencies:
+  - pandoc
   - r-base
+  - r-docopt
   - r-essentials
   - r-httr
+  - r-knitr
+  - r-optparse
   - r-qpdf
   - r-rjson
-  - r-optparse
-  - r-tidyverse
-  - r-knitr
-  - r-yaml
   - r-rmarkdown
-  - r-docopt
-  - pandoc
+  - r-tidyverse
+  - r-yaml
