@@ -13,12 +13,6 @@ suppressPackageStartupMessages(library("tagbio"))
 suppressPackageStartupMessages(library("yaml"))
 
 
-## print version info to console
-tagbio_pkg <- as.character(packageName("tagbio"))
-tagbio_ver <- as.character(packageVersion("tagbio"))
-cat(tagbio_pkg, "connect_tagbio.R script version:", tagbio_ver, "\n")
-
-
 ## simple Rmd reader
 rmd_reader <- function(rmd_file) {
   yaml_content <- c()
