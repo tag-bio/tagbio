@@ -394,7 +394,7 @@ body{counter-reset: section}
     font-size: 1.1rem;
   }
 }
-.main-content table {
+/* .main-content table {
   width: fit-content;
   overflow: auto;
   word-break: normal;
@@ -408,12 +408,12 @@ body{counter-reset: section}
   display: block;
   margin-left:auto; 
   margin-right:auto;
-  /*border-right: 5px dotted #007CB2; */
+  border-right: 5px dotted #007CB2;
 }
 .main-content table th {
   font-weight: 700;
-  /* background-color: #007CB2;
-  color: #fff; */
+  background-color: #007CB2;
+  color: #fff;
 }
 .main-content table th,
 .main-content table td {
@@ -423,7 +423,7 @@ body{counter-reset: section}
 }
 .main-content table tr:nth-child(odd) {
   background-color: #f2f2f2;
-}
+} */
 .main-content dl {
   padding: 0;
 }
