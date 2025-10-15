@@ -2,7 +2,7 @@
 % Please edit documentation in R/tag_fundamentals.R
 \name{CategoricalCollection}
 \alias{CategoricalCollection}
-\title{An S3 class representing tag.bio CategoricalCollection}
+\title{An S3 class representing the Tag.bio CategoricalCollection}
 \usage{
 CategoricalCollection(
   collection,
@@ -12,5 +12,5 @@ CategoricalCollection(
 )
 }
 \description{
-An S3 class representing tag.bio CategoricalCollection
+An S3 class representing the Tag.bio CategoricalCollection
 }

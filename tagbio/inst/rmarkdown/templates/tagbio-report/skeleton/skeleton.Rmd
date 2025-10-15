@@ -19,12 +19,12 @@ output:
 ```{r, include=FALSE}
 
 knitr::opts_chunk$set(
-  echo = FALSE, 
+  echo = FALSE,
   fig.width = 8,
   fig.height = 6,
-  echo = F,
-  warning = F,
-  message = F
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE
 )
 ```
 
@@ -40,10 +40,12 @@ if (is.null(params$tag_data)) {
   # Run from RStudio
   tag_con <- tagConnect()
   fc <- tbl(tag_con)
-  
+
   # might want to select specific fields
-  fc_data <- fc %>% collect() 
+  fc_data <- fc |> collect()
+
 } else {
+
   # Run from tag.bio UI
   fc_data <- get_results(params$tag_data)
   parameters <- get_parameters(params$tag_data)

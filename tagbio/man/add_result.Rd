@@ -2,9 +2,9 @@
 % Please edit documentation in R/tagResult.R
 \name{add_result}
 \alias{add_result}
-\title{Add data to a tagResult.}
+\title{Add data to a tagResult object}
 \usage{
-add_result(tag_result, results, results_type)
+add_result(tag_result, results, result_type)
 }
 \arguments{
 \item{tag_result}{tagResult object}
@@ -13,6 +13,8 @@ add_result(tag_result, results, results_type)
 
 \item{result_type}{either \code{data.frame}, \code{jpeg}, \code{pdf},
 \code{png}, \code{svg}}
+
+\item{tag_data}{tagData object}
 }
 \value{
 updated tagResult object

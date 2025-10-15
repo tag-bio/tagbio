@@ -2,7 +2,7 @@
 % Please edit documentation in R/tag_fundamentals.R
 \name{NumericSlice}
 \alias{NumericSlice}
-\title{An S3 class representing a NumericSlice}
+\title{An S3 class representing the Tag.bio NumericSlice}
 \usage{
 NumericSlice(
   criterion,
@@ -13,7 +13,7 @@ NumericSlice(
 )
 }
 \description{
-An S3 class representing a NumericSlice
+An S3 class representing the Tag.bio NumericSlice
 }
 \section{Slots}{
 
@@ -34,6 +34,7 @@ ns <- NumericSlice("carat", ">", 0.3)
 \seealso{
 Useful links:
 \itemize{
-\item \url{https://code.tag.bio/docs/variable-object-reference#numericslice} tag.bio documentation
+\item \url{https://code.tag.bio/docs/variable-object-reference#numericslice}
+The Numeric-Slice data-function from Tag.bio syntax documentation.
 }
 }

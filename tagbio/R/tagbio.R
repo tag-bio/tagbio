@@ -1,11 +1,12 @@
 #' tagbio: A package for working with the tag.bio analysis platform
 #'
-#' The tagbio package provides an interface for connecting to a tag.bio
+#' The tagbio package provides an interface for connecting to a Tag.bio
 #' server, discovering data products and accessing data.  The package allows
 #' you to work with remote data products as if they are in-memory data frames.
-#' The package follows the tidyverse design and should feel right at home to anyone
-#' familiar with tidyverse libraries.
+#' The package follows the tidyverse design and should feel right at home
+#' to anyone familiar.
 #'
+#' @name tagbio
 #' @section tagbio classes:
 #' To be filled in ...
 #'
@@ -16,7 +17,6 @@
 #' \item \url{https://code.tag.bio}
 #' }
 #'
-#' @docType package
-#' @name tagbio
+#' @keywords internal
+"_PACKAGE"
 NULL
-#> NULL

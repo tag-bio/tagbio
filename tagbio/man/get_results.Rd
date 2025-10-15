@@ -2,14 +2,14 @@
 % Please edit documentation in R/tagData.R
 \name{get_results}
 \alias{get_results}
-\title{Get result data from a tagData object.}
+\title{Get result data from a tagData object}
 \usage{
 get_results(tag_data, data_type = NA, row_name = "")
 }
 \arguments{
 \item{tag_data}{tagData object}
 
-\item{data_type}{type of data to return in data frame (default NA)}
+\item{data_type}{type of data to return in data graphics::frame (default NA)}
 
 \item{row_name}{if set, use this column to create row names (default "")}
 }
@@ -17,6 +17,7 @@ get_results(tag_data, data_type = NA, row_name = "")
 data.frame of data
 }
 \description{
-This getter method returns the data.frame component of a tagData object.  If a
-data_type is provided, only results of this type are returned in the data.frame.
+This getter method returns the data.frame component of a tagData object.
+If a data_type is provided, only results of this type are returned in
+the data.frame.
 }

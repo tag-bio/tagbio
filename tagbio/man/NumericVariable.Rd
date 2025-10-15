@@ -2,10 +2,29 @@
 % Please edit documentation in R/tag_fundamentals.R
 \name{NumericVariable}
 \alias{NumericVariable}
-\title{An S3 class representing tag.bio NumericVariable}
+\title{An S3 class representing the Tag.bio NumericVariable}
 \usage{
 NumericVariable(collection, variable, ...)
 }
 \description{
-An S3 class representing tag.bio NumericVariable
+An S3 class representing the Tag.bio NumericVariable
+}
+\section{Slots}{
+
+\describe{
+\item{\code{collection}}{a numeric collection}
+
+\item{\code{variable}}{from a numeric variable containing numeric values}
+}}
+
+\examples{
+nvr <- NumericVariable("diamond", "carat")
+
+}
+\seealso{
+Useful links:
+\itemize{
+\item \url{https://code.tag.bio/docs/variable-object-reference#numeric}
+The Numeric variable data-function from Tag.bio syntax documentation.
+}
 }

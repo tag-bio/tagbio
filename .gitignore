@@ -5,3 +5,10 @@
 .idea/workspace.xml
 .Rproj.user
 .idea
+tagbio.Rproj
+air.toml
+.Rbuildignore
+.RData
+.Rhistory
+.vscode
+tagbio.Rcheck/

@@ -2,18 +2,18 @@
 % Please edit documentation in R/tag_fundamentals.R
 \name{to_json}
 \alias{to_json}
-\title{Translate tag data constructs as JSON}
+\title{Translate Tag.bio data constructs as JSON}
 \usage{
 to_json(.Object, ...)
 }
 \description{
-The \code{to_json} method converts tag data constructs to JSON, typically for
-communicating with the API or creating configuration files.
+The \code{to_json} method converts Tag.bio data constructs to JSON, typically
+for communicating with the API or creating configuration files.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{.Object}}{a tag data object}
+\item{\code{.Object}}{a Tag.bio data object}
 }}
 
 \examples{

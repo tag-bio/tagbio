@@ -2,69 +2,77 @@
 % Please edit documentation in R/tagConnect.R
 \name{tagConnect}
 \alias{tagConnect}
-\title{An S3 class representing a connection to a tag.bio server}
+\title{An S3 class representing a connection to a Tag.bio server}
 \usage{
 tagConnect(host_url = "", api_key = "", url = "", token = "")
 }
 \arguments{
 \item{host_url}{URL to the tag.bio server}
 
-\item{api_key}{tag.bio api key}
+\item{api_key}{Tag.bio API key}
+
+\item{url}{alternative host_url parameter}
 
 \item{token}{alternative authentication based on bearer token}
 }
 \description{
 The tagConnect class establishes a connection to a local or remote
-tag.bio server.
+Tag.bio server.
 }
 \section{Server Address}{
 
-The tag.bio server URL can be specified in multiple ways.  Methods are listed here
-in priority order and the URL is obtained from the first successful method.
+The Tag.bio server URL can be specified in multiple ways.
+
+Methods are listed here in priority order and the URL is obtained from
+the first successful method.
 \itemize{
-\item If \code{host_url} is passed as a parameter, this URL is used and overrides
-all other methods.  This method is not considered best practice as hard-coded URLs
-will make software less portable.
-\item If \code{TAGBIO_HOST_URL} exists as a system environment variable, then the URL is
-obtained from this variable.
-\item If a \code{.tagbio.json} file exists in the  \code{HOME} directory, then the URL is
-looked for in this configuration file.  The URL should be called \code{TAGBIO_HOST_URL}
-in the configuration file.
-\item If not specified by any of the above methods, \code{tagConnect} assumes that the
-tag.bio server is running locally.
+\item If \code{host_url} is passed as a parameter, this URL is used and
+overrides all other methods.  This method is not considered best practice
+as hard-coded URLs will make software less portable.
+\item If \code{TAGBIO_HOST_URL} exists as a system environment variable,
+then the URL is obtained from this variable.
+\item If a \code{.tagbio.json} file exists in the  \code{HOME} directory,
+then the URL is looked for in this configuration file.  The URL should be
+called \code{TAGBIO_HOST_URL} in the configuration file.
+\item If not specified by any of the above methods, \code{tagConnect}
+assumes that the Tag.bio server is running locally.
 }
 }
 
 \section{API Key}{
 
-Connecting to a remote tag.bio server requires the user to have a tag.bio API key.
-See this site (TODO) on how to obtain an API key.  Once an API key has been obtained
-it may be specified in multiple ways:
+Connecting to a remote Tag.bio server requires the user to have a
+Tag.bio API key. See this site (TODO) on how to obtain an API key.
+Once an API key has been obtained, it may be specified in multiple ways:
 \itemize{
-\item The API key may be specified directly through the \code{api_key} parameter.  Note
-that this method is not recommended as it is a security risk to maintain API keys
-in code.
-\item If \code{TAGBIO_API_KEY} is present as a system variable, this value will be used.
-\item If a \code{.tagbio.json} file exists in the  \code{HOME} directory, then the API key is
-looked for in this configuration file.  The URL should be called \code{TAGBIO_API_KEY}
-in the configuration file.
-\item If not specified by any other method, it is assumed no API key is required.  This will
- always be the case when connection to a local tag.bio server.
- }
+\item The API key may be specified directly through the \code{api_key}
+parameter.  Note that this method is not recommended as it is a security risk
+to maintain API keys in code.
+\item If \code{TAGBIO_API_KEY} is present as a system variable, this value
+will be used.
+\item If a \code{.tagbio.json} file exists in the \code{HOME} directory, then
+the API key is looked for in this configuration file. The URL should be
+called \code{TAGBIO_API_KEY} in the configuration file.
+\item If not specified by any other method, it is assumed no API key
+is required. This will always be the case when connection to a local
+Tag.bio server.
+}
 }
 
 \section{Warning}{
 
 Note that the connection is 'lazy'  meaning that no
-communication with the tag.bio server is attempted until data is
+communication with the Tag.bio server is attempted until data is
 required.  Connection errors will be deferred until that point.
 }
 
 \section{Methods}{
 
-\code{summary(tc)}: Shows all data products the user has access to through tagConnect \code{tc}.
-Summary results are returned as a table with columns for \code{key}, \code{site},
-\code{description}, \code{displayname} and \code{url}.
+\code{summary(tc)}: Shows all data products the user has access to
+through tagConnect \code{tc}.
+
+Summary results are returned as a table with columns for \code{key},
+\code{site}, \code{description}, \code{displayname} and \code{url}.
 }
 
 \examples{

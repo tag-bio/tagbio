@@ -2,12 +2,12 @@
 % Please edit documentation in R/tag_fundamentals.R
 \name{CategoricalBatch}
 \alias{CategoricalBatch}
-\title{An S3 class representing a CategoricalBatch}
+\title{An S3 class representing the Tag.bio CategoricalBatch}
 \usage{
 CategoricalBatch(collection, operator, variables, ...)
 }
 \description{
-Represents an AND or OR of variables in the collection
+Represents the intersection or union of variables within one collection.
 }
 \section{Slots}{
 
@@ -26,6 +26,7 @@ cb <- CategoricalBatch("Title", "OR", c("The Matrix", "Casablanca"))
 \seealso{
 Useful links:
 \itemize{
-\item \url{https://code.tag.bio/docs/variable-object-reference} tag.bio documentation
+\item \url{https://code.tag.bio/docs/variable-object-reference}
+The Categorical-Batch data-function from Tag.bio syntax documentation.
 }
 }

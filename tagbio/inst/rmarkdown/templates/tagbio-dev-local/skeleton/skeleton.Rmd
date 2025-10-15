@@ -17,9 +17,9 @@ output:
 knitr::opts_chunk$set(
   fig.width = 8,
   fig.height = 6,
-  echo = T,
-  warning = T,
-  message = T
+  echo = TRUE,
+  warning = TRUE,
+  message = TRUE
 )
 ```
 
@@ -58,7 +58,7 @@ summary(fc)
 Finally, let's grab the entire data product and import into a data frame/tibble.  This is only recommended for reasonably sized data products.  Otherwise, you likely will want to scope the data using selects and filters.
 
 ```{r}
-fc %>% collect()
+fc |> collect()
 ```
 
 

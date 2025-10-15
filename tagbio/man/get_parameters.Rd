@@ -2,7 +2,7 @@
 % Please edit documentation in R/tagData.R
 \name{get_parameters}
 \alias{get_parameters}
-\title{Get parameters from a tagData object.}
+\title{Get parameters from a tagData object}
 \usage{
 get_parameters(tag_data)
 }

@@ -4,16 +4,21 @@
 \alias{tagResult}
 \title{An S3 class representing data to return to the tag.bio platform}
 \usage{
-tagResult(output_path, result_type, results = tibble(), message_path = NA)
+tagResult(
+  output_path,
+  result_type,
+  results = tibble::tibble(),
+  message_path = NA
+)
 }
 \arguments{
-\item{output_path}{path to resullts file}
+\item{output_path}{path to results file}
 
 \item{result_type}{format of the results (html, png, pdf)}
 
 \item{message_path}{path to a message file}
 
-\item{result_data}{a dataframe of results}
+\item{result_data}{a data frame of results}
 }
 \description{
 The tagResult class allows the user to return data to the tag.bio
@@ -25,7 +30,7 @@ Results are typically stored in a file either as a data frame or a
 plot saved in a graphics format or HTML.  Any messages not part of
 the results can be placed in the message file.
 
-A tagResult is typically prepopulated and passed to a user-
+A tagResult is typically pre-populated and passed to a user-
 defined R function.  The type and paths direct the user what output
 is expected and where results should be saved.
 }

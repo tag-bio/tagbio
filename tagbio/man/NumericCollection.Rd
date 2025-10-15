@@ -2,10 +2,10 @@
 % Please edit documentation in R/tag_fundamentals.R
 \name{NumericCollection}
 \alias{NumericCollection}
-\title{An S3 class representing tag.bio NumericCollection}
+\title{An S3 class representing the Tag.bio NumericCollection}
 \usage{
 NumericCollection(collection, collection_size, ...)
 }
 \description{
-An S3 class representing tag.bio NumericCollection
+An S3 class representing the Tag.bio NumericCollection
 }

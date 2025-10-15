@@ -2,12 +2,12 @@
 % Please edit documentation in R/tag_fundamentals.R
 \name{CategoricalVariable}
 \alias{CategoricalVariable}
-\title{An S3 class representing a CategoricalVariable}
+\title{An S3 class representing the Tag.bio CategoricalVariable}
 \usage{
 CategoricalVariable(collection, variable, ...)
 }
 \description{
-An S3 class representing a CategoricalVariable
+An S3 class representing the Tag.bio CategoricalVariable
 }
 \section{Slots}{
 
@@ -24,6 +24,7 @@ cvr <- CategoricalVariable("color", "red")
 \seealso{
 Useful links:
 \itemize{
-\item \url{https://code.tag.bio/docs/variable-object-reference#categorical} tag.bio documentation
+\item \url{https://code.tag.bio/docs/variable-object-reference#categorical}
+The Categorical variable data-function from Tag.bio syntax documentation.
 }
 }

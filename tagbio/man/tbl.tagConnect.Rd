@@ -2,7 +2,7 @@
 % Please edit documentation in R/tagConnect.R
 \name{tbl.tagConnect}
 \alias{tbl.tagConnect}
-\title{Create a table from a tag.bio data product}
+\title{Create a table from a Tag.bio data product}
 \usage{
 \method{tbl}{tagConnect}(src = "tagConnect", fc = "")
 }
@@ -17,7 +17,6 @@ Connects to a data product via a tagConnect connection.
 tag_con <- tagConnect()
 
 # pulls a data table from the data product
-fc <- tbl(tag_con) \%>\% collect()
-
+fc <- tbl(tag_con) |> collect()
 
 }

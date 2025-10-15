@@ -2,15 +2,18 @@
 % Please edit documentation in R/tag_fundamentals.R
 \name{CategoricalCompound}
 \alias{CategoricalCompound}
-\title{An S3 class representing a CategoricalCompound}
+\title{An S3 class representing the Tag.bio CategoricalCompound}
 \usage{
 CategoricalCompound(criteria = list(), operator, ...)
 }
 \description{
-A categorical-compound variable object converts two or more categorical variable
-objects representing variables into the intersection or the union of those two sets.
-If the operator attribute is AND, the categorical variable objects in the criteria
-attribute will be intersected.
+A categorical-compound variable object converts two or more
+categorical variable objects representing variables into the intersection
+or the union of those two sets.
+}
+\details{
+If the operator attribute is AND, the categorical variable objects
+in the criteria attribute will be intersected.
 }
 \section{Slots}{
 
@@ -27,6 +30,7 @@ cc <- CategoricalCompound(c(), "AND")
 \seealso{
 Useful links:
 \itemize{
-\item \url{https://code.tag.bio/docs/variable-object-reference#categoricalcompound} tag.bio documentation
+\item \url{https://code.tag.bio/docs/variable-object-reference#categoricalcompound}
+The Categorical-Compound data-function from Tag.bio syntax documentation.
 }
 }

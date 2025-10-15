@@ -2,7 +2,7 @@
 % Please edit documentation in R/tagData.R
 \name{tagData}
 \alias{tagData}
-\title{An S3 class representing data response from a protocol}
+\title{An S3 class representing data response from a Tag.bio protocol}
 \usage{
 tagData(results = data.frame(), parameters = list())
 }

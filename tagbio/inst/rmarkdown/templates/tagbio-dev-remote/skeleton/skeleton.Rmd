@@ -17,9 +17,9 @@ output:
 knitr::opts_chunk$set(
   fig.width = 8,
   fig.height = 6,
-  echo = T,
-  warning = T,
-  message = T
+  echo = TRUE,
+  warning = TRUE,
+  message = TRUE
 )
 ```
 
@@ -39,7 +39,7 @@ library(tagbio)
 Next, we connect to a remote tagbio server.  You'll need to get an API key if you don't have one yet from the tag.bio profile page (for example: [https://demo.tag.bio/profile](https://demo.tag.bio/profile) ).  The API key can be supplied as a parameter to the call, saved in a system parameter called `TAGBIO_API_KEY` or placed in a file called `.tagbio.json` in your `HOME` directory.
 
 ```{r}
-tag_con <- tagConnect(host_url = "https://demo.tag.bio", 
+tag_con <- tagConnect(host_url = "https://demo.tag.bio",
                       api_key = "<API_KEY>")
 ```
 
@@ -53,7 +53,7 @@ The `key` column in the table lists the data product names.  We can access a dat
 
 
 ```{r}
-fc <- tbl(tag_con, 'fc-catalyze')
+fc <- tbl(tag_con, "fc-catalyze")
 ```
 
 
@@ -67,10 +67,10 @@ Finally, let's grab data from the data product and lod into a tibble.  You can u
 
 ```{r}
 # pull unique patient-cancer list from data product
-patients_per_cancer <- fc %>% 
-  select(`Patient ID`, `Cancer Subtype`) %>%
-  collect() %>%
-  filter(!is.na(`Cancer Subtype` != "NA")) %>%
+patients_per_cancer <- fc |>
+  select(`Patient ID`, `Cancer Subtype`) |>
+  collect() |>
+  filter(!is.na(`Cancer Subtype` != "NA")) |>
   distinct()
 ```
 

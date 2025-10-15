@@ -3,24 +3,29 @@ Type: Package
 Title: tagbio: methods for interacting with the tag.bio analysis platform
 Version: 1.1.52
 Author: J Ireland
-Maintainer: tag.bio <j@tagbio.com>
+Maintainer: Tag.bio <j@tagbio.com>
 Description: This library allows users to work with data from the tag.bio
     analysis platform directly from R.
-License: MIT
 Encoding: UTF-8
-LazyData: true
 VignetteBuilder: knitr
 biocViews: ThirdPartyClient
-Date/Publication: 2023-07-08
-RoxygenNote: 7.3.2
+License: MIT + file LICENSE
+RoxygenNote: 7.3.3
 Imports:
-    optparse,
     httr,
-    qpdf,
-    rjson
+    jsonlite,
+    optparse,
+    rjson,
+    rlang,
+    methods,
+    tidyselect,
+    purrr,
+    stringr,
+    tibble,
+    yaml
 Depends:
-    tidyverse,
-    yaml,
-    rmarkdown
+    R (>= 4.1.0),
+    dplyr
 Suggests: 
-    knitr
+    knitr,
+    rmarkdown
