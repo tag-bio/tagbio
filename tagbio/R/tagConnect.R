@@ -415,7 +415,7 @@ api_post.tagConnect <- function(
       header = TRUE,
       sep = ",",
       check.names = FALSE,
-      quote = "\""
+      quote = "\"", comment.char = ""
     )
     return(tibble::tibble(res_table))
   }
