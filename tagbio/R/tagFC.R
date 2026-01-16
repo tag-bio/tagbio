@@ -217,8 +217,12 @@ get_collection_defs.tagFC <- function(.data) {
       groups = c("developer")
     )
 
+    # override the default collection query limit of 50k
+    collection_limit <- 1000000000
+
     script <- list(
-      method = "collection"
+      method = "collection",
+      limit = result_limit
     )
 
     jsonPayload[['script']] = script
