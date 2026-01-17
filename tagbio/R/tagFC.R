@@ -222,7 +222,8 @@ get_collection_defs.tagFC <- function(.data) {
 
     script <- list(
       method = "collection",
-      limit = result_limit
+      limit = collection_limit,
+      minify = TRUE
     )
 
     jsonPayload[['script']] = script
@@ -454,6 +455,17 @@ run_script.tagFC <- function(fc, script) {
 ## GENERAL METHODS
 
 parse_collection_values <- function(res_values) {
+
+  if(!is.null(res_values$z)) {
+    res_values$data_reference_type <- res_values$drt
+    if (res_values$data_reference_type == 't') res_values$data_reference_type = 'categorical'
+    if (res_values$data_reference_type == 'n') res_values$data_reference_type = 'numeric'
+    if (res_values$data_reference_type == 'tx') res_values$data_reference_type = 'categorical-matrix'
+    if (res_values$data_reference_type == 'nx') res_values$data_reference_type = 'numeric-matrix'
+    res_values$collection <- res_values$c
+    res_values$collection-size <- res_values$cs
+    res_values$collection-entity-count <- res_values$cec
+  }
 
   # 2.52.4 after use data_reference_type, before uses variable_type
   # data_reference_type (new)
