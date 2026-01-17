@@ -456,7 +456,7 @@ run_script.tagFC <- function(fc, script) {
 
 parse_collection_values <- function(res_values) {
 
-  if(!is.null(res_values$z)) { # the minified case
+  if(!is.null(res_values$drt)) { # the minified case
     res_values$data_reference_type <- res_values$drt
     if (res_values$data_reference_type == 't') res_values$data_reference_type = 'categorical'
     if (res_values$data_reference_type == 'n') res_values$data_reference_type = 'numeric'
@@ -504,8 +504,8 @@ parse_collection_query <- function(query_res) {
   # parses collection query results to determine collections
   res <- query_res$results
   collection_defs <- lapply(res, function(x) {
-    if (!is.na(x$values)) { parse_collection_values(x$values) }
-    else { parse_collection_values(x$vs) } # the minified case
+    if (!is.na(x$v)) { parse_collection_values(x$v) } # the minified case
+    else { parse_collection_values(x$values) } 
   })
   collection_defs <- purrr::set_names(collection_defs, lapply(collection_defs, function(x) {x$collection}))
 
