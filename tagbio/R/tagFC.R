@@ -217,8 +217,13 @@ get_collection_defs.tagFC <- function(.data) {
       groups = c("developer")
     )
 
+    # override the default collection query limit of 50k
+    collection_limit <- 1000000000
+
     script <- list(
-      method = "collection"
+      method = "collection",
+      limit = collection_limit,
+      minify = TRUE
     )
 
     jsonPayload[['script']] = script
@@ -451,6 +456,17 @@ run_script.tagFC <- function(fc, script) {
 
 parse_collection_values <- function(res_values) {
 
+  if(!is.null(res_values$drt)) { # the minified case
+    res_values$data_reference_type <- res_values$drt
+    if (res_values$data_reference_type == 't') res_values$data_reference_type = 'categorical'
+    if (res_values$data_reference_type == 'n') res_values$data_reference_type = 'numeric'
+    if (res_values$data_reference_type == 'tx') res_values$data_reference_type = 'categorical-matrix'
+    if (res_values$data_reference_type == 'nx') res_values$data_reference_type = 'numeric-matrix'
+    res_values$collection <- res_values$c
+    res_values$collection-size <- res_values$cs
+    res_values$collection-entity-count <- res_values$cec
+  }
+
   # 2.52.4 after use data_reference_type, before uses variable_type
   # data_reference_type (new)
 
@@ -487,7 +503,10 @@ parse_collection_values <- function(res_values) {
 parse_collection_query <- function(query_res) {
   # parses collection query results to determine collections
   res <- query_res$results
-  collection_defs <- lapply(res, function(x) {parse_collection_values(x$values)})
+  collection_defs <- lapply(res, function(x) {
+    if (!is.na(x$v)) { parse_collection_values(x$v) } # the minified case
+    else { parse_collection_values(x$values) } 
+  })
   collection_defs <- purrr::set_names(collection_defs, lapply(collection_defs, function(x) {x$collection}))
 
   return(collection_defs)
