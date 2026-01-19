@@ -8,7 +8,9 @@
 #' @slot .Object a Tag.bio data object
 #'
 #' @examples
+#' \dontrun{
 #' # TODO
+#' }
 #'
 #' @export
 to_json <- function(.Object, ...) {
@@ -84,7 +86,9 @@ to_json.CategoricalCollection <- function(.Object) {
 #' @slot variable from a numeric variable containing numeric values
 #'
 #' @examples
+#' \dontrun{
 #' nvr <- NumericVariable("diamond", "carat")
+#' }
 #'
 #' @export
 NumericVariable <- function(collection, variable, ...) {
@@ -123,7 +127,9 @@ to_json.NumericVariable <- function(.Object) {
 #' @slot variable a categorical variable
 #'
 #' @examples
+#' \dontrun{
 #' cvr <- CategoricalVariable("color", "red")
+#' }
 #'
 #' @export
 CategoricalVariable <- function(collection, variable, ...) {
@@ -164,7 +170,9 @@ to_json.CategoricalVariable <- function(.Object) {
 #' @slot percentile percentile comparator
 #'
 #' @examples
+#' \dontrun{
 #' ns <- NumericSlice("carat", ">", 0.3)
+#' }
 #'
 #' @export
 NumericSlice <- function(
@@ -221,7 +229,9 @@ to_json.NumericSlice <- function(.Object) {
 #' @slot variables list of variables to be combined
 #'
 #' @examples
+#' \dontrun{
 #' cb <- CategoricalBatch("Title", "OR", c("The Matrix", "Casablanca"))
+#' }
 #'
 #' @export
 CategoricalBatch <- function(collection, operator, variables, ...) {
@@ -265,11 +275,13 @@ to_json.CategoricalBatch <- function(.Object) {
 #' }
 #'
 #'
-#' @slot criteria list of categorical variable objects
+#' @slot criteria A list of categorical variable objects
 #' @slot operator "AND", "OR"
 #'
 #' @examples
+#' \dontrun{
 #' cc <- CategoricalCompound(c(), "AND")
+#' }
 #'
 #' @export
 CategoricalCompound <- function(criteria = list(), operator, ...) {

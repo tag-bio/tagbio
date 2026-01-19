@@ -18,7 +18,9 @@ An S3 class representing the Tag.bio NumericVariable
 }}
 
 \examples{
+\dontrun{
 nvr <- NumericVariable("diamond", "carat")
+}
 
 }
 \seealso{

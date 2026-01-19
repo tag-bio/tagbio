@@ -56,11 +56,13 @@ classes and methods.
 }
 
 \examples{
+\dontrun{
 # connect to local host, no API key required
 tag_con <- tagConnect()
 
 # access to tagFC object from local instance
 fc <- tbl(tag_con)
+}
 
 }
 \seealso{

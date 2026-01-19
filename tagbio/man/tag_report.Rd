@@ -65,6 +65,7 @@ doc <- system.file("rmarkdown", "templates", "tagbio",
 )
 rmarkdown::render(doc, html_tag(), output_dir = tempdir())
 }
+
 }
 \author{
 J Ireland, Yixuan Qiu (prettydoc)

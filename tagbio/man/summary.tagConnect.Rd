@@ -9,16 +9,18 @@
 \arguments{
 \item{object}{an object for which a summary is desired.}
 
-\item{...}{additional arguments affecting the summary produced.}
+\item{...}{future extensions}
 }
 \description{
 Connects to a data product via a tagConnect connection.
 }
 \examples{
+\dontrun{
 # connect to local host, no API key required
 tag_con <- tagConnect()
 
 # pulls a data table from the data product
 fc <- tbl(tag_con) |> collect()
+}
 
 }

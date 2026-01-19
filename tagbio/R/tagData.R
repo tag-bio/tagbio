@@ -65,7 +65,13 @@ get_results.tagData <- function(tag_data, data_type = NA, row_name = "") {
 
     type_eq <- paste0(data_type, " = ")
     df <- df |>
-      select(dplyr::matches(paste0("^(", type_eq, ".*|", row_name, ")$"))) |>
+      dplyr::select(dplyr::matches(paste0(
+        "^(",
+        type_eq,
+        ".*|",
+        row_name,
+        ")$"
+      ))) |>
       purrr::set_names(~ stringr::str_replace_all(., type_eq, ""))
   }
 

@@ -18,7 +18,9 @@ An S3 class representing the Tag.bio CategoricalVariable
 }}
 
 \examples{
+\dontrun{
 cvr <- CategoricalVariable("color", "red")
+}
 
 }
 \seealso{

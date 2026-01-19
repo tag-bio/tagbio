@@ -86,18 +86,21 @@ null_to_na_recurse <- function(obj) {
 #' Summary results are returned as a table with columns for \code{key},
 #' \code{site}, \code{description}, \code{displayname} and \code{url}.
 #'
-#' @param host_url URL to the tag.bio server
-#' @param url alternative host_url parameter
-#' @param api_key Tag.bio API key
-#' @param token alternative authentication based on bearer token
+#' @param host_url The URL to the tag.bio server
+#' @param url An alternative host_url parameter
+#' @param api_key A Tag.bio API key
+#' @param token An alternative authentication based on bearer token
 #'
 #' @examples
-#' # connect to local host, no API key required
+#' \dontrun{
+#' #connect to local host, no API key required
 #' tag_con <- tagConnect()
 #'
-#' # connect to a remote tag.bio server with
-#' # explicit parameters (not recommended)
+#' #connect to a remote tag.bio server with
+#' #  explicit parameters (not recommended)
 #' tag_con <- tagConnect(host_url = "", api_key = "")
+#' }
+#'
 #' @export
 tagConnect <- function(host_url = "", api_key = "", url = "", token = "") {
   tc <- list(
@@ -170,15 +173,18 @@ tag_load_config <- function() {
 #' Connects to a data product via a tagConnect connection.
 #'
 #' @examples
-#' # connect to local host, no API key required
+#' \dontrun{
+#' #connect to local host, no API key required
 #' tag_con <- tagConnect()
 #'
-#' # pulls a data table from the data product
+#' #pulls a data table from the data product
 #' fc <- tbl(tag_con) |> collect()
+#' }
 #'
-#' @inheritParams dplyr::tbl
-#' @export
 #' @importFrom dplyr tbl
+#' @inheritParams dplyr::tbl
+#' @param src tagConnect object
+#' @param fc data product name
 #' @export
 tbl.tagConnect <- function(src = "tagConnect", fc = "") {
   return(tagFC(fc = fc, con = src))
@@ -189,17 +195,22 @@ tbl.tagConnect <- function(src = "tagConnect", fc = "") {
 #' The api_auth_header class establishes models the authentication token
 #' for a local or remote Tag.bio server.
 #'
+#' @param object A tagConnect object
+#' @param ... Reserved for future extensions
+#'
 #' @section API Authentication Notes:
 #' There are three different modes for authenticating to the API:
-#' 1. For an API call connected via localhost, no authentication is
+#' \itemize{
+#' \item 1. For an API call connected via localhost, no authentication is
 #'    required.  Localhost is the assumed endpoint if:
 #'    - no URL is provided
 #'    - URL contains "localhost" or "127.0.0.1"
-#' 2. When an API key is provided, connection is made using basic
+#' \item 2. When an API key is provided, connection is made using basic
 #'    authentication with user name and password extracted from the
 #'    API key.
-#' 3. If neither, but a token is provided, use token
+#' \item 3. If neither, but a token is provided, use token
 #'    authentication.
+#' }
 #' @export
 api_auth_header <- function(object, ...) {
   UseMethod("api_auth_header", object)
@@ -210,6 +221,11 @@ api_auth_header <- function(object, ...) {
 #'
 #' The tagConnect class establishes a connection to a local or remote
 #' Tag.bio server.
+#'
+#' @param api_auth_header An authenticaion header object from a
+#'   Tag.bio server connection
+#' @param url A URL to connect to
+#'
 #' @export
 api_auth_header.tagConnect <- function(object, url) {
   # decide which authentication mode to use
@@ -241,30 +257,36 @@ api_auth_header.tagConnect <- function(object, url) {
 #'
 #' Connects to a data product via a tagConnect connection.
 #'
-#' @param tagConnect object
+#' @param tagConnect A tagConnect object
+#' @param ... Reserved for future extensions
 #'
 #' @examples
+#' \dontrun{
 #' # Connected to Tag.bio data host using API key
+#' }
 #'
 #' @export
 api_get <- function(object, ...) {
   UseMethod("api_get", object)
 }
 
-
 #' Tag.bio API data product getter
 #'
 #' Connects to a data product via a tagConnect connection.
 #'
-#' @param api_auth_header object
+#' @param api_auth_header An authenticaion header object from a
+#'   Tag.bio server connection
+#' @param url URL to connect to
 #'
 #' @examples
+#' \dontrun{
 #' # Connected to Tag.bio data host using API key
+#' }
 #'
 #' @export
 api_get.tagConnect <- function(object, url) {
   api_head <- api_auth_header(object, url)
-  r <- tryCatch(
+  response <- tryCatch(
     {
       httr::GET(url, api_head, encode = "json")
     },
@@ -278,40 +300,70 @@ api_get.tagConnect <- function(object, url) {
     }
   )
 
-  if (is.null(r)) {
+  if (is.null(response)) {
     return()
   }
 
   # check status!
-  call_status <- r$status_code
+  call_status <- response$status_code
   if (call_status != 200) {
     if (call_status == 401) {
       print_error("Authentication failed.  Please check API key.")
-      status_message <- httr::content(r)
+      status_message <- httr::content(response)
       print_error(status_message$message)
       return()
     }
     if (call_status == 500) {
       print_error("Server error.")
-      status_message <- httr::content(r)
+      status_message <- httr::content(response)
       print_error(status_message$message)
       return()
     }
     print_error("Error connecting to tag.bio API!")
-    status_message <- httr::content(r)
+    status_message <- httr::content(response)
     print_error(status_message$message)
     return()
   }
 
-  r
+  response
 }
 
+#' An S3 class representing a Tag.bio API data product post
+#'
+#' The tagConnect class establishes a connection to a local or remote
+#' Tag.bio server.
+#'
+#' Connects to a data product via a tagConnect connection.
+#'
+#' @param tagConnect object
+#' @param ... future extensions
+#'
+#' @examples
+#' \dontrun{
+#' # Connected to Tag.bio data host using API key
+#' }
+#'
 #' @export
 api_post <- function(object, ...) {
   UseMethod("api_post", object)
 }
 
-# TODO: Document - all API posts should go through here.
+#' Tag.bio API data product post
+#'
+#' Connects to a data product via a tagConnect connection.
+#'
+#' @param api_auth_header An authenticaion header object from a
+#'   Tag.bio server connection
+#' @param query_type The type of query to execute on the Tag.bio server
+#' @param url The URL of the Tag.bio server to connect to
+#' @param return_type The results return type (ex. "json" or "table")
+#' @param jsonPayload The JSON payload for POST
+#'
+#' @examples
+#' \dontrun{
+#' # Connected to Tag.bio data host using API key
+#' }
+#'
 #' @export
 api_post.tagConnect <- function(
   object,
@@ -327,7 +379,7 @@ api_post.tagConnect <- function(
   api_head <- api_auth_header(object, url)
 
   if (query_type == "s") {
-    r <- tryCatch(
+    response <- tryCatch(
       {
         httr::POST(url, api_head, encode = "json")
       },
@@ -340,7 +392,7 @@ api_post.tagConnect <- function(
       }
     )
   } else {
-    r <- tryCatch(
+    response <- tryCatch(
       {
         httr::POST(url, body = jsonPayload, api_head, encode = "json")
       },
@@ -352,60 +404,67 @@ api_post.tagConnect <- function(
         ))
         api_head <- list()
 
-        r <- httr::POST(url, body = jsonPayload, api_head, encode = "json")
+        response <- httr::POST(
+          url,
+          body = jsonPayload,
+          api_head,
+          encode = "json"
+        )
+
+        response
       }
     )
   }
 
-  if (is.null(r)) {
+  if (is.null(response)) {
     return()
   }
 
   # check status!
-  call_status <- r$status_code
+  call_status <- response$status_code
   if (call_status != 200) {
     if (call_status == 401) {
       print_error("Authentication failed.  Please check API key.")
       print_error("Request:")
-      print_error(r$request)
+      print_error(response$request)
       print_error("Status:")
-      status_message <- httr::content(r)
+      status_message <- httr::content(response)
       print_error(status_message$message)
       return()
     }
     if (call_status == 500) {
       print_error("Internal server error.")
       print_error("Request:")
-      print_error(r$request)
+      print_error(response$request)
       print_error("Status:")
-      status_message <- httr::content(r)
+      status_message <- httr::content(response)
       print_error(status_message$message)
       return()
     }
     if (call_status == 502) {
       print_error("FC appears to be offline.")
       print_error("Request:")
-      print_error(r$request)
+      print_error(response$request)
       print_error("Status:")
-      status_message <- httr::content(r)
+      status_message <- httr::content(response)
       print_error(status_message$message)
       return()
     }
     print_error("Error connecting to tag.bio API")
     print_error("Request:")
-    print_error(r$request)
+    print_error(response$request)
     print_error("Status:")
-    status_message <- httr::content(r)
+    status_message <- httr::content(response)
     print_error(status_message$message)
     return()
   }
 
   if (return_type == "json") {
-    return(httr::content(r))
+    return(httr::content(response))
   } else {
     # wrote a parser here as content was giving floats as strings
     res <- paste0(httr::content(
-      r,
+      response,
       as = "text",
       type = "text/csv",
       encoding = "UTF-8"
@@ -426,22 +485,25 @@ api_post.tagConnect <- function(
 #' Connects to a data product via a tagConnect connection.
 #'
 #' @examples
+#' \dontrun{
 #' # connect to local host, no API key required
 #' tag_con <- tagConnect()
 #'
 #' # pulls a data table from the data product
 #' fc <- tbl(tag_con) |> collect()
+#' }
 #'
 #' @inheritParams base::summary
+#' @param ... future extensions
 #' @export
 summary.tagConnect <- function(object, ...) {
   # returns FC data as a tibble
   kung_url <- paste0(object$url, KUNG_CAPACITORS)
 
   # make api call
-  r <- api_get(object, kung_url)
+  response <- api_get(object, kung_url)
 
-  fcs_json <- null_to_na_recurse(httr::content(r))
+  fcs_json <- null_to_na_recurse(httr::content(response))
   fcs_tbl <- fcs_json |> purrr::map_df(purrr::flatten_df)
 
   if (!("key" %in% colnames(fcs_tbl))) {
@@ -479,6 +541,9 @@ summary.tagConnect <- function(object, ...) {
 #'
 #' The tagConnect class establishes a connection to a local or remote
 #' Tag.bio server.
+#'
+#' @importFrom rlang .data
+#' @param .data tagConnect object
 #' @export
 tagListFCs <- function(.data) {
   UseMethod("tagListFCs", .data)
@@ -488,6 +553,7 @@ tagListFCs <- function(.data) {
 #'
 #' Connects to a data product via a tagConnect connection.
 #'
+#' @importFrom rlang .data
 #' @export
 tagListFCs.tagConnect <- function(.data) {
   fcs_tbl <- summary(.data)
@@ -495,6 +561,6 @@ tagListFCs.tagConnect <- function(.data) {
   if (is.null(fcs_tbl)) {
     c()
   } else {
-    unlist(fcs_tbl |> dplyr::pull(key))
+    unlist(fcs_tbl |> dplyr::pull(name = "key"))
   }
 }

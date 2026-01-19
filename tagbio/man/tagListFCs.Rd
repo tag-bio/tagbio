@@ -6,6 +6,9 @@
 \usage{
 tagListFCs(.data)
 }
+\arguments{
+\item{.data}{tagConnect object}
+}
 \description{
 The tagConnect class establishes a connection to a local or remote
 Tag.bio server.

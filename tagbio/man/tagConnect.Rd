@@ -76,10 +76,13 @@ Summary results are returned as a table with columns for \code{key},
 }
 
 \examples{
-# connect to local host, no API key required
+\dontrun{
+#connect to local host, no API key required
 tag_con <- tagConnect()
 
-# connect to a remote tag.bio server with
-# explicit parameters (not recommended)
+#connect to a remote tag.bio server with
+#  explicit parameters (not recommended)
 tag_con <- tagConnect(host_url = "", api_key = "")
+}
+
 }

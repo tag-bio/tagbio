@@ -6,6 +6,11 @@
 \usage{
 \method{api_auth_header}{tagConnect}(object, url)
 }
+\arguments{
+\item{url}{URL to connect to}
+
+\item{api_auth_header}{object}
+}
 \description{
 The tagConnect class establishes a connection to a local or remote
 Tag.bio server.

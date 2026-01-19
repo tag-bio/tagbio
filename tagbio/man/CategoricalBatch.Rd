@@ -20,7 +20,9 @@ Represents the intersection or union of variables within one collection.
 }}
 
 \examples{
+\dontrun{
 cb <- CategoricalBatch("Title", "OR", c("The Matrix", "Casablanca"))
+}
 
 }
 \seealso{

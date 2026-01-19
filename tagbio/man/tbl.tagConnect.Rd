@@ -7,16 +7,20 @@
 \method{tbl}{tagConnect}(src = "tagConnect", fc = "")
 }
 \arguments{
-\item{src}{A data source}
+\item{src}{tagConnect object}
+
+\item{fc}{data product name}
 }
 \description{
 Connects to a data product via a tagConnect connection.
 }
 \examples{
-# connect to local host, no API key required
+\dontrun{
+#connect to local host, no API key required
 tag_con <- tagConnect()
 
-# pulls a data table from the data product
+#pulls a data table from the data product
 fc <- tbl(tag_con) |> collect()
+}
 
 }

@@ -25,7 +25,7 @@ switch_expr <- function(x, ...) {
 }
 
 flat_map_chr <- function(.x, .f, ...) {
-  rlang::flatten_chr(purrr::map(.x, .f, ...))
+  purrr::list_c(purrr::map(.x, .f, ...), ptype = character())
 }
 
 all_names_rec <- function(x) {
@@ -80,14 +80,19 @@ comparator_opposites <- list(
   "==" = "=="
 )
 
+e1 <- ""
+e2 <- ""
+
+#' @importFrom utils methods
+#' @importFrom methods is
 tag_numeric_slice_op <- function(op) {
   # handle numeric and cat
   rlang::new_function(
-    rlang::exprs(e1 = , e2 = ),
+    rlang::exprs(e1 = e1, e2 = e2),
     rlang::expr(
       # test signature - if we don't handle the pass to parent environment
-      if (methods::is(e1, "NumericVariable")) {
-        if (methods::is(e2, "numeric")) {
+      if (methods:is(e1, "NumericVariable")) {
+        if (methods:is(e2, "numeric")) {
           NumericSlice(criterion = e1, operator = !!op, value = e2)
         } else {
           # if e2 is another type, raise error for now... more work to do...
@@ -95,12 +100,12 @@ tag_numeric_slice_op <- function(op) {
             "ERROR: Not supported for operator",
             !!op,
             "arguments NumericVariable,",
-            methods::is(e2)
+            methods:is(e2)
           ))
         }
       } else {
-        if (methods::is(e2, "NumericVariable")) {
-          if (methods::is(e1, "numeric")) {
+        if (methods:is(e2, "NumericVariable")) {
+          if (methods:is(e1, "numeric")) {
             # reverse the comparator
             NumericSlice(
               criterion = e2,
@@ -113,7 +118,7 @@ tag_numeric_slice_op <- function(op) {
               "ERROR: Not supported for operator",
               !!op,
               "arguments",
-              methods::is(e1),
+              methods:is(e1),
               " and NumericVariable,"
             ))
           }
@@ -139,14 +144,19 @@ tag_numeric_func_list <- list(
 #----------------------------------------------------------
 # CategoricalBatch
 
+#' importFrom utils methods
+#' importFrom methods is
 tag_categorical_batch_op <- function(op, batch_op) {
+  e1 <- ""
+  e2 <- ""
+
   # handle categorical batch operators
   rlang::new_function(
-    rlang::exprs(e1 = , e2 = ),
+    rlang::exprs(e1 = e1, e2 = e2),
     rlang::expr(
       # test signature - if we don't handle the pass to parent environment
-      if (methods::is(e1, "CategoricalCollection")) {
-        if (methods::is(e2, "numeric") | methods::is(e2, "character")) {
+      if (methods:is(e1, "CategoricalCollection")) {
+        if (methods:is(e2, "numeric") | methods:is(e2, "character")) {
           # if (length(e2) == 1) {
           #  # variables should always be a list
           #  e2 <- list(e2)
@@ -162,12 +172,12 @@ tag_categorical_batch_op <- function(op, batch_op) {
             "ERROR: Not supported for operator",
             !!op,
             "arguments CategoricalCollection,",
-            methods::is(e2)
+            methods:is(e2)
           ))
         }
       } else {
-        if (methods::is(e2, "CategoricalCollection")) {
-          if (methods::is(e1, "numeric") | methods::is(e1, "character")) {
+        if (methods:is(e2, "CategoricalCollection")) {
+          if (methods:is(e1, "numeric") | methods:is(e1, "character")) {
             # if (length(e1) == 1) {
             #  # variables should always be a list
             #  e1 <- list(e1)
@@ -183,7 +193,7 @@ tag_categorical_batch_op <- function(op, batch_op) {
               "ERROR: Not supported for operator",
               !!op,
               "arguments ",
-              methods::is(e1),
+              methods:is(e1),
               " CategoricalCollection,"
             ))
           }

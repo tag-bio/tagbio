@@ -28,7 +28,9 @@ An S3 class representing the Tag.bio NumericSlice
 }}
 
 \examples{
+\dontrun{
 ns <- NumericSlice("carat", ">", 0.3)
+}
 
 }
 \seealso{

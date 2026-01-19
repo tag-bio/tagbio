@@ -37,6 +37,7 @@
 #' )
 #' rmarkdown::render(doc, html_tag(), output_dir = tempdir())
 #' }
+#'
 #' @export
 tag_report <- function(
   theme = "default-color",

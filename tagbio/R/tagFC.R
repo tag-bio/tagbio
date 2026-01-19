@@ -42,11 +42,13 @@
 #' @slot url full URL to this data product
 #'
 #' @examples
+#' \dontrun{
 #' # connect to local host, no API key required
 #' tag_con <- tagConnect()
 #'
 #' # access to tagFC object from local instance
 #' fc <- tbl(tag_con)
+#' }
 #'
 #' @export
 tagFC <- function(con, fc = "", qdelim = " = ") {
@@ -224,11 +226,13 @@ colnames.tagFC <- function(x, ...) {
   col_names
 }
 
+#' @importFrom rlang .data
 #' @export
 info <- function(.data, ...) {
   UseMethod("info", .data)
 }
 
+#' @importFrom rlang .data
 #' @export
 info.tagFC <- function(.data) {
   # returns FC provenance information
@@ -240,11 +244,13 @@ print.tagFC <- function(x) {
   list(x$fc)
 }
 
+#' @importFrom rlang .data
 #' @export
 get_collection_defs <- function(.data) {
   UseMethod("get_collection_defs", .data)
 }
 
+#' @importFrom rlang .data
 #' @export
 get_collection_defs.tagFC <- function(.data) {
   # lazy loaded attribute
@@ -277,11 +283,13 @@ get_collection_defs.tagFC <- function(.data) {
 }
 
 # DEPRECATED...
+#' @importFrom rlang .data
 #' @export
 get_variable_defs <- function(.data, ...) {
   UseMethod("get_variable_defs", .data)
 }
 
+#' @importFrom rlang .data
 #' @export
 get_variable_defs.tagFC <- function(.data, ...) {
   # user supplied list of collections if they desire just a subset
@@ -324,11 +332,13 @@ get_variable_defs.tagFC <- function(.data, ...) {
   var_defs
 }
 
+#' @importFrom rlang .data
 #' @export
 get_analysis_variables <- function(.data) {
   UseMethod("get_analysis_variables", .data)
 }
 
+#' @importFrom rlang .data
 #' @export
 get_analysis_variables.tagFC <- function(.data) {
   # build up analysis variables from select
@@ -358,6 +368,7 @@ get_analysis_variables.tagFC <- function(.data) {
 #' @inheritParams dplyr::select
 #' @export
 #' @importFrom dplyr select
+#' @importFrom rlang .data
 #' @export
 select.tagFC <- function(.data, ...) {
   .data$qselect <- c(.data$qselect, rlang::enexprs(...))
@@ -367,6 +378,7 @@ select.tagFC <- function(.data, ...) {
 
 #' @inheritParams dplyr::filter
 #' @export
+#' @importFrom rlang .data
 #' @importFrom dplyr filter
 #' @export
 filter.tagFC <- function(.data, ...) {
@@ -375,11 +387,13 @@ filter.tagFC <- function(.data, ...) {
   .data
 }
 
+#' @importFrom rlang .data
 #' @export
 get_background <- function(.data) {
   UseMethod("get_background", .data)
 }
 
+#' @importFrom rlang .data
 #' @export
 get_background.tagFC <- function(.data) {
   # empty background if no filters have been specified

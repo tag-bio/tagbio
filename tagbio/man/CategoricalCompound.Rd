@@ -24,7 +24,9 @@ in the criteria attribute will be intersected.
 }}
 
 \examples{
+\dontrun{
 cc <- CategoricalCompound(c(), "AND")
+}
 
 }
 \seealso{

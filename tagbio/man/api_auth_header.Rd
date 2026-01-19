@@ -6,6 +6,11 @@
 \usage{
 api_auth_header(object, ...)
 }
+\arguments{
+\item{object}{tagConnect object}
+
+\item{...}{future extensions}
+}
 \description{
 The api_auth_header class establishes models the authentication token
 for a local or remote Tag.bio server.
@@ -13,14 +18,16 @@ for a local or remote Tag.bio server.
 \section{API Authentication Notes}{
 
 There are three different modes for authenticating to the API:
-1. For an API call connected via localhost, no authentication is
+\itemize{
+\item 1. For an API call connected via localhost, no authentication is
    required.  Localhost is the assumed endpoint if:
    - no URL is provided
    - URL contains "localhost" or "127.0.0.1"
-2. When an API key is provided, connection is made using basic
+\item 2. When an API key is provided, connection is made using basic
    authentication with user name and password extracted from the
    API key.
-3. If neither, but a token is provided, use token
+\item 3. If neither, but a token is provided, use token
    authentication.
+}
 }
 

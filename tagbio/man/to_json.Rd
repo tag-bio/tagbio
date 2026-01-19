@@ -17,6 +17,8 @@ for communicating with the API or creating configuration files.
 }}
 
 \examples{
+\dontrun{
 # TODO
+}
 
 }
