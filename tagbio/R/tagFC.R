@@ -504,7 +504,7 @@ parse_collection_query <- function(query_res) {
   # parses collection query results to determine collections
   res <- query_res$results
   collection_defs <- lapply(res, function(x) {
-    if (!is.na(x$v)) { parse_collection_values(x$v) } # the minified case
+    if (!is.null(x$v)) { parse_collection_values(x$v) } # the minified case
     else { parse_collection_values(x$values) } 
   })
   collection_defs <- purrr::set_names(collection_defs, lapply(collection_defs, function(x) {x$collection}))
