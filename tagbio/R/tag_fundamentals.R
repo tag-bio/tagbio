@@ -210,6 +210,7 @@ to_json.CategoricalBatch <- function(.Object) {
   json[['collection']] <- .Object$collection$collection
   json[['variables']] <- .Object$variables
   json[['data_function_type']] <- .Object$data_function_type
+  json[['allow_null']] < "true"
   return(json)
 }
 
