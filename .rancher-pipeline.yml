@@ -41,3 +41,4 @@ notification:
     - notifier: c-ptwnq:n-h4lq7
   condition:
     - Failed
+
