@@ -31,6 +31,7 @@ flat_map_chr <- function(.x, .f, ...) {
 all_names_rec <- function(x) {
   switch_expr(x,
               constant = character(),
+              character = character(),
               symbol =   as.character(x),
               call =     flat_map_chr(as.list(x[-1]), all_names)
   )
