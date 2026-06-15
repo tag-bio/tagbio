@@ -349,7 +349,11 @@ api_post.tagConnect <- function(object, query_type, url,
     res <- paste0(httr::content(r, as = "text", type = "text/csv", encoding = "UTF-8"))
     res_table <- read.table(text = res, header = T, sep = ",", check.names = F,
                             quote = "\"", comment.char = "")
-    return(tibble(res_table))
+    # FC downloads can carry duplicate column names (e.g. a collection exposed as
+    # both categorical and a same-named numeric variable). read.table keeps them;
+    # tibble() rejects duplicates by default and hard-errors. Repair to unique
+    # names so the pull succeeds instead of crashing (only affects dup'd columns).
+    return(tibble(res_table, .name_repair = "unique"))
   }
 }
 
