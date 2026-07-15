@@ -6,7 +6,7 @@ Author: J Ireland
 Maintainer: tag.bio <j@tagbio.com>
 Description: This library allows users to work with data from the tag.bio
     analysis platform directly from R.
-License: MIT
+License: Apache License (== 2.0)
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
