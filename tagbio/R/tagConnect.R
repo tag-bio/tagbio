@@ -277,7 +277,9 @@ api_post.tagConnect <- function(object, query_type, url,
   if (query_type == "s") {
     r <- tryCatch({httr::POST(url, api_head, encode = "json")},
                    error=function(cond) {
-                     print_error(paste0("Error.  Was not able to connect to: ",url,".  Please check URL."))
+                     print_error(paste0("Server unreachable — could not connect to ", url,
+                                       ". Is the server up? Check the host and your network / VPN.  (",
+                                       conditionMessage(cond), ")"))
                      return()
                   })
   } else {
@@ -287,7 +289,9 @@ api_post.tagConnect <- function(object, query_type, url,
                               api_head,
                               encode = "json")},
                   error=function(cond) {
-                    print_error(paste0("Error.  Was not able to connect to: ",url,".  Please check URL."))
+                    print_error(paste0("Server unreachable — could not connect to ", url,
+                                       ". Is the server up? Check the host and your network / VPN.  (",
+                                       conditionMessage(cond), ")"))
                     api_head <- list()
 
                     r <- httr::POST(url,
@@ -309,7 +313,7 @@ api_post.tagConnect <- function(object, query_type, url,
     if (call_status == 401) {
       print_error("Authentication failed.  Please check API key.")
       print_error("Request:")
-      print_error(r$request)
+      print_error(paste(r$request$method, r$request$url))
       print_error("Status:")
       status_message <- httr::content(r)
       print_error(status_message$message)
@@ -318,7 +322,7 @@ api_post.tagConnect <- function(object, query_type, url,
     if (call_status == 500) {
       print_error("Internal server error.")
       print_error("Request:")
-      print_error(r$request)
+      print_error(paste(r$request$method, r$request$url))
       print_error("Status:")
       status_message <- httr::content(r)
       print_error(status_message$message)
@@ -327,7 +331,7 @@ api_post.tagConnect <- function(object, query_type, url,
     if (call_status == 502) {
       print_error("FC appears to be offline.")
       print_error("Request:")
-      print_error(r$request)
+      print_error(paste(r$request$method, r$request$url))
       print_error("Status:")
       status_message <- httr::content(r)
       print_error(status_message$message)
