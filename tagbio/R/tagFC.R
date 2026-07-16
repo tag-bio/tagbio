@@ -103,6 +103,15 @@ summary.tagFC <- function(object, ...) {
 # colnames method
 # - returns back a mix of categorical collections and numeric variables
 
+# base::colnames is NOT an S3 generic, so colnames(fc) never dispatched to the tagFC method
+# (it silently returned NULL). Make colnames generic here; the default delegates to base, so
+# every existing (non-tagFC) colnames() call behaves exactly as before.
+#' @export
+colnames <- function(x, ...) UseMethod("colnames")
+
+#' @export
+colnames.default <- function(x, ...) base::colnames(x, ...)
+
 #' @export
 colnames.tagFC <- function(x, ...) {
 
