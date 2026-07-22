@@ -178,17 +178,18 @@ if (!is.null(fc_request$uuid)) {
   fc_blob_id <- fc_request$uuid
 }
 
-# make connection
-# - we are now always running locally
-#if (is.null(fc_url) | is.null(fc_token)) {
-print("Using localhost to communicate with API.")
-tag_con <- tagConnect()
-fc <- tagFC(tag_con)
-#} else {
-#  print("Using token-based authentication to communicate with API.")
-#  tag_con <- tagConnect(url = fc_url, token = fc_token)
-#  fc <- tagFC(tag_con, fc_name)
-#}
+# make connection — pin to the engine-provided packet URL (+ token when remote). NEVER bare
+# tagConnect(): that resolves the host from env / ~/.tagbio.json and would dial the wrong server.
+# A plugin's connection comes ONLY from the engine packet, never a developer's config file.
+if (is.null(fc_url) | is.null(fc_token)) {
+  print("Using localhost to communicate with API.")
+  tag_con <- tagConnect(url = url)
+  fc <- tagFC(tag_con)
+} else {
+  print("Using token-based authentication to communicate with API.")
+  tag_con <- tagConnect(url = fc_url, token = fc_token)
+  fc <- tagFC(tag_con, fc_name)
+}
 
 ## Look for protocol instance or script
 tag_data <- NULL

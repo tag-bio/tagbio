@@ -99,8 +99,11 @@ tagConnect <- function(host_url = "", api_key = "", url = "", token = "") {
              token = token)
   class(tc) <- "tagConnect"
 
-  # get configuration from sys variables or file
-  config_data <- tag_load_config()
+  # Config (env vars / ~/.tagbio.json) is for AD-HOC use only. When an explicit `url` is passed (the
+  # plugin path), the caller is authoritative for both endpoint and credentials, so we do NOT read the
+  # config file: a plugin must never pick up a developer's carte-blanche API key — its remote-FC calls
+  # carry the invoking user's token, and localhost needs no auth. See governing rule in the SDK matrix.
+  config_data <- if (url != "") list() else tag_load_config()
 
   if (url == "") {
     url <- host_url
