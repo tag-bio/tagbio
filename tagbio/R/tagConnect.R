@@ -6,6 +6,8 @@ LOCALHOST_IP <- "127.0.0.1"
 
 # environment variables
 TAGBIO_HOST_URL <- "TAGBIO_HOST_URL"
+# The deployed notebook sets the host as TAGBIO_BASE_URL, not TAGBIO_HOST_URL; accept either.
+TAGBIO_BASE_URL <- "TAGBIO_BASE_URL"
 TAGBIO_API_KEY <- "TAGBIO_API_KEY"
 # Sentinel set by the plugin runner (connect_tagbio.R). When present, this is a plugin run and the
 # SDK must never read env/config for connection/auth (see tagConnect).
@@ -20,6 +22,20 @@ KUNG_CAPACITORS <- "/kung-services/db/capacitors"
 # home dir and config file
 HOME_ENV <- "HOME"
 CONFIG_FILE <- ".tagbio.json"
+
+# Resolve a setting with the FILE (~/.tagbio.json) beating ENV, per key: try each candidate key in
+# the config file first, then the environment, then the default. `keys` lets the host accept either
+# TAGBIO_HOST_URL or TAGBIO_BASE_URL. Mirrors _get_env_setting() in the Python SDK.
+resolve_setting <- function(config_data, keys, default = "") {
+  for (k in keys) {
+    if (k %in% names(config_data) && nzchar(config_data[[k]])) return(config_data[[k]])
+  }
+  for (k in keys) {
+    v <- Sys.getenv(k)
+    if (nzchar(v)) return(v)
+  }
+  default
+}
 
 print_error <- function(message) {
   if (is_list(message)) {
@@ -118,17 +134,9 @@ tagConnect <- function(host_url = "", api_key = "", url = "", token = "") {
     url <- host_url
   }
 
-  # look other places for url/api key
+  # look other places for url — FILE beats ENV, per key; host may be TAGBIO_HOST_URL or TAGBIO_BASE_URL
   if (url == "") {
-    if (Sys.getenv(TAGBIO_HOST_URL) != "") {
-      url <- Sys.getenv(TAGBIO_HOST_URL)
-    } else {
-      if (TAGBIO_HOST_URL %in% names(config_data)) {
-        url <- config_data[[TAGBIO_HOST_URL]]
-      } else {
-        url <- LOCALHOST_URL
-      }
-    }
+    url <- resolve_setting(config_data, c(TAGBIO_HOST_URL, TAGBIO_BASE_URL), LOCALHOST_URL)
   }
 
   # drop trailing slash if it exists
@@ -139,14 +147,9 @@ tagConnect <- function(host_url = "", api_key = "", url = "", token = "") {
 
   tc$url <- url
 
+  # api key — FILE beats ENV, per key (same rule as the host)
   if (api_key == "") {
-    if (Sys.getenv(TAGBIO_API_KEY) != "") {
-      api_key <- Sys.getenv(TAGBIO_API_KEY)
-    } else {
-      if (TAGBIO_API_KEY %in% names(config_data)) {
-        api_key <- config_data[[TAGBIO_API_KEY]]
-      }
-    }
+    api_key <- resolve_setting(config_data, TAGBIO_API_KEY, "")
   }
   tc$api_key <- api_key
   tc$token <- token
