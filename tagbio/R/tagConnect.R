@@ -121,12 +121,13 @@ tagConnect <- function(host_url = "", api_key = "", url = "", token = "") {
              token = token)
   class(tc) <- "tagConnect"
 
-  # Config (env vars / ~/.tagbio.json) is for AD-HOC use only. A plugin (the runner connect_tagbio.R
-  # sets the TAGBIO_PLUGIN_CONTEXT sentinel) must NEVER read the config file: it would pick up the
-  # developer's carte-blanche API key (privilege escalation). A plugin's credentials come only from
-  # the engine packet — remote-FC calls carry the invoking user's token, localhost needs no auth.
-  # A dev can opt back in for a local test with TAGBIO_PLUGIN_ALLOW_CONFIG (no user token in a test,
-  # so nothing to escalate over). Mirrors _get_env_setting() in the Python SDK.
+  # Config (~/.tagbio.json) AND ambient env vars are for AD-HOC use only. A plugin (the runner
+  # connect_tagbio.R sets the TAGBIO_PLUGIN_CONTEXT sentinel) must NEVER resolve its host or key from
+  # the file OR the environment: it would pick up the developer's carte-blanche API key (privilege
+  # escalation) or dial the wrong server (e.g. a TAGBIO_BASE_URL the notebook sets -> a plugin's
+  # self-query goes to the services host with a bare /q -> 405). A plugin's connection comes ONLY from
+  # the engine packet (explicit url/host_url + the invoking user's token); localhost needs no auth.
+  # A dev can opt back in for a local test with TAGBIO_PLUGIN_ALLOW_CONFIG. Mirrors the Python SDK.
   skip_config <- Sys.getenv(TAGBIO_PLUGIN_CONTEXT) != "" && Sys.getenv(TAGBIO_PLUGIN_ALLOW_CONFIG) == ""
   config_data <- if (skip_config) list() else tag_load_config()
 
@@ -134,9 +135,10 @@ tagConnect <- function(host_url = "", api_key = "", url = "", token = "") {
     url <- host_url
   }
 
-  # look other places for url — FILE beats ENV, per key; host may be TAGBIO_HOST_URL or TAGBIO_BASE_URL
+  # look other places for url — FILE beats ENV, per key; host may be TAGBIO_HOST_URL or TAGBIO_BASE_URL.
+  # In a plugin (skip_config) do NOT consult env/file at all — fall straight to localhost.
   if (url == "") {
-    url <- resolve_setting(config_data, c(TAGBIO_HOST_URL, TAGBIO_BASE_URL), LOCALHOST_URL)
+    url <- if (skip_config) LOCALHOST_URL else resolve_setting(config_data, c(TAGBIO_HOST_URL, TAGBIO_BASE_URL), LOCALHOST_URL)
   }
 
   # drop trailing slash if it exists
@@ -147,9 +149,9 @@ tagConnect <- function(host_url = "", api_key = "", url = "", token = "") {
 
   tc$url <- url
 
-  # api key — FILE beats ENV, per key (same rule as the host)
+  # api key — FILE beats ENV, per key (same rule as the host); a plugin (skip_config) uses none.
   if (api_key == "") {
-    api_key <- resolve_setting(config_data, TAGBIO_API_KEY, "")
+    api_key <- if (skip_config) "" else resolve_setting(config_data, TAGBIO_API_KEY, "")
   }
   tc$api_key <- api_key
   tc$token <- token

@@ -1,7 +1,7 @@
 Package: tagbio
 Type: Package
 Title: tagbio: methods for interacting with the tag.bio analysis platform
-Version: 1.1.68
+Version: 1.1.69
 Author: Jesse Paquette (current author and maintainer); original authors J Ireland, Damir
 Maintainer: Jesse Paquette <jesse@tag.bio>
 Description: This library allows users to work with data from the tag.bio
