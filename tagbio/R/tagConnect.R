@@ -10,6 +10,9 @@ TAGBIO_API_KEY <- "TAGBIO_API_KEY"
 # Sentinel set by the plugin runner (connect_tagbio.R). When present, this is a plugin run and the
 # SDK must never read env/config for connection/auth (see tagConnect).
 TAGBIO_PLUGIN_CONTEXT <- "TAGBIO_PLUGIN_CONTEXT"
+# Explicit dev opt-in to read env/config even inside a plugin, for locally testing a remote
+# cross-FC call (a test has no user token, so nothing to escalate over). Off by default.
+TAGBIO_PLUGIN_ALLOW_CONFIG <- "TAGBIO_PLUGIN_ALLOW_CONFIG"
 
 # kung services (for data product discovery)
 KUNG_CAPACITORS <- "/kung-services/db/capacitors"
@@ -106,8 +109,10 @@ tagConnect <- function(host_url = "", api_key = "", url = "", token = "") {
   # sets the TAGBIO_PLUGIN_CONTEXT sentinel) must NEVER read the config file: it would pick up the
   # developer's carte-blanche API key (privilege escalation). A plugin's credentials come only from
   # the engine packet — remote-FC calls carry the invoking user's token, localhost needs no auth.
-  # Mirrors _in_plugin_context() in the Python SDK. See the governing rule in the SDK matrix.
-  config_data <- if (Sys.getenv(TAGBIO_PLUGIN_CONTEXT) != "") list() else tag_load_config()
+  # A dev can opt back in for a local test with TAGBIO_PLUGIN_ALLOW_CONFIG (no user token in a test,
+  # so nothing to escalate over). Mirrors _get_env_setting() in the Python SDK.
+  skip_config <- Sys.getenv(TAGBIO_PLUGIN_CONTEXT) != "" && Sys.getenv(TAGBIO_PLUGIN_ALLOW_CONFIG) == ""
+  config_data <- if (skip_config) list() else tag_load_config()
 
   if (url == "") {
     url <- host_url
