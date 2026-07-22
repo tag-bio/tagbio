@@ -16,6 +16,11 @@ suppressPackageStartupMessages(library("yaml"))
 ## print startup to console
 print("Starting connect_tagbio.R")
 
+# Mark this process as an FC engine plugin run. The SDK must never read ~/.tagbio.json for
+# connection/auth in a plugin: credentials come only from the engine packet (URL + the invoking
+# user's token). See tagConnect(). Mirrors cli.py:main in the Python SDK.
+Sys.setenv(TAGBIO_PLUGIN_CONTEXT = "1")
+
 ## simple Rmd reader
 rmd_reader <- function(rmd_file) {
   yaml_content <- c()

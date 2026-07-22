@@ -7,6 +7,9 @@ LOCALHOST_IP <- "127.0.0.1"
 # environment variables
 TAGBIO_HOST_URL <- "TAGBIO_HOST_URL"
 TAGBIO_API_KEY <- "TAGBIO_API_KEY"
+# Sentinel set by the plugin runner (connect_tagbio.R). When present, this is a plugin run and the
+# SDK must never read env/config for connection/auth (see tagConnect).
+TAGBIO_PLUGIN_CONTEXT <- "TAGBIO_PLUGIN_CONTEXT"
 
 # kung services (for data product discovery)
 KUNG_CAPACITORS <- "/kung-services/db/capacitors"
@@ -99,11 +102,12 @@ tagConnect <- function(host_url = "", api_key = "", url = "", token = "") {
              token = token)
   class(tc) <- "tagConnect"
 
-  # Config (env vars / ~/.tagbio.json) is for AD-HOC use only. When an explicit `url` is passed (the
-  # plugin path), the caller is authoritative for both endpoint and credentials, so we do NOT read the
-  # config file: a plugin must never pick up a developer's carte-blanche API key — its remote-FC calls
-  # carry the invoking user's token, and localhost needs no auth. See governing rule in the SDK matrix.
-  config_data <- if (url != "") list() else tag_load_config()
+  # Config (env vars / ~/.tagbio.json) is for AD-HOC use only. A plugin (the runner connect_tagbio.R
+  # sets the TAGBIO_PLUGIN_CONTEXT sentinel) must NEVER read the config file: it would pick up the
+  # developer's carte-blanche API key (privilege escalation). A plugin's credentials come only from
+  # the engine packet — remote-FC calls carry the invoking user's token, localhost needs no auth.
+  # Mirrors _in_plugin_context() in the Python SDK. See the governing rule in the SDK matrix.
+  config_data <- if (Sys.getenv(TAGBIO_PLUGIN_CONTEXT) != "") list() else tag_load_config()
 
   if (url == "") {
     url <- host_url
