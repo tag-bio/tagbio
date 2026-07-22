@@ -352,9 +352,11 @@ api_post.tagConnect <- function(object, query_type, url,
       print_error(status_message$message)
       return()
     }
-    print_error("Error connecting to tag.bio API")
+    print_error(paste("Error connecting to tag.bio API. HTTP status:", call_status))
     print_error("Request:")
-    print_error(r$request)
+    # Never pass the raw httr request object to print_error: jsonlite can't serialize its S3 class
+    # ("No method asJSON S3 class: request") and THROWS, masking the real server error below.
+    print_error(paste(r$request$method, r$request$url))
     print_error("Status:")
     status_message <- httr::content(r)
     print_error(status_message$message)
