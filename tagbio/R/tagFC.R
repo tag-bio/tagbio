@@ -59,6 +59,16 @@ tagFC <- function(con, fc = "", qdelim = " = ") {
   fc_obj$url <- con$url
 
   if ((fc != "") & (fc != "fc-local")) {
+    # A named FC requires a REMOTE services host. If the connection resolved to localhost/empty (e.g. a
+    # plugin auto-test with no signed-in session, so no host_url), a named cross-FC call cannot be routed
+    # -- localhost serves a single unnamed FC (bare /q), not /fc-svc/<name>. Error clearly instead of
+    # silently dialing the local server (which returns a confusing malformed-request error).
+    if (con$url == "" || grepl(LOCALHOST, con$url, ignore.case = TRUE) || grepl(LOCALHOST_IP, con$url)) {
+      stop("Cannot reach named FC '", fc, "': no remote host is available (the connection resolved to ",
+           "localhost). A named cross-FC call requires a host_url and a signed-in user session. In a ",
+           "plugin auto-test both are absent -- wrap the call in tryCatch and degrade gracefully, or run ",
+           "where the FC is reachable.")
+    }
     fc_obj$url <- paste0(fc_obj$url, "/fc-svc/", fc)
   }
 
