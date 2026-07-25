@@ -135,7 +135,7 @@ to_json.CategoricalVariable <- function(.Object) {
 #'
 #'
 #' @slot criterion a numeric variable being compared
-#' @slot operator "<", "<=", "==", "!=", ">=", ">"
+#' @slot operator "<", "<=", "=", "!=", ">=", ">" (engine codes; the dplyr `==` maps to "=")
 #' @slot value numeric comparator
 #' @slot percentile percentile comparator
 #'

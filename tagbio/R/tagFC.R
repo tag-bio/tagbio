@@ -373,6 +373,16 @@ get_background.tagFC <- function(.data) {
     # TODO - check that results are allowable types...
     criteria_list[[i]] <- to_tag(.data, !!.data$qfilter[[i]])
   }
+  # Guard bare is-null: a numeric `= "NaN"` slice (from `is.na(x)`) HANGS the current engine, so
+  # reject it with a clear message instead of shipping a query that never returns. `!is.na(x)`
+  # (not-null) is already flipped to `!=` by this point, so only an un-negated is.na trips this.
+  for (crit in criteria_list) {
+    if (is(crit, "NumericSlice") &&
+        identical(crit$operator, "=") && identical(as.character(crit$value), "NaN")) {
+      stop("is-null on a numeric column (`is.na(x)`) is not supported by the FC engine yet -- it ",
+           "hangs. Use `!is.na(x)` for a not-null filter.", call. = FALSE)
+    }
+  }
   bkg <- CategoricalCompound(criteria = criteria_list, operator = "AND")
   return(bkg)
 }
