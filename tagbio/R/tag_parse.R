@@ -70,8 +70,42 @@ comparator_opposites <- list(
   ">=" = "<=",
   "<" = ">",
   "<=" = ">=",
-  "==" = "=="
+  "=" = "=",
+  "!=" = "!="
 )
+
+# Logical negation of a numeric-slice operator, so `!(x > 5)` -> `x <= 5` and, most usefully,
+# `!is.na(x)` -> not-null. Used by the `!` handler below.
+operator_negations <- list(
+  "=" = "!=",
+  "!=" = "=",
+  ">"  = "<=",
+  "<=" = ">",
+  "<"  = ">=",
+  ">=" = "<"
+)
+
+# `is.na(x)` on a numeric column -> the engine's null test, encoded as `= "NaN"` (NaN passed as a
+# string through JSON; R itself can't compare to NaN). `!is.na(x)` negates it to not-null. This is
+# the idiomatic dplyr surface -- users never type NaN. Falls back to base is.na() for non-columns.
+# NB the engine's equality operator is "=" (single), not "==" -- see the `==` mapping below.
+tag_is_na <- function(e1) {
+  if (is(e1, "NumericVariable")) {
+    NumericSlice(criterion = e1, operator = "=", value = "NaN")
+  } else {
+    base::is.na(e1)
+  }
+}
+
+# `!` flips a numeric-slice's operator (so `!is.na(x)` -> not-null); otherwise base negation.
+tag_not <- function(e1) {
+  if (is(e1, "NumericSlice")) {
+    e1$operator <- operator_negations[[e1$operator]]
+    e1
+  } else {
+    base::`!`(e1)
+  }
+}
 
 tag_numeric_slice_op <- function(op) {
 
@@ -81,7 +115,9 @@ tag_numeric_slice_op <- function(op) {
     rlang::expr(
       # test signature - if we don't handle the pass to parent environment
       if (is(e1, "NumericVariable")) {
-        if (is(e2, "numeric")) {
+        # "NaN" (string) is allowed as the value so `col != "NaN"` compiles to a numeric-slice
+        # that filters out null/NaN rows -- the engine's not-null idiom for a numeric criterion.
+        if (is(e2, "numeric") || (is.character(e2) && toupper(e2) == "NAN")) {
           NumericSlice(criterion = e1, operator = !!op, value = e2)
         } else {
           # if e2 is another type, raise error for now... more work to do...
@@ -90,7 +126,7 @@ tag_numeric_slice_op <- function(op) {
         }
       } else {
         if (is(e2, "NumericVariable")) {
-          if (is(e1, "numeric")) {
+          if (is(e1, "numeric") || (is.character(e1) && toupper(e1) == "NAN")) {
             # reverse the comparator
             NumericSlice(criterion = e2,
                          operator = comparator_opposites[[!!op]],
@@ -116,7 +152,10 @@ tag_numeric_func_list <- list(
   `>=` = tag_numeric_slice_op(">="),
   `<` = tag_numeric_slice_op("<"),
   `<=` = tag_numeric_slice_op("<="),
-  `==` = tag_numeric_slice_op("==")
+  `==` = tag_numeric_slice_op("="),   # R's `==` -> the engine's numeric equality operator "=" (single)
+  `!=` = tag_numeric_slice_op("!="),
+  `is.na` = tag_is_na,
+  `!` = tag_not
 )
 
 #----------------------------------------------------------
