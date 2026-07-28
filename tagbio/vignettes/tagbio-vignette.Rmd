@@ -32,7 +32,7 @@ Next, to install or update the tag.bio R SDK, run the following.
 ```{r, eval = F}
 install.packages("remotes")
 library(remotes)
-install_bitbucket("cloudfolks/tagbio", ref = "master", subdir = "tagbio")
+install_local("tagbio")  # install the tagbio/ package subdir from a local clone of the repo
 ```
 
 That should do it!
@@ -61,7 +61,7 @@ library(tidyverse)
 library(tagbio)
 
 # paste in your API key here
-tag_con <- tagConnect(host_url = "https://aws-demo-cluster.dev.tag.bio", 
+tag_con <- tagConnect(host_url = "https://aws-demo.tag.bio", 
                       api_key = "<API_KEY>")
 ```
 
@@ -73,7 +73,7 @@ library(tidyverse)
 library(tagbio)
 
 # paste in your API key here
-tag_con <- tagConnect(host_url = "https://aws-demo-cluster.dev.tag.bio")
+tag_con <- tagConnect(host_url = "https://aws-demo.tag.bio")
 
 ```
 

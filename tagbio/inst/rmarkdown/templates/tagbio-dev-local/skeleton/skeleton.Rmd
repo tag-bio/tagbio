@@ -27,7 +27,7 @@ We start by bringing in the tagbio library.  If you don't have this installed, p
 
 ```
 library(remotes)
-install_bitbucket("cloudfolks/tagbio", ref = "master", subdir = "tagbio")
+install_local("tagbio")  # install the tagbio/ package subdir from a local clone of the repo
 ```
 
 Once installed, load the library.

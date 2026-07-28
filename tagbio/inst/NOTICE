@@ -1,0 +1,58 @@
+tagbio R package -- THIRD-PARTY NOTICES
+=======================================
+
+The tagbio package is licensed under Apache-2.0 (see LICENSE). Its HTML report
+output (`tag_report()`, R/tagRmd.R) bundles and/or derives from the third-party
+components below. Each is redistributed under its own license, reproduced/linked
+here as those licenses require. This NOTICE must ship with the package.
+
+-----------------------------------------------------------------------------
+1. prettydoc
+   Used by: the report HTML/CSS templating in tag_report() is derived from the
+            prettydoc "cayman"/"architect" style approach.
+   Files:   inst/resources/templates/default-color*.html,
+            inst/resources/css/default-color*.css
+   License: MIT
+   Copyright (c) Yixuan Qiu and prettydoc authors
+   Upstream: https://github.com/yixuan/prettydoc
+
+-----------------------------------------------------------------------------
+2. KaTeX (+ auto-render extension)
+   Used by: client-side math rendering in the report.
+   Files:   inst/resources/js/katex.min.js,
+            inst/resources/js/auto-render.min.js,
+            inst/resources/css/katex/katex.min.css
+   License: MIT
+   Copyright (c) 2013-present Khan Academy and other contributors
+   Upstream: https://github.com/KaTeX/KaTeX
+
+-----------------------------------------------------------------------------
+3. highlight.js -- "github" theme
+   Used by: syntax highlighting styles in the report/vignette.
+   Files:   inst/resources/css/highlight/github.css,
+            inst/resources/css/highlight/vignette.css
+   License: BSD 3-Clause
+   Copyright (c) 2006, Ivan Sagalaev and highlight.js contributors
+   Upstream: https://github.com/highlightjs/highlight.js
+
+-----------------------------------------------------------------------------
+4. Barlow (font family)
+   Used by: report typography.
+   Files:   inst/resources/fonts/Barlow-Regular.ttf,
+            inst/resources/fonts/Barlow-Bold.ttf,
+            inst/resources/fonts/Barlow-Italic.ttf,
+            inst/resources/fonts/Barlow-BoldItalic.ttf
+   License: SIL Open Font License, Version 1.1 -- with Reserved Font Name "Barlow"
+   Copyright (c) The Barlow Project Authors (Jeremy Tribby)
+   Upstream: https://github.com/jpt/barlow
+
+   NOTE (action for review): the OFL 1.1 REQUIRES that its full license text be
+   distributed alongside the fonts. Add the canonical `OFL.txt` from the Barlow
+   distribution to inst/resources/fonts/OFL.txt (verbatim) so this obligation is
+   met -- do not paraphrase it. The OFL also forbids selling the fonts on their
+   own and requires that any derivative renamed if it doesn't carry the RFN.
+
+-----------------------------------------------------------------------------
+Full license texts: the MIT and BSD-3-Clause texts above are short and standard;
+consider adding an inst/LICENSES/ directory with each license's verbatim text
+(MIT, BSD-3-Clause, OFL-1.1) for a fully self-contained distribution.
