@@ -200,8 +200,45 @@ colnames.tagFC <- function(x, ...) {
       col_names <- c(col_names, av$collection)
     }
   }
+  # Fail loud instead of silently returning character(0): an empty result here would feed
+  # all_of()/select() and quietly build a request for NO columns. Localhost single-FC serves in
+  # particular may not enumerate collections -- say so rather than hand back nothing.
+  if (length(col_names) == 0) {
+    stop("colnames(): no collections resolved for the FC at ", x$url,
+         ". If this is a localhost single-FC serve, collection enumeration may be unavailable -- pass ",
+         "literal collection names to select() rather than relying on colnames()/all_of(). If this is a ",
+         "deployed product, check the host and that it exposes collections.", call. = FALSE)
+  }
   return(col_names)
 }
+
+# Unsupported dplyr/dbplyr verbs on a tagFC: fail LOUD with guidance instead of dispatching to a
+# cryptic "no applicable method" or (worse) silently doing the wrong thing. A tagFC is a thin lazy
+# handle over the FC query API -- it supports select() + filter() + collect(), not a full dbplyr
+# backend. Do the reshaping on the collected local tibble.
+tag_unsupported_verb <- function(verb) {
+  force(verb)
+  function(.data, ...) {
+    stop(verb, "() is not supported on a tag.bio FC handle. Supported verbs are select(), filter() ",
+         "and collect(); collect() the columns you need into a local tibble first, then ", verb,
+         "() that.", call. = FALSE)
+  }
+}
+
+#' @export
+mutate.tagFC <- tag_unsupported_verb("mutate")
+#' @export
+arrange.tagFC <- tag_unsupported_verb("arrange")
+#' @export
+group_by.tagFC <- tag_unsupported_verb("group_by")
+#' @export
+summarise.tagFC <- tag_unsupported_verb("summarise")
+#' @export
+summarize.tagFC <- tag_unsupported_verb("summarize")
+#' @export
+rename.tagFC <- tag_unsupported_verb("rename")
+#' @export
+distinct.tagFC <- tag_unsupported_verb("distinct")
 
 #' @export
 info <- function(.data, ...) {
