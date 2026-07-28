@@ -147,6 +147,16 @@ tagConnect <- function(host_url = "", api_key = "", url = "", token = "") {
     url <- substr(url, 1, nurl-1)
   }
 
+  # "localhost" is a proxy keyword for the full local URL: prepend the http scheme and default the
+  # port to 8000 when none is given, so a self-query can write host_url = "localhost" (or
+  # "localhost:7999") instead of the full "http://localhost:8000". Case-sensitive lowercase "localhost"
+  # ONLY -- matching the flux-http no-auth loophole (name-based: not 127.0.0.1, not mixed case) and the
+  # Python SDK's _is_localhost. A host that already carries a scheme, or any other name, is untouched.
+  if (grepl("^localhost(:[0-9]+)?$", url)) {
+    if (!grepl(":[0-9]+$", url)) url <- paste0(url, ":8000")
+    url <- paste0("http://", url)
+  }
+
   tc$url <- url
 
   # api key — FILE beats ENV, per key (same rule as the host); a plugin (skip_config) uses none.
