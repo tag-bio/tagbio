@@ -3,7 +3,7 @@ Type: Package
 Title: tagbio: methods for interacting with the tag.bio analysis platform
 Version: 1.1.78
 Author: Jesse Paquette (current author and maintainer); original authors J Ireland, Damir
-Maintainer: Jesse Paquette <jesse@tag.bio>
+Maintainer: Jesse Paquette <support@tag.bio>
 Description: This library allows users to work with data from the tag.bio
     analysis platform directly from R.
 License: Apache License (== 2.0)

@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 # connect_tagbio.R
 #
-# author: Jesse Paquette <jesse@tag.bio> (original: J Ireland)
+# author: Jesse Paquette <support@tag.bio> (original: J Ireland)
 # version: 0.9.3
 # last update: 2024.11.18
 #
