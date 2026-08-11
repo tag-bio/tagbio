@@ -428,9 +428,11 @@ get_background.tagFC <- function(.data) {
 #' @export
 #' @importFrom dplyr collect
 #' @export
-collect.tagFC <- function(x) {
+collect.tagFC <- function(x, output_type = "parquet", ...) {
 
-  # use the download method to pull data from FC
+  # output_type: "parquet" (default) = the done-right parquet download; "rows"/"csv" forces the legacy
+  # CSV path (deprecated fallback + for testing); NULL = server default. The response is sniffed (PAR1)
+  # regardless, so parsing is robust to what the FC actually returns (an old FC returns CSV -> still fine).
   tc <- x$con
 
   qdelim <- paste0("\\s*", x$qdelim, "\\s*")
@@ -455,6 +457,11 @@ collect.tagFC <- function(x) {
 
   if (!is.null(background)) {
     script[['background']] <- to_json(background)
+  }
+
+  if (!is.null(output_type)) {
+    # "csv" is a friendly alias for the legacy rows output
+    script[['output_type']] <- if (identical(output_type, "csv")) "rows" else output_type
   }
 
   jsonPayload[['script']] = script

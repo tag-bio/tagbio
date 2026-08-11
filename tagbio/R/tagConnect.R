@@ -409,6 +409,21 @@ api_post.tagConnect <- function(object, query_type, url,
   if (return_type == "json") {
     return(httr::content(r))
   } else {
+    # Sniff the response bytes rather than trusting the requested format: parquet files begin with the
+    # magic bytes "PAR1". Robust to FC version skew -- an older FC that ignored output_type returns CSV
+    # and we fall through to the (unchanged) CSV parser below.
+    raw <- httr::content(r, as = "raw")
+    if (length(raw) >= 4 && identical(raw[1:4], charToRaw("PAR1"))) {
+      if (!requireNamespace("arrow", quietly = TRUE)) {
+        stop("Reading a parquet download requires the 'arrow' package. Install it with install.packages('arrow').",
+             call. = FALSE)
+      }
+      tmp <- tempfile(fileext = ".parquet")
+      on.exit(unlink(tmp), add = TRUE)
+      writeBin(raw, tmp)
+      return(tibble::tibble(arrow::read_parquet(tmp)))
+    }
+
     # wrote a parser here as content was giving floats as strings
     res <- paste0(httr::content(r, as = "text", type = "text/csv", encoding = "UTF-8"))
     res_table <- read.table(text = res, header = T, sep = ",", check.names = F,
