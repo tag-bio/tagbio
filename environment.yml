@@ -4,11 +4,15 @@ dependencies:
   - r-base
   - r-docopt
   - r-essentials
+  - r-gt
   - r-httr
   - r-knitr
+  - r-lme4
   - r-optparse
+  - r-plotly
   - r-qpdf
   - r-rjson
   - r-rmarkdown
+  - r-survminer
   - r-tidyverse
   - r-yaml
