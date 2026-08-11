@@ -1,5 +1,6 @@
 dependencies:
   - pandoc
+  - r-arrow
   - r-base
   - r-docopt
   - r-essentials
