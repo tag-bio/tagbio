@@ -87,3 +87,43 @@ getDataFrame.tagData <- function(tag_data, data_type = NA, row_name = "") {
 
   return(get_results(tag_data, data_type, row_name))
 }
+
+#' Get the FC server-info (/s) map from a tagData object.
+#'
+#' Returns the full server-info map the engine embeds in the plugin packet (no
+#' network call). Keys mirror the FC's /s response (name, title, version,
+#' data_timestamp, entity_count, ...) and are generic -- new keys added to /s
+#' appear here without any SDK change.
+#'
+#' @param tag_data tagData object
+#' @return named list of FC server info (empty list if none present)
+#' @export
+get_fc_info <- function(tag_data) {
+  UseMethod("get_fc_info", tag_data)
+}
+
+#' @export
+get_fc_info.tagData <- function(tag_data) {
+  info <- tag_data$fc_info
+  if (is.null(info)) list() else info
+}
+
+#' Get the human-readable data-snapshot timestamp from a tagData object.
+#'
+#' Formats the archive/snapshot creation time (epoch millis in /s) to a
+#' readable local-time string, mirroring the client-side /s formatting.
+#'
+#' @param tag_data tagData object
+#' @return character timestamp (e.g. "2026-08-11 14:32:00"), or "" if absent
+#' @export
+get_data_timestamp <- function(tag_data) {
+  UseMethod("get_data_timestamp", tag_data)
+}
+
+#' @export
+get_data_timestamp.tagData <- function(tag_data) {
+  ts <- get_fc_info(tag_data)[["data_timestamp"]]
+  if (is.null(ts) || is.na(ts) || ts == "") return("")
+  format(as.POSIXct(as.numeric(ts) / 1000, origin = "1970-01-01"),
+         "%Y-%m-%d %H:%M:%S")
+}
