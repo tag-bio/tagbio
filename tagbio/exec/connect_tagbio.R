@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 # connect_tagbio.R
 #
-# author: Jesse Paquette <support@tag.bio> (original: J Ireland)
+# author: Jesse Paquette <jesse@tag.bio> (original: J Ireland)
 # version: 0.9.3
 # last update: 2024.11.18
 #
@@ -232,6 +232,9 @@ tag_data$parameters$token <- fc_token
 tag_data$parameters$fc_user_email <- fc_user_email
 tag_data$parameters$fc_blob_id <- fc_blob_id
 tag_data$parameters$fc_url <- fc_url
+
+# full /s server-info map embedded by the engine (generic; clients read keys without knowing them)
+tag_data$fc_info <- fc_params$info
 
 # A bit fragile, this assumes we can get the host URL by looking for the
 # "fc-svc" element in the FC url and trimming it away.  This host URL is
