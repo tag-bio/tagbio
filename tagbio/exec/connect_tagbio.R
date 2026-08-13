@@ -48,7 +48,7 @@ rmd_reader <- function(rmd_file) {
 }
 
 ## updates rmd files with required fields
-rmd_updater <- function(rmd_file, email, analysis_url) {
+rmd_updater <- function(rmd_file, email, analysis_url, data_updated = "") {
 
   rmd <- rmd_reader(rmd_file)
 
@@ -72,6 +72,13 @@ rmd_updater <- function(rmd_file, email, analysis_url) {
   # date
   if (!("date" %in% yaml_fields) | is.na(yaml["date"])) {
     yaml["date"] <- "`r Sys.Date()`"
+  }
+
+  # data snapshot timestamp -> report header ("Data updated on ..."). Only set when the engine
+  # supplied it via fc.info; the template guards on it, so nothing shows when it is absent.
+  if (!is.null(data_updated) && nzchar(data_updated) &&
+      (!("data_updated" %in% yaml_fields) | is.na(yaml["data_updated"]))) {
+    yaml["data_updated"] <- data_updated
   }
 
   # tag data and results - add these fields no matter what
@@ -251,7 +258,10 @@ if (!is.null(tag_params) & !is.null(tag_params$output_file) & !is.null(tag_param
 if (grepl(".Rmd", args$user_function)) {
   print("Knitting Rmd Now")
 
-  rmd_tmp_file <- rmd_updater(args$user_function, fc_user_email, fc_protocol_url)
+  # human-readable data-snapshot timestamp from the engine's fc.info (empty if unavailable) -> header
+  data_updated <- tryCatch(get_data_timestamp(tag_data), error = function(e) "")
+
+  rmd_tmp_file <- rmd_updater(args$user_function, fc_user_email, fc_protocol_url, data_updated)
 
   tryCatch(
     rmarkdown::render(rmd_tmp_file,
