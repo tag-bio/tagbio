@@ -125,5 +125,5 @@ get_data_timestamp.tagData <- function(tag_data) {
   ts <- get_fc_info(tag_data)[["data_timestamp"]]
   if (is.null(ts) || is.na(ts) || ts == "") return("")
   format(as.POSIXct(as.numeric(ts) / 1000, origin = "1970-01-01"),
-         "%Y-%m-%d %H:%M:%S")
+         "%Y-%m-%d %H:%M")
 }
