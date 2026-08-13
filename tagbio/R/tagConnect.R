@@ -421,7 +421,18 @@ api_post.tagConnect <- function(object, query_type, url,
       tmp <- tempfile(fileext = ".parquet")
       on.exit(unlink(tmp), add = TRUE)
       writeBin(raw, tmp)
-      return(tibble::tibble(arrow::read_parquet(tmp)))
+      df <- tibble::tibble(arrow::read_parquet(tmp))
+      # A multi-value (non-exclusive) categorical is written as parquet LIST<string> and arrives as a
+      # LIST column; the CSV path delivers the same data as a single string joined with "; ". Collapse
+      # list columns to that exact form so the parquet frame is shape-identical to CSV -- otherwise every
+      # plugin doing a string op on a multi-value categorical breaks (e.g. `col == ""` on a list column).
+      list_cols <- names(df)[vapply(df, is.list, logical(1))]
+      for (col in list_cols) {
+        df[[col]] <- vapply(df[[col]],
+                            function(v) paste0(v, collapse = "; "),
+                            character(1))
+      }
+      return(df)
     }
 
     # wrote a parser here as content was giving floats as strings
