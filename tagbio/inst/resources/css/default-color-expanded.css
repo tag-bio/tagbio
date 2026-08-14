@@ -129,10 +129,10 @@ a:hover {
   font-size: 1.1em;
 }
 .page-header .analysis-url {
-  margin-top: 5px;
+  margin-top: 8px;
 }
 .page-header .analysis-url, header .analysis-url a {
-  font-size: 1.0em;;
+  font-size: 0.85em;
 }
 .page-header .inner :last-child {
   margin-bottom: 0;
