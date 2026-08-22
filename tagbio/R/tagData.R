@@ -69,7 +69,7 @@ get_results.tagData <- function(tag_data, data_type = NA, row_name = "") {
       set_names(~stringr::str_replace_all(., type_eq, ""))
   }
 
-  if (row_name != "") {
+  if (row_name != "" && row_name %in% names(df)) {
     df <- df %>% column_to_rownames(var = row_name)
   }
   return(df)
