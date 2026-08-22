@@ -205,6 +205,7 @@ tag_report <- function(theme = "default-color",
                                            css = NULL,
                                            theme = NULL,
                                            highlight = "pygments",
+                                           mathjax = if (math == "katex") NULL else "default",
                                            ...)
   )
 
