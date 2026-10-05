@@ -224,7 +224,7 @@ tag_env <- function(fc, expr) {
   fc_env <- rlang::as_environment(tag_categorical_func_list, fn_env)
 
   # check names for variables and add to environment
-  tag_vars <- lapply(str_split(names, delim),
+  tag_vars <- lapply(stringr::str_split(names, delim),
                      function(x) { check_variable(get_collection_defs(fc), x) })
 
   # remove any vars that come back as null
@@ -281,7 +281,7 @@ tag_select_eval <- function(fc, ...) {
   delim <- fc$qdelim
 
   # check names for variables and add to environment
-  tag_vars <- lapply(str_split(names, delim),
+  tag_vars <- lapply(stringr::str_split(names, delim),
                      function(x) { check_variable(get_collection_defs(fc), x) })
 
   tag_vars <- purrr::set_names(tag_vars, names)
