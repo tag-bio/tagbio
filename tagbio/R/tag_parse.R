@@ -246,7 +246,7 @@ tag_env <- function(fc, expr) {
 
 #' @export
 to_tag <- function(fc, x) {
-  expr <- enexpr(x)
+  expr <- rlang::enexpr(x)
   out <- rlang::eval_bare(expr, tag_env(fc = fc, expr))
   return(out)
 }
@@ -277,7 +277,7 @@ tag_select_names <- function(x) {
 #' @export
 tag_select_eval <- function(fc, ...) {
 
-  names <- unlist(map(rlang::exprs(...), tag_select_names))
+  names <- unlist(purrr::map(rlang::exprs(...), tag_select_names))
   delim <- fc$qdelim
 
   # check names for variables and add to environment

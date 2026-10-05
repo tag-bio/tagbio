@@ -16,10 +16,14 @@ RoxygenNote: 7.3.2
 Imports:
     arrow,
     httr,
+    magrittr,
     optparse,
+    purrr,
     qpdf,
     rjson,
-    stringr
+    rlang,
+    stringr,
+    tibble
 Depends:
     dplyr,
     rmarkdown,

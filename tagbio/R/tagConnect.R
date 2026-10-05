@@ -38,7 +38,7 @@ resolve_setting <- function(config_data, keys, default = "") {
 }
 
 print_error <- function(message) {
-  if (is_list(message)) {
+  if (rlang::is_list(message)) {
     write(jsonlite::toJSON(message,auto_unbox=TRUE), file=stderr())
   } else {
     write(message, file=stderr())
@@ -306,6 +306,7 @@ tag_load_config <- function() {
 #' @inheritParams dplyr::tbl
 #' @export
 #' @importFrom dplyr tbl
+#' @importFrom magrittr %>%
 tbl.tagConnect <- function(src = "tagConnect", fc = "") {
   return(tagFC(fc = fc, con = src))
 }
@@ -443,7 +444,7 @@ api_post.tagConnect <- function(object, query_type, url,
     # both categorical and a same-named numeric variable). read.table keeps them;
     # tibble() rejects duplicates by default and hard-errors. Repair to unique
     # names so the pull succeeds instead of crashing (only affects dup'd columns).
-    return(tibble(res_table, .name_repair = "unique"))
+    return(tibble::tibble(res_table, .name_repair = "unique"))
   }
 }
 
@@ -470,7 +471,7 @@ summary.tagConnect <- function(object, ...) {
   r <- api_get(object, kung_url)
 
   fcs_json <- null_to_na_recurse(httr::content(r))
-  fcs_tbl <- fcs_json %>% map_df(flatten_df)
+  fcs_tbl <- fcs_json %>% purrr::map_df(purrr::flatten_df)
 
   if (!("key" %in% colnames(fcs_tbl))) {
     if ((grepl(LOCALHOST, object$url)) | (grepl(LOCALHOST_IP,object$url))) {
@@ -505,7 +506,7 @@ tagListFCs.tagConnect <- function(.data) {
   if (is.null(fcs_tbl)) {
     return(c())
   } else {
-    return(unlist(fcs_tbl %>% pull(key)))
+    return(unlist(fcs_tbl %>% dplyr::pull(key)))
   }
 }
 

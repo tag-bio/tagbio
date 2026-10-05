@@ -19,7 +19,7 @@
 #' @param result_type format of the results (html, png, pdf)
 #' @export
 tagResult <- function(output_path,  result_type,
-                      results = tibble(), message_path = NA) {
+                      results = tibble::tibble(), message_path = NA) {
 
   tr <- list(results = results,
              output_path = output_path,
