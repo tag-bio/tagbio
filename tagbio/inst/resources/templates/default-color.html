@@ -698,5 +698,114 @@ $if(mathjax-url)$
 $endif$
 $endif$
 
+<!-- plot zoom: click a figure to view it full-screen, then scroll/drag/double-click to magnify -->
+<style>
+.tb-zoomable { cursor: zoom-in; }
+.tb-zoom-overlay { position: fixed; inset: 0; z-index: 10000; background: rgba(20, 24, 28, 0.88); display: none; overflow: hidden; touch-action: none; }
+.tb-zoom-overlay.tb-open { display: block; }
+.tb-zoom-overlay img { position: absolute; left: 0; top: 0; max-width: none !important; transform-origin: 0 0; cursor: grab; user-select: none; -webkit-user-drag: none; background: #fff; }
+.tb-zoom-overlay img.tb-dragging { cursor: grabbing; }
+.tb-zoom-bar { position: absolute; top: 12px; right: 12px; display: flex; gap: 6px; z-index: 1; }
+.tb-zoom-bar button { width: 40px; height: 40px; border: 0; border-radius: 6px; background: rgba(255, 255, 255, 0.92); color: #222; font-size: 22px; line-height: 1; cursor: pointer; }
+.tb-zoom-hint { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); color: #ddd; font-size: 13px; z-index: 1; }
+</style>
+<script>
+(function () {
+  var MIN_WIDTH = 150, MAX_SCALE = 12;
+  var overlay, img, scale = 1, fit = 1, tx = 0, ty = 0, drag = null;
+
+  function apply() { img.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + scale + ')'; }
+
+  function zoomAt(factor, cx, cy) {
+    var next = Math.min(Math.max(scale * factor, fit), fit * MAX_SCALE);
+    tx = cx - (cx - tx) * (next / scale);
+    ty = cy - (cy - ty) * (next / scale);
+    scale = next;
+    apply();
+  }
+
+  function reset() {
+    var w = img.naturalWidth, h = img.naturalHeight;
+    fit = Math.min((window.innerWidth - 40) / w, (window.innerHeight - 80) / h, 1);
+    scale = fit;
+    tx = (window.innerWidth - w * fit) / 2;
+    ty = (window.innerHeight - h * fit) / 2;
+    apply();
+  }
+
+  function close() { overlay.classList.remove('tb-open'); img.removeAttribute('src'); }
+
+  function open(src) {
+    img.onload = reset;
+    img.src = src;
+    overlay.classList.add('tb-open');
+    if (img.complete && img.naturalWidth) reset();
+  }
+
+  function build() {
+    overlay = document.createElement('div');
+    overlay.className = 'tb-zoom-overlay';
+    overlay.innerHTML = '<div class="tb-zoom-bar"><button type="button" data-z="in" title="Zoom in">+</button>' +
+      '<button type="button" data-z="out" title="Zoom out">&minus;</button>' +
+      '<button type="button" data-z="fit" title="Fit to screen">&#8634;</button>' +
+      '<button type="button" data-z="close" title="Close (Esc)">&times;</button></div>' +
+      '<div class="tb-zoom-hint">Scroll or double-click to zoom, drag to move, Esc to close</div>';
+    img = document.createElement('img');
+    img.alt = '';
+    overlay.appendChild(img);
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener('click', function (e) {
+      var z = e.target.getAttribute && e.target.getAttribute('data-z');
+      var cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+      if (z === 'in') zoomAt(1.5, cx, cy);
+      else if (z === 'out') zoomAt(1 / 1.5, cx, cy);
+      else if (z === 'fit') reset();
+      else if (z === 'close' || e.target === overlay) close();
+    });
+    overlay.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      zoomAt(e.deltaY < 0 ? 1.2 : 1 / 1.2, e.clientX, e.clientY);
+    }, { passive: false });
+    img.addEventListener('dblclick', function (e) {
+      if (scale > fit * 1.01) reset(); else zoomAt(3, e.clientX, e.clientY);
+    });
+    img.addEventListener('pointerdown', function (e) {
+      drag = { x: e.clientX - tx, y: e.clientY - ty };
+      img.setPointerCapture(e.pointerId);
+      img.classList.add('tb-dragging');
+    });
+    img.addEventListener('pointermove', function (e) {
+      if (!drag) return;
+      tx = e.clientX - drag.x; ty = e.clientY - drag.y; apply();
+    });
+    function endDrag() { drag = null; img.classList.remove('tb-dragging'); }
+    img.addEventListener('pointerup', endDrag);
+    img.addEventListener('pointercancel', endDrag);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.classList.contains('tb-open')) close();
+    });
+    window.addEventListener('resize', function () { if (overlay.classList.contains('tb-open')) reset(); });
+  }
+
+  function init() {
+    build();
+    var imgs = document.querySelectorAll('img');
+    Array.prototype.forEach.call(imgs, function (el) {
+      if (el.closest('a') || el.closest('.logo') || el.closest('header') || el.closest('#header') || el.closest('.tb-zoom-overlay') || el.classList.contains('tb-zoomable')) return;
+      var mark = function () {
+        if ((el.naturalWidth || el.width) < MIN_WIDTH) return;
+        el.classList.add('tb-zoomable');
+        el.title = el.title || 'Click to zoom';
+        el.addEventListener('click', function () { open(el.currentSrc || el.src); });
+      };
+      if (el.complete) mark(); else el.addEventListener('load', mark);
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
+
 </body>
 </html>
