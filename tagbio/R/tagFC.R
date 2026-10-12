@@ -428,7 +428,7 @@ get_background.tagFC <- function(.data) {
 #' @export
 #' @importFrom dplyr collect
 #' @export
-collect.tagFC <- function(x, output_type = "parquet", ...) {
+collect.tagFC <- function(x, output_type = "parquet", factors = FALSE, ...) {
 
   # output_type: "parquet" (default) = the done-right parquet download; "rows"/"csv" forces the legacy
   # CSV path (deprecated fallback + for testing); NULL = server default. The response is sniffed (PAR1)
@@ -441,8 +441,9 @@ collect.tagFC <- function(x, output_type = "parquet", ...) {
     groups = c("developer")
   )
 
-  # select
-  analysis_variables <- tag_select_eval(x, !!!x$qselect)
+  # select: collection_set(...) entries become collection-set data functions, the rest resolve as usual
+  selections <- split_collection_sets(x$qselect)
+  analysis_variables <- c(tag_select_eval(x, !!!selections$rest), selections$sets)
 
   # filter
   background <- get_background(x)
@@ -459,6 +460,16 @@ collect.tagFC <- function(x, output_type = "parquet", ...) {
     script[['background']] <- to_json(background)
   }
 
+  # head(n): a seeded sample of the filtered entities (or of all entities when unfiltered)
+  if (!is.null(x$qlimit)) {
+    script[['background']] <- list(
+      data_function_type = "sample",
+      size = x$qlimit$n,
+      seed = x$qlimit$seed,
+      criterion = if (!is.null(script[['background']])) script[['background']] else
+        list(data_function_type = "categorical-all"))
+  }
+
   if (!is.null(output_type)) {
     # "csv" is a friendly alias for the legacy rows output
     script[['output_type']] <- if (identical(output_type, "csv")) "rows" else output_type
@@ -467,7 +478,7 @@ collect.tagFC <- function(x, output_type = "parquet", ...) {
   jsonPayload[['script']] = script
   jsonPayload[['stringify_names']] = "true"
 
-  tag_data_frame <- api_post(tc, "q", x$url, "text", jsonPayload = jsonPayload)
+  tag_data_frame <- api_post(tc, "q", x$url, "text", jsonPayload = jsonPayload, factors = factors)
 
   tibble::tibble(tag_data_frame)
 }
@@ -642,3 +653,62 @@ get_info <- function(url, tc) {
 
 
 
+
+#' Keep a reproducible set of N entities
+#'
+#' Limits a query to \code{n} entities, drawn as a seeded sample of the entities matching the filters so
+#' far (or of all entities). The same \code{n} and \code{seed} return the same entities. Entities have no
+#' inherent order, so this is a reproducible subset, not "the first n".
+#'
+#' @param x a tagFC query
+#' @param n number of entities
+#' @param seed integer seed; change it for a different subset
+#' @param ... unused
+#' @export
+#' @importFrom utils head
+head.tagFC <- function(x, n = 6L, seed = 1L, ...) {
+  x$qlimit <- list(n = as.integer(n), seed = as.integer(seed))
+  return(x)
+}
+
+#' List the collection sets of a data product
+#'
+#' @param fc a tagFC (from \code{tbl(con)} or \code{tbl(con, "fc-name")})
+#' @return character vector of collection set names
+#' @export
+tagListCollectionSets <- function(fc) {
+  jsonPayload <- list(zip = TRUE, groups = c("developer"), script = list(method = "collection-set"))
+  res <- tryCatch(api_post(fc$con, "q", fc$url, "json", jsonPayload),
+                  error = function(e) stop("Listing collection sets needs an FC engine that supports the ",
+                                           "'collection-set' query method: ", conditionMessage(e),
+                                           call. = FALSE))
+  vapply(res$results, function(r) as.character(r$values[["collection-set-name"]]), character(1))
+}
+
+#' Select every collection in a collection set
+#'
+#' Use inside \code{select()}: \code{tbl(con) |> select(collection_set("Labs")) |> collect()}.
+#'
+#' @param name collection set name
+#' @param data_type optional "categorical" or "numeric" to keep only that type
+#' @export
+collection_set <- function(name, data_type = NULL) {
+  .Object <- list(data_function_type = "collection-set", collection_set = name, data_type = data_type)
+  class(.Object) <- "CollectionSet"
+  .Object
+}
+
+#' @export
+to_json.CollectionSet <- function(.Object) {
+  json <- list(data_function_type = .Object$data_function_type, collection_set = .Object$collection_set)
+  if (!is.null(.Object$data_type)) {
+    json[["data_type"]] <- .Object$data_type
+  }
+  json
+}
+
+# collection_set(...) calls inside select() are evaluated here; every other selection goes to tag_select_eval
+split_collection_sets <- function(exprs) {
+  is_set <- vapply(exprs, function(e) rlang::is_call(e, "collection_set"), logical(1))
+  list(sets = lapply(exprs[is_set], rlang::eval_tidy), rest = exprs[!is_set])
+}

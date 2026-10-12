@@ -381,7 +381,7 @@ api_post <- function(object, ...) {
 # TODO: Document - all API posts should go through here.
 #' @export
 api_post.tagConnect <- function(object, query_type, url,
-                                return_type = "json", jsonPayload = NA) {
+                                return_type = "json", jsonPayload = NA, factors = FALSE) {
 
   # set up url
   url <- paste0(url, "/", query_type)
@@ -422,7 +422,8 @@ api_post.tagConnect <- function(object, query_type, url,
       tmp <- tempfile(fileext = ".parquet")
       on.exit(unlink(tmp), add = TRUE)
       writeBin(raw, tmp)
-      df <- tibble::tibble(arrow::read_parquet(tmp))
+      table <- arrow::read_parquet(tmp, as_data_frame = FALSE)
+      df <- tibble::tibble(as.data.frame(table))
       # A multi-value (non-exclusive) categorical is written as parquet LIST<string> and arrives as a
       # LIST column; the CSV path delivers the same data as a single string joined with "; ". Collapse
       # list columns to that exact form so the parquet frame is shape-identical to CSV -- otherwise every
@@ -432,6 +433,15 @@ api_post.tagConnect <- function(object, query_type, url,
         df[[col]] <- vapply(df[[col]],
                             function(v) paste0(v, collapse = "; "),
                             character(1))
+      }
+      # opt-in: single_valued categoricals (named in the file's tagbio.single_valued metadata) as factors
+      if (isTRUE(factors)) {
+        single_valued <- table$metadata[["tagbio.single_valued"]]
+        if (!is.null(single_valued)) {
+          for (col in intersect(unlist(rjson::fromJSON(single_valued)), names(df))) {
+            df[[col]] <- factor(df[[col]])
+          }
+        }
       }
       return(df)
     }
@@ -512,3 +522,26 @@ tagListFCs.tagConnect <- function(.data) {
 
 
 
+
+#' List the data products on a Tag.bio cluster
+#'
+#' The same catalog the Tag.bio UI uses (\code{kung-services/db/capacitors}). A localhost connection
+#' serves one data product, listed as \code{localhost}.
+#'
+#' @param con a tagConnect connection
+#' @return tibble with name, title, description and url
+#' @export
+tagListDataProducts <- function(con) {
+  if (grepl(LOCALHOST, con$url) || grepl(LOCALHOST_IP, con$url)) {
+    return(tibble::tibble(name = LOCALHOST, title = LOCALHOST, description = "local data product",
+                          url = con$url))
+  }
+  fcs <- summary(con)
+  if (is.null(fcs)) {
+    return(tibble::tibble(name = character(), title = character(), description = character(),
+                          url = character()))
+  }
+  fcs %>%
+    dplyr::transmute(name = key, title = displayname, description = description,
+                     url = url)
+}
