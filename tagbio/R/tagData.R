@@ -13,11 +13,14 @@
 #'
 #' @param results a data frame response from the protocol
 #' @param parameters a list of pass-through parameters from the protocol
+#' @param date_kinds the download's date columns and their kinds (the tagbio.dates metadata), or NULL
 #' @export
 tagData <- function(results = data.frame(),
-                       parameters = list()) {
+                       parameters = list(),
+                       date_kinds = NULL) {
   td <- list(results = results,
-             parameters = parameters)
+             parameters = parameters,
+             date_kinds = date_kinds)
 
   class(td) <- "tagData"
 
@@ -48,17 +51,22 @@ get_parameters.tagData <- function(tag_data) {
 #' @param tag_data tagData object
 #' @param data_type type of data to return in data frame (default NA)
 #' @param row_name if set, use this column to create row names (default "")
+#' @param dates if TRUE, date columns (datetime parsers on engine 2.99.37+ archives) become Date/POSIXct
 #' @return data.frame of data
 #' @export
 #' @examples
-get_results <- function(tag_data, data_type = NA, row_name = "") {
+get_results <- function(tag_data, data_type = NA, row_name = "", dates = FALSE) {
   UseMethod("get_results", tag_data)
 }
 
 #' @export
-get_results.tagData <- function(tag_data, data_type = NA, row_name = "") {
+get_results.tagData <- function(tag_data, data_type = NA, row_name = "", dates = FALSE) {
 
   df <- tag_data$results
+
+  if (isTRUE(dates) && !is.null(tag_data$date_kinds)) {
+    df <- convert_date_kinds(df, tag_data$date_kinds)
+  }
 
   if (!is.na(data_type)) {
     # escape parens

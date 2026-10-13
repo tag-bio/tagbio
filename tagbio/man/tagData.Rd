@@ -4,12 +4,14 @@
 \alias{tagData}
 \title{An S3 class representing data response from a protocol}
 \usage{
-tagData(results = data.frame(), parameters = list())
+tagData(results = data.frame(), parameters = list(), date_kinds = NULL)
 }
 \arguments{
 \item{results}{a data frame response from the protocol}
 
 \item{parameters}{a list of pass-through parameters from the protocol}
+
+\item{date_kinds}{the download's date columns and their kinds (the tagbio.dates metadata), or NULL}
 }
 \description{
 The tagData class captures the resulting data frame and pass-through

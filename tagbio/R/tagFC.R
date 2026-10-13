@@ -506,7 +506,8 @@ run_protocol.tagFC <- function(fc, protocol_instance) {
   tag_data_frame <- api_post(tc, "q", fc$url, "text", jsonPayload)
 
   # set up the tagData instance
-  tag_data <- tagData(results = tibble::tibble(tag_data_frame))
+  tag_data <- tagData(results = tibble::tibble(tag_data_frame),
+                      date_kinds = attr(tag_data_frame, "tagbio_dates"))
   return(tag_data)
 }
 
@@ -532,7 +533,8 @@ run_script.tagFC <- function(fc, script) {
   tag_data_frame <- api_post(tc, "q", fc$url, "text", jsonPayload)
 
   # set up the tagData instance
-  tag_data <- tagData(results = tibble::tibble(tag_data_frame))
+  tag_data <- tagData(results = tibble::tibble(tag_data_frame),
+                      date_kinds = attr(tag_data_frame, "tagbio_dates"))
   return(tag_data)
 }
 
