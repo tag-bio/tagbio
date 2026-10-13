@@ -435,12 +435,15 @@ api_post.tagConnect <- function(object, query_type, url,
                             function(v) paste0(v, collapse = "; "),
                             character(1))
       }
-      # opt-in: date-like columns (the file's tagbio.dates metadata, set by datetime parsers) as dates
-      if (isTRUE(dates)) {
-        date_kinds <- table$metadata[["tagbio.dates"]]
-        if (!is.null(date_kinds)) {
-          df <- convert_date_kinds(df, rjson::fromJSON(date_kinds))
+      # opt-in: date-like columns (the file's tagbio.dates metadata, set by datetime parsers) as dates;
+      # the map is kept on the frame so plugin data can convert later through get_results(dates = TRUE)
+      date_kinds <- table$metadata[["tagbio.dates"]]
+      if (!is.null(date_kinds)) {
+        date_kinds <- rjson::fromJSON(date_kinds)
+        if (isTRUE(dates)) {
+          df <- convert_date_kinds(df, date_kinds)
         }
+        attr(df, "tagbio_dates") <- date_kinds
       }
       # opt-in: single_valued categoricals (named in the file's tagbio.single_valued metadata) as factors
       if (isTRUE(factors)) {
