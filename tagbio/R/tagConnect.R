@@ -381,7 +381,8 @@ api_post <- function(object, ...) {
 # TODO: Document - all API posts should go through here.
 #' @export
 api_post.tagConnect <- function(object, query_type, url,
-                                return_type = "json", jsonPayload = NA, factors = FALSE) {
+                                return_type = "json", jsonPayload = NA, factors = FALSE,
+                                dates = FALSE) {
 
   # set up url
   url <- paste0(url, "/", query_type)
@@ -433,6 +434,13 @@ api_post.tagConnect <- function(object, query_type, url,
         df[[col]] <- vapply(df[[col]],
                             function(v) paste0(v, collapse = "; "),
                             character(1))
+      }
+      # opt-in: date-like columns (the file's tagbio.dates metadata, set by datetime parsers) as dates
+      if (isTRUE(dates)) {
+        date_kinds <- table$metadata[["tagbio.dates"]]
+        if (!is.null(date_kinds)) {
+          df <- convert_date_kinds(df, rjson::fromJSON(date_kinds))
+        }
       }
       # opt-in: single_valued categoricals (named in the file's tagbio.single_valued metadata) as factors
       if (isTRUE(factors)) {
@@ -544,4 +552,24 @@ tagListDataProducts <- function(con) {
   fcs %>%
     dplyr::transmute(name = key, title = displayname, description = description,
                      url = url)
+}
+
+# Converts columns by the engine's date kind: epoch-* numerics to POSIXct (UTC), epoch-days and
+# yyyy/MM/dd categoricals to Date. Days are rounded: the engine counts them from local midnight.
+convert_date_kinds <- function(df, kinds) {
+  for (col in intersect(names(kinds), names(df))) {
+    x <- df[[col]]
+    kind <- kinds[[col]]
+    if (is.numeric(x)) {
+      df[[col]] <- switch(kind,
+        "epoch-ms"      = as.POSIXct(x / 1000, origin = "1970-01-01", tz = "UTC"),
+        "epoch-seconds" = as.POSIXct(x, origin = "1970-01-01", tz = "UTC"),
+        "epoch-minutes" = as.POSIXct(x * 60, origin = "1970-01-01", tz = "UTC"),
+        "epoch-days"    = as.Date(round(x), origin = "1970-01-01"),
+        x)
+    } else if (is.character(x) && identical(kind, "ymd")) {
+      df[[col]] <- as.Date(x, format = "%Y/%m/%d")
+    }
+  }
+  df
 }
