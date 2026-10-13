@@ -478,9 +478,10 @@ collect.tagFC <- function(x, output_type = "parquet", factors = FALSE, dates = F
   jsonPayload[['script']] = script
   jsonPayload[['stringify_names']] = "true"
 
-  tag_data_frame <- api_post(tc, "q", x$url, "text", jsonPayload = jsonPayload, factors = factors)
+  tag_data_frame <- api_post(tc, "q", x$url, "text", jsonPayload = jsonPayload, factors = factors,
+                             dates = dates)
 
-  # opt-in: numeric columns the FC flags is_timestamp become POSIXct
+  # opt-in fallback for engines without tagbio.dates metadata: is_timestamp numerics become POSIXct
   if (isTRUE(dates)) {
     tag_data_frame <- convert_timestamps(x, analysis_variables, tag_data_frame)
   }
