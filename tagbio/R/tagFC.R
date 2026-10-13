@@ -481,11 +481,6 @@ collect.tagFC <- function(x, output_type = "parquet", factors = FALSE, dates = F
   tag_data_frame <- api_post(tc, "q", x$url, "text", jsonPayload = jsonPayload, factors = factors,
                              dates = dates)
 
-  # opt-in fallback for engines without tagbio.dates metadata: is_timestamp numerics become POSIXct
-  if (isTRUE(dates)) {
-    tag_data_frame <- convert_timestamps(x, analysis_variables, tag_data_frame)
-  }
-
   tibble::tibble(tag_data_frame)
 }
 
@@ -717,37 +712,4 @@ to_json.CollectionSet <- function(.Object) {
 split_collection_sets <- function(exprs) {
   is_set <- vapply(exprs, function(e) rlang::is_call(e, "collection_set"), logical(1))
   list(sets = lapply(exprs[is_set], rlang::eval_tidy), rest = exprs[!is_set])
-}
-
-# Numeric columns flagged is_timestamp by the FC's variable API become POSIXct (UTC); columns that are
-# already date-times (a native_timestamps server) are left as they are.
-convert_timestamps <- function(fc, analysis_variables, df) {
-  # a NumericVariable nests its collection object; a NumericCollection holds the name directly
-  collections <- unique(unlist(lapply(analysis_variables, function(v) {
-    if (!inherits(v, c("NumericCollection", "NumericVariable"))) return(NULL)
-    if (is.list(v$collection)) v$collection$collection else v$collection
-  })))
-  if (length(collections) == 0) {
-    return(df)
-  }
-  jsonPayload <- list(zip = TRUE, groups = c("developer"),
-                      script = list(method = "variable",
-                                    variables = lapply(collections, function(collection)
-                                      list(data_function_type = "numeric", collection = collection))))
-  res <- api_post(fc$con, "q", fc$url, "json", jsonPayload)
-  for (r in res$results) {
-    v <- r$values
-    if (!isTRUE(v$is_timestamp)) {
-      next
-    }
-    collection <- v$collection$name
-    variable <- v$variable$name
-    candidates <- c(paste0(collection, fc$qdelim, variable), if (identical(collection, variable)) collection)
-    for (col in intersect(candidates, names(df))) {
-      if (is.numeric(df[[col]])) {
-        df[[col]] <- as.POSIXct(df[[col]] / 1000, origin = "1970-01-01", tz = "UTC")
-      }
-    }
-  }
-  df
 }
