@@ -51,16 +51,16 @@ get_parameters.tagData <- function(tag_data) {
 #' @param tag_data tagData object
 #' @param data_type type of data to return in data frame (default NA)
 #' @param row_name if set, use this column to create row names (default "")
-#' @param dates if TRUE, date columns (datetime parsers on engine 2.99.37+ archives) become Date/POSIXct
+#' @param dates date columns (datetime parsers on engine 2.99.37+ archives) become Date/POSIXct; FALSE keeps the raw values
 #' @return data.frame of data
 #' @export
 #' @examples
-get_results <- function(tag_data, data_type = NA, row_name = "", dates = FALSE) {
+get_results <- function(tag_data, data_type = NA, row_name = "", dates = TRUE) {
   UseMethod("get_results", tag_data)
 }
 
 #' @export
-get_results.tagData <- function(tag_data, data_type = NA, row_name = "", dates = FALSE) {
+get_results.tagData <- function(tag_data, data_type = NA, row_name = "", dates = TRUE) {
 
   df <- tag_data$results
 

@@ -4,7 +4,7 @@
 \alias{get_results}
 \title{Get result data from a tagData object.}
 \usage{
-get_results(tag_data, data_type = NA, row_name = "", dates = FALSE)
+get_results(tag_data, data_type = NA, row_name = "", dates = TRUE)
 }
 \arguments{
 \item{tag_data}{tagData object}
@@ -13,7 +13,7 @@ get_results(tag_data, data_type = NA, row_name = "", dates = FALSE)
 
 \item{row_name}{if set, use this column to create row names (default "")}
 
-\item{dates}{if TRUE, date columns (datetime parsers on engine 2.99.37+ archives) become Date/POSIXct}
+\item{dates}{date columns (datetime parsers on engine 2.99.37+ archives) become Date/POSIXct; FALSE keeps the raw values}
 }
 \value{
 data.frame of data
