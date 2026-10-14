@@ -430,9 +430,10 @@ api_post.tagConnect <- function(object, query_type, url,
       # list columns to that exact form so the parquet frame is shape-identical to CSV -- otherwise every
       # plugin doing a string op on a multi-value categorical breaks (e.g. `col == ""` on a list column).
       list_cols <- names(df)[vapply(df, is.list, logical(1))]
+      # native Parquet dates in a multi-value column keep the engine's yyyy/MM/dd label form
       for (col in list_cols) {
         df[[col]] <- vapply(df[[col]],
-                            function(v) paste0(v, collapse = "; "),
+                            function(v) paste0(if (inherits(v, "Date")) format(v, "%Y/%m/%d") else v, collapse = "; "),
                             character(1))
       }
       # opt-in: date-like columns (the file's tagbio.dates metadata, set by datetime parsers) as dates;
