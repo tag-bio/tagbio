@@ -66,8 +66,9 @@ tagFC <- function(con, fc = "", qdelim = " = ") {
     if (con$url == "" || grepl(LOCALHOST, con$url, ignore.case = TRUE) || grepl(LOCALHOST_IP, con$url)) {
       # an engine test run with no user session reaches the FC's in-cluster service directly, as kung does
       if (Sys.getenv(TAGBIO_PLUGIN_TEST) != "") {
-        fc_obj$url <- paste0("http://", fc, ":", FC_SERVICE_PORT)
+        fc_obj$url <- paste0("http://", fc, ".", FC_SERVICE_DOMAIN, ":", FC_SERVICE_PORT)
         fc_obj$con$test_groups <- TEST_GROUPS
+        message("test run: reaching ", fc, " directly at ", fc_obj$url)
         return(fc_obj)
       }
       # classed so a plugin can tell "remote unreachable" from a bug; still an ordinary error
