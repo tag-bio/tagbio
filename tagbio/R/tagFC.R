@@ -64,10 +64,19 @@ tagFC <- function(con, fc = "", qdelim = " = ") {
     # -- localhost serves a single unnamed FC (bare /q), not /fc-svc/<name>. Error clearly instead of
     # silently dialing the local server (which returns a confusing malformed-request error).
     if (con$url == "" || grepl(LOCALHOST, con$url, ignore.case = TRUE) || grepl(LOCALHOST_IP, con$url)) {
-      stop("Cannot reach named FC '", fc, "': no remote host is available (the connection resolved to ",
-           "localhost). A named cross-FC call requires a host_url and a signed-in user session. In a ",
-           "plugin auto-test both are absent -- wrap the call in tryCatch and degrade gracefully, or run ",
-           "where the FC is reachable.")
+      # an engine test run with no user session reaches the FC's in-cluster service directly, as kung does
+      if (Sys.getenv(TAGBIO_PLUGIN_TEST) != "") {
+        fc_obj$url <- paste0("http://", fc, ":", FC_SERVICE_PORT)
+        fc_obj$con$test_groups <- TEST_GROUPS
+        return(fc_obj)
+      }
+      # classed so a plugin can tell "remote unreachable" from a bug; still an ordinary error
+      stop(structure(class = c("tagbio_remote_unavailable", "error", "condition"), list(
+        message = paste0("Cannot reach named FC '", fc, "': no remote host is available (the connection ",
+                         "resolved to localhost). A named cross-FC call requires a host_url and a signed-in ",
+                         "user session. In a plugin auto-test both are absent -- wrap the call in tryCatch ",
+                         "and degrade gracefully, or run where the FC is reachable."),
+        call = NULL)))
     }
     fc_obj$url <- paste0(fc_obj$url, "/fc-svc/", fc)
   }

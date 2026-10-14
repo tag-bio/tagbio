@@ -179,6 +179,12 @@ if (!is.null(fc_request$auth)) {
   fc_token <- gsub(".* ", "", fc_request$auth)
 }
 
+# An engine test run (startup tests) has no user token; let the SDK reach a named FC directly inside
+# the cluster, as kung does, instead of through kung.
+if (isTRUE(fc_request$test) && is.null(fc_token)) {
+  Sys.setenv(TAGBIO_PLUGIN_TEST = "1")
+}
+
 fc_user_email <- Sys.info()['user'] # default to local user
 if (!is.null(fc_request$email)) {
   fc_user_email <- fc_request$email
