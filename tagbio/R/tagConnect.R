@@ -17,7 +17,9 @@ TAGBIO_PLUGIN_CONTEXT <- "TAGBIO_PLUGIN_CONTEXT"
 TAGBIO_PLUGIN_ALLOW_CONFIG <- "TAGBIO_PLUGIN_ALLOW_CONFIG"
 # set by the plugin runner for an engine test run with no user session
 TAGBIO_PLUGIN_TEST <- "TAGBIO_PLUGIN_TEST"
-# in-cluster FC service port and the groups a test-run call carries (the header kung sets for a user)
+# in-cluster FC service address (full name, so it resolves from notebooks as well as FC pods) and the
+# groups a test-run call carries (the header kung sets for a user)
+FC_SERVICE_DOMAIN <- "tagbio-app.svc.cluster.local"
 FC_SERVICE_PORT <- 8000
 TEST_GROUPS <- "developer"
 
