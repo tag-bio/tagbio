@@ -15,6 +15,11 @@ TAGBIO_PLUGIN_CONTEXT <- "TAGBIO_PLUGIN_CONTEXT"
 # Explicit dev opt-in to read env/config even inside a plugin, for locally testing a remote
 # cross-FC call (a test has no user token, so nothing to escalate over). Off by default.
 TAGBIO_PLUGIN_ALLOW_CONFIG <- "TAGBIO_PLUGIN_ALLOW_CONFIG"
+# set by the plugin runner for an engine test run with no user session
+TAGBIO_PLUGIN_TEST <- "TAGBIO_PLUGIN_TEST"
+# in-cluster FC service port and the groups a test-run call carries (the header kung sets for a user)
+FC_SERVICE_PORT <- 8000
+TEST_GROUPS <- "developer"
 
 # kung services (for data product discovery)
 KUNG_CAPACITORS <- "/kung-services/db/capacitors"
@@ -330,6 +335,11 @@ api_auth_header <- function(object, ...) {
 
 #' @export
 api_auth_header.tagConnect <- function(object, url) {
+  # a test-run call straight to an in-cluster FC carries groups instead of a user credential
+  if (!is.null(object$test_groups)) {
+    return(httr::add_headers(`X-Tagbio-Groups` = object$test_groups))
+  }
+
   # decide which authentication mode to use
   if (grepl(LOCALHOST, url, ignore.case=T) | grepl(LOCALHOST_IP, url)) {
     # local mode - no auth
@@ -430,9 +440,10 @@ api_post.tagConnect <- function(object, query_type, url,
       # list columns to that exact form so the parquet frame is shape-identical to CSV -- otherwise every
       # plugin doing a string op on a multi-value categorical breaks (e.g. `col == ""` on a list column).
       list_cols <- names(df)[vapply(df, is.list, logical(1))]
+      # native Parquet dates in a multi-value column keep the engine's yyyy/MM/dd label form
       for (col in list_cols) {
         df[[col]] <- vapply(df[[col]],
-                            function(v) paste0(v, collapse = "; "),
+                            function(v) paste0(if (inherits(v, "Date")) format(v, "%Y/%m/%d") else v, collapse = "; "),
                             character(1))
       }
       # opt-in: date-like columns (the file's tagbio.dates metadata, set by datetime parsers) as dates;
