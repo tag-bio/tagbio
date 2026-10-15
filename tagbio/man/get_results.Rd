@@ -13,7 +13,7 @@ get_results(tag_data, data_type = NA, row_name = "", dates = TRUE)
 
 \item{row_name}{if set, use this column to create row names (default "")}
 
-\item{dates}{date columns (datetime parsers on engine 2.99.37+ archives) become Date/POSIXct; FALSE keeps the raw values}
+\item{dates}{ignored; kept for compatibility (date columns arrive as Date/POSIXct from engine 2.100.2)}
 }
 \value{
 data.frame of data
