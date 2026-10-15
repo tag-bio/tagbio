@@ -11,7 +11,7 @@ tagData(results = data.frame(), parameters = list(), date_kinds = NULL)
 
 \item{parameters}{a list of pass-through parameters from the protocol}
 
-\item{date_kinds}{the download's date columns and their kinds (the tagbio.dates metadata), or NULL}
+\item{date_kinds}{ignored; kept for compatibility}
 }
 \description{
 The tagData class captures the resulting data frame and pass-through

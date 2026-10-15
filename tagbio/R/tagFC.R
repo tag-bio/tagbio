@@ -488,8 +488,7 @@ collect.tagFC <- function(x, output_type = "parquet", factors = FALSE, dates = F
   jsonPayload[['script']] = script
   jsonPayload[['stringify_names']] = "true"
 
-  tag_data_frame <- api_post(tc, "q", x$url, "text", jsonPayload = jsonPayload, factors = factors,
-                             dates = dates)
+  tag_data_frame <- api_post(tc, "q", x$url, "text", jsonPayload = jsonPayload, factors = factors)
 
   tibble::tibble(tag_data_frame)
 }
@@ -516,8 +515,7 @@ run_protocol.tagFC <- function(fc, protocol_instance) {
   tag_data_frame <- api_post(tc, "q", fc$url, "text", jsonPayload)
 
   # set up the tagData instance
-  tag_data <- tagData(results = tibble::tibble(tag_data_frame),
-                      date_kinds = attr(tag_data_frame, "tagbio_dates"))
+  tag_data <- tagData(results = tibble::tibble(tag_data_frame))
   return(tag_data)
 }
 
@@ -543,8 +541,7 @@ run_script.tagFC <- function(fc, script) {
   tag_data_frame <- api_post(tc, "q", fc$url, "text", jsonPayload)
 
   # set up the tagData instance
-  tag_data <- tagData(results = tibble::tibble(tag_data_frame),
-                      date_kinds = attr(tag_data_frame, "tagbio_dates"))
+  tag_data <- tagData(results = tibble::tibble(tag_data_frame))
   return(tag_data)
 }
 
