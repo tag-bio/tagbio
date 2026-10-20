@@ -394,7 +394,7 @@ api_post <- function(object, ...) {
 #' @export
 api_post.tagConnect <- function(object, query_type, url,
                                 return_type = "json", jsonPayload = NA, factors = FALSE,
-                                dates = FALSE) {
+                                ...) {
 
   # set up url
   url <- paste0(url, "/", query_type)
