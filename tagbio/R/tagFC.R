@@ -438,7 +438,7 @@ get_background.tagFC <- function(.data) {
 #' @export
 #' @importFrom dplyr collect
 #' @export
-collect.tagFC <- function(x, output_type = "parquet", factors = FALSE, dates = FALSE, ...) {
+collect.tagFC <- function(x, output_type = "parquet", factors = FALSE, ...) {
 
   # output_type: "parquet" (default) = the done-right parquet download; "rows"/"csv" forces the legacy
   # CSV path (deprecated fallback + for testing); NULL = server default. The response is sniffed (PAR1)
