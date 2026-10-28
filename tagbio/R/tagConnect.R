@@ -448,12 +448,13 @@ api_post.tagConnect <- function(object, query_type, url,
                             function(v) paste0(if (inherits(v, "Date")) format(v, "%Y/%m/%d") else v, collapse = "; "),
                             character(1))
       }
-      # opt-in: single_valued categoricals (named in the file's tagbio.single_valued metadata) as factors
+      # opt-in: single_valued text categoricals (named in the file's tagbio.single_valued metadata) as factors;
+      # date and logical columns keep their own types
       if (isTRUE(factors)) {
         single_valued <- table$metadata[["tagbio.single_valued"]]
         if (!is.null(single_valued)) {
           for (col in intersect(unlist(rjson::fromJSON(single_valued)), names(df))) {
-            df[[col]] <- factor(df[[col]])
+            if (is.character(df[[col]])) df[[col]] <- factor(df[[col]])
           }
         }
       }
