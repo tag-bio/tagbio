@@ -717,7 +717,7 @@ tagListCollectionSetMembers <- function(fc, collection_set, data_type = NULL) {
   res <- api_post(fc$con, "q", fc$url, "json", list(zip = TRUE, groups = c("developer"), script = script))
   rows <- lapply(res$results, function(r) {
     v <- r$values
-    data.frame(collection = if (is.list(v$collection)) v$collection$name else v$collection,
+    data.frame(collection = flux_name(if (is.list(v$collection)) v$collection$name else v$collection),
                data_type = if (!is.null(v$data_reference_type)) v$data_reference_type else v$data_function_type,
                variables = if (is.null(v[["collection-size"]])) NA_integer_ else v[["collection-size"]],
                entities = if (is.null(v[["collection-entity-count"]])) NA_integer_ else v[["collection-entity-count"]],
