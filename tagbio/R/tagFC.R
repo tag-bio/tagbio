@@ -578,7 +578,6 @@ parse_collection_values <- function(res_values) {
     variable_type <- res_values$data_function_type
   }
 
-  # TODO - SUPPORT FOR DATA FRAMES...
   tag_coll <- switch(variable_type,
                      numeric = NumericCollection(collection = res_values$collection,
                                                  collection_size = res_values$`collection-size`),
@@ -594,6 +593,10 @@ parse_collection_values <- function(res_values) {
                      `data-frame-numeric` = CategoricalCollection(collection = res_values$collection,
                                                                 collection_size = res_values$`collection-size`,
                                                                 collection_entity_count = res_values$`collection-entity-count`))
+  # matrices are selected by their own type (the engine rejects them as categorical); data-frame-numeric is the old numeric-matrix name
+  if (variable_type %in% c("numeric-matrix", "categorical-matrix", "data-frame-numeric")) {
+    tag_coll$data_function_type <- if (variable_type == "data-frame-numeric") "numeric-matrix" else variable_type
+  }
 
   return(tag_coll)
 }
