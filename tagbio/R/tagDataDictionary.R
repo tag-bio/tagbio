@@ -73,7 +73,7 @@ tagDataDictionary <- function(fc, collections = NULL, collection_set = NULL, var
 
   # ---- variables of small collections (levels, numeric column names), or everything in scope when variables = TRUE
   want <- if (isTRUE(variables)) rep(TRUE, nrow(dd)) else
-    dd$data_type %in% c("categorical", "numeric") & dd$n_values <= max_levels
+    dd$data_type %in% c("categorical", "numeric", "numeric-matrix", "categorical-matrix") & dd$n_values <= max_levels
   vars <- tibble::tibble(collection = character(), variable = character(), data_type = character(),
                          n_entities = numeric(), date_kind = character())
   if (any(want) && (isTRUE(variables) || sum(dd$n_values[want]) <= 100000)) {
@@ -88,8 +88,11 @@ tagDataDictionary <- function(fc, collections = NULL, collection_set = NULL, var
                      date_kind = value_of(v$variable, "date_kind", NA_character_))
     }))
   }
+  is_matrix <- function(data_type) data_type %in% c("numeric-matrix", "categorical-matrix")
+  # a matrix variable arrives as one column per header: `Variable = <column>` (time points, genes, ...)
   column_name <- function(collection, variable, data_type) {
-    ifelse(data_type == "categorical" | variable == collection, collection, paste0(collection, " = ", variable))
+    ifelse(is_matrix(data_type), paste0(variable, " = <column>"),
+           ifelse(data_type == "categorical" | variable == collection, collection, paste0(collection, " = ", variable)))
   }
 
   if (isTRUE(variables)) {
@@ -102,7 +105,7 @@ tagDataDictionary <- function(fc, collections = NULL, collection_set = NULL, var
   }
 
   # ---- per-collection summaries from the variables
-  numeric_vars <- vars[vars$data_type == "numeric", , drop = FALSE]
+  numeric_vars <- vars[vars$data_type == "numeric" | is_matrix(vars$data_type), , drop = FALSE]
   columns <- tapply(column_name(numeric_vars$collection, numeric_vars$variable, numeric_vars$data_type),
                     numeric_vars$collection, function(x) paste(sort(x), collapse = "; "))
   numeric_dates <- tapply(!is.na(numeric_vars$date_kind), numeric_vars$collection, any)
@@ -126,9 +129,10 @@ tagDataDictionary <- function(fc, collections = NULL, collection_set = NULL, var
   out <- dd %>%
     dplyr::mutate(
       column = dplyr::case_when(
-        data_type != "numeric" ~ collection,
+        !(data_type == "numeric" | is_matrix(data_type)) ~ collection,
         collection %in% names(columns) ~ as.character(unname(columns[collection])),
-        TRUE ~ paste0(collection, " = <variable> (", format(n_values, big.mark = ",", trim = TRUE),
+        TRUE ~ paste0(ifelse(is_matrix(data_type), "<variable> = <column>", paste0(collection, " = <variable>")),
+                      " (", format(n_values, big.mark = ",", trim = TRUE),
                       ifelse(n_values == 1, " variable)", " variables)"))),
       kind = dplyr::case_when(logical ~ "logical",
                               !is.na(date_kind) ~ "date",
