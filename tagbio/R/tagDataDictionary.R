@@ -37,7 +37,7 @@ tagDataDictionary <- function(fc, collections = NULL, collection_set = NULL, var
   }
   query <- function(script) {
     api_post(fc$con, "q", fc$url, "json",
-             list(zip = TRUE, groups = c("developer"), script = script))$results
+             list(groups = c("developer"), script = script))$results
   }
   value_of <- function(x, name, default = NA) if (is.null(x[[name]])) default else x[[name]]
   info <- info(fc)
