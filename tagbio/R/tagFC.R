@@ -164,7 +164,6 @@ colnames.tagFC <- function(x, ...) {
   if (length(num_colls) > 0) {
     # use the variables method to pull variable data from FC
     jsonPayload <- list(
-      zip = TRUE,
       groups = c("developer")
     )
 
@@ -279,7 +278,6 @@ get_collection_defs.tagFC <- function(.data) {
     # assume not loaded
     # use the collections method to pull summary data from FC
     jsonPayload <- list(
-      zip = TRUE,
       groups = c("developer")
     )
 
@@ -327,7 +325,6 @@ get_variable_defs.tagFC <- function(.data, ...) {
 
   # use the variables method to pull variable data from FC
   jsonPayload <- list(
-    zip = TRUE,
     groups = c("developer")
   )
 
@@ -447,7 +444,6 @@ collect.tagFC <- function(x, output_type = "parquet", factors = FALSE, ...) {
 
   qdelim <- paste0("\\s*", x$qdelim, "\\s*")
   jsonPayload <- list(
-    zip = TRUE,
     groups = c("developer")
   )
 
@@ -509,7 +505,6 @@ run_protocol.tagFC <- function(fc, protocol_instance) {
   tc <- fc$con
 
   jsonPayload <- list(
-    zip = TRUE,
     groups = c("developer"),
     protocol_instance = protocol_instance
   )
@@ -535,7 +530,6 @@ run_script.tagFC <- function(fc, script) {
   tc <- fc$con
 
   jsonPayload <- list(
-    zip = TRUE,
     groups = c("developer"),
     script = script
   )
@@ -695,7 +689,7 @@ head.tagFC <- function(x, n = 6L, seed = 1L, ...) {
 #' @return character vector of collection set names
 #' @export
 tagListCollectionSets <- function(fc, pattern = NULL) {
-  jsonPayload <- list(zip = TRUE, groups = c("developer"), script = list(method = "collection-set"))
+  jsonPayload <- list(groups = c("developer"), script = list(method = "collection-set"))
   res <- tryCatch(api_post(fc$con, "q", fc$url, "json", jsonPayload),
                   error = function(e) stop("Listing collection sets needs an FC engine that supports the ",
                                            "'collection-set' query method: ", conditionMessage(e),
@@ -717,7 +711,7 @@ tagListCollectionSets <- function(fc, pattern = NULL) {
 tagListCollectionSetMembers <- function(fc, collection_set, data_type = NULL) {
   script <- list(method = "collection", limit = 1000000000,
                  analysis_variables = list(to_json(collection_set(collection_set))))
-  res <- api_post(fc$con, "q", fc$url, "json", list(zip = TRUE, groups = c("developer"), script = script))
+  res <- api_post(fc$con, "q", fc$url, "json", list(groups = c("developer"), script = script))
   rows <- lapply(res$results, function(r) {
     v <- r$values
     data.frame(collection = flux_name(if (is.list(v$collection)) v$collection$name else v$collection),
