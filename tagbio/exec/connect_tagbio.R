@@ -123,7 +123,9 @@ option_list = list(
   make_option(c("-t", "--output_type"), action="store", default=NA, type='character',
               help="File type of result.")
 )
-args = parse_args(OptionParser(option_list=option_list))
+# JOB_ARGS: the arguments of a job run by connect_tagbio_worker.R (in a forked child); otherwise the command line
+args = parse_args(OptionParser(option_list=option_list),
+                  args = if (exists("JOB_ARGS", envir = globalenv())) get("JOB_ARGS", envir = globalenv()) else commandArgs(trailingOnly = TRUE))
 
 # test for required options
 if (is.na(args$fc_data)) {
