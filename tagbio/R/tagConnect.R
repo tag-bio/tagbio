@@ -432,22 +432,13 @@ api_post.tagConnect <- function(object, query_type, url,
         stop("Reading a parquet download requires the 'arrow' package. Install it with install.packages('arrow').",
              call. = FALSE)
       }
-      tmp <- tempfile(fileext = ".parquet")
-      on.exit(unlink(tmp), add = TRUE)
-      writeBin(raw, tmp)
-      table <- arrow::read_parquet(tmp, as_data_frame = FALSE)
+      # read straight from the response bytes in memory, without a temp file
+      table <- arrow::read_parquet(arrow::buffer(raw), as_data_frame = FALSE)
+      # A multi-value (non-exclusive) categorical is written as parquet LIST<string>; the CSV path delivers
+      # the same data as a single string joined with "; ". Collapse list columns to that exact form (inside
+      # Arrow, before conversion) so the parquet frame is shape-identical to CSV.
+      table <- collapse_list_columns(table)
       df <- tibble::tibble(as.data.frame(table))
-      # A multi-value (non-exclusive) categorical is written as parquet LIST<string> and arrives as a
-      # LIST column; the CSV path delivers the same data as a single string joined with "; ". Collapse
-      # list columns to that exact form so the parquet frame is shape-identical to CSV -- otherwise every
-      # plugin doing a string op on a multi-value categorical breaks (e.g. `col == ""` on a list column).
-      list_cols <- names(df)[vapply(df, is.list, logical(1))]
-      # native Parquet dates in a multi-value column keep the engine's yyyy/MM/dd label form
-      for (col in list_cols) {
-        df[[col]] <- vapply(df[[col]],
-                            function(v) paste0(if (inherits(v, "Date")) format(v, "%Y/%m/%d") else v, collapse = "; "),
-                            character(1))
-      }
       # opt-in: single_valued text categoricals (named in the file's tagbio.single_valued metadata) as factors;
       # date and logical columns keep their own types
       if (isTRUE(factors)) {
@@ -561,3 +552,40 @@ tagListDataProducts <- function(con) {
                      url = url)
 }
 
+
+# one list value as the CSV form: "; "-joined, native dates in the engine's yyyy/MM/dd label form
+collapse_list_value <- function(v) paste0(if (inherits(v, "Date")) format(v, "%Y/%m/%d") else v, collapse = "; ")
+
+# the schema as "name: type" lines; arrow's own ToString builds an R object per field (~1 ms each on wide downloads)
+schema_lines <- function(table) {
+  arrow_ns <- asNamespace("arrow")
+  text <- if (exists("Schema__ToString", envir = arrow_ns, inherits = FALSE)) {
+    tryCatch(get("Schema__ToString", envir = arrow_ns)(table$schema), error = function(e) table$schema$ToString())
+  } else {
+    table$schema$ToString()
+  }
+  strsplit(text, "\n", fixed = TRUE)[[1]]
+}
+
+# LIST columns joined to "; " strings in Arrow; a column with a null value inside a list, or an arrow without
+# the compute functions, takes the per-row path (which prints a null value as "NA")
+collapse_list_columns <- function(table) {
+  lines <- schema_lines(table)
+  n <- table$num_columns
+  candidates <- if (length(lines) >= n) which(grepl(": (large_)?list<", lines[seq_len(n)])) else seq_len(n)
+  for (i in candidates) {
+    field <- table$schema$field(i - 1)
+    if (!inherits(field$type, c("ListType", "LargeListType"))) next
+    column <- table[[i]]
+    joined <- tryCatch({
+      if (arrow::call_function("list_flatten", column)$null_count > 0) stop("null inside a list")
+      dates <- inherits(field$type$value_type, "Date32")
+      if (dates) column <- arrow::call_function("cast", column, options = list(to_type = arrow::list_of(arrow::utf8())))
+      out <- arrow::call_function("binary_join", column, arrow::Scalar$create("; "))
+      if (dates) out <- arrow::call_function("replace_substring", out, options = list(pattern = "-", replacement = "/"))
+      arrow::call_function("coalesce", out, arrow::Scalar$create(""))
+    }, error = function(e) arrow::Array$create(vapply(as.vector(column), collapse_list_value, character(1))))
+    table[[i]] <- joined
+  }
+  table
+}
